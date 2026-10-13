@@ -1,7 +1,7 @@
 ---
 title: "Tooltip — Hover & Focus Hint Component | Shadcn HTML"
 sidebarTitle: Tooltip
-description: "Accessible tooltips using popover=\"hint\" and CSS anchor positioning. Shows on hover and keyboard focus with configurable delay, arrow support, and automatic collision avoidance."
+description: "Contextual hint tooltips using popover hint and CSS anchor positioning. Triggered on hover and focus with configurable delay and optional arrow indicator."
 ---
 
 The **Tooltip** component displays a short contextual hint when the user hovers over or focuses a trigger element. It is built on the newer `popover="hint"` primitive — a variant of the Popover API that appears on pointer hover and keyboard focus without closing any currently open `auto` popovers. [CSS Anchor Positioning](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_anchor_positioning) tethers each tooltip to its trigger, and `position-try-fallbacks` ensures the tooltip automatically flips when near viewport edges. Never use the HTML `title` attribute as a tooltip replacement — it is invisible on touch devices and unstyled in all browsers.

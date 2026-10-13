@@ -28,7 +28,7 @@ Every component stylesheet in shadcn HTML wraps its rules inside `@layer compone
   `@layer` is supported in all modern browsers with no polyfill required — Chrome/Edge 99+, Firefox 97+, and Safari 15.4+ (all March 2022).
 </Tip>
 
-## The Three-Layer Architecture
+## The Cascade Order
 
 Shadcn HTML uses a deliberate three-tier cascade, from lowest to highest priority:
 
@@ -41,20 +41,6 @@ Shadcn HTML uses a deliberate three-tier cascade, from lowest to highest priorit
 <Note>
   Tokens and your styles are both unlayered — between them, normal specificity and source order apply. They don't compete with each other because tokens only define `:root` custom properties, not component selectors.
 </Note>
-
-### Why Utilities Always Win Over Components
-
-Because the `utilities` layer is declared *after* `components`, utilities always take precedence over component defaults. And because your own unlayered CSS sits outside all layers, it beats everything — without `!important` or specificity climbing.
-
-To declare an explicit layer order at the top of your main stylesheet:
-
-```css
-/* Declare layer order: first listed = lowest priority */
-@layer components, utilities;
-
-/* Now utility-layer rules beat component-layer rules,
-   and your unlayered CSS beats everything. */
-```
 
 ## How Each Component Uses `@layer`
 

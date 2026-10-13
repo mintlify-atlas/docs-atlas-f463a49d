@@ -137,6 +137,7 @@ Use `.form-fieldset` on a native `<fieldset>` to group related controls under a 
 
   <fieldset class="form-fieldset">
     <legend>Notify me about...</legend>
+    <p class="field-description">Choose what you want to be notified about.</p>
     <div class="form-group">
       <div class="form-field-inline">
         <input class="radio" type="radio" name="notify" id="notify-all" checked>
@@ -260,6 +261,7 @@ A full form composing multiple field types — input, select, textarea, radio gr
 
   <fieldset class="form-fieldset">
     <legend>Notify me about...</legend>
+    <p class="field-description">Choose what you want to be notified about.</p>
     <div class="form-group">
       <div class="form-field-inline">
         <input class="radio" type="radio" name="comp-notify" id="comp-all" checked>
@@ -299,11 +301,11 @@ A full form composing multiple field types — input, select, textarea, radio gr
 | Attribute | Element | Purpose |
 |-----------|---------|---------|
 | `for` / `id` | `<label>` → `<input>` | Associates label text with control |
-| `aria-describedby` | `<input>` | Points to `.field-description` or `.field-error` element |
+| `aria-describedby` | `<input>` | Points to `.field-description` or `.field-error` element `id` |
 | `aria-invalid="true"` | `<input>` | Marks control as invalid for assistive technology |
 | `role="alert"` | `.field-error` | Announces error messages to screen readers immediately |
+| `role="group"` | container | Groups related controls (optional on `.form-field`) |
 | `required` | `<input>` | Triggers native browser required validation |
-| `novalidate` | `<form>` | Disables native bubbles when using custom JS validation |
 
 <Warning>
   When using `novalidate` on a `<form>` for custom validation, you are responsible for setting `aria-invalid="true"` on invalid fields and injecting `.field-error` elements with `role="alert"` so screen reader users hear the error messages.
@@ -315,7 +317,7 @@ A full form composing multiple field types — input, select, textarea, radio gr
 - `.form-field-inline` aligns checkbox, switch, or radio horizontally with its label.
 - `.form-field-row` creates a card-style row (border, padding, shadow) for notification-preference switch items — label and description on the left, control on the right.
 - `.form-actions` creates a flex row for submit/reset buttons with a small top padding.
-- `.form-fieldset` styles a native `<fieldset>` — removes the default border, and styles the `<legend>` as a label.
+- `.form-fieldset` styles a native `<fieldset>` — removes the default border, styles the `<legend>` as a label, and supports a `.field-description` directly after the legend for group-level help text.
 - `.form-group` is a vertical stack (`gap: 0.75rem`) for grouping multiple inline fields inside a fieldset.
 - No JavaScript is needed for basic forms — use native Constraint Validation attributes (`required`, `pattern`, `min`, `max`, `minlength`, `maxlength`).
 - Prefer `:user-valid` / `:user-invalid` for post-interaction validation styling without JavaScript (defined in `input.css`).

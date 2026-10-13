@@ -1,7 +1,7 @@
 ---
 title: "Component Skills: Structured HTML Usage References"
 sidebarTitle: Component Skills
-description: "Component skill files are structured Markdown references that teach AI assistants and developers how to build each shadcn-html component's markup correctly."
+description: "Component skill files are structured Markdown references that teach AI assistants and developers how to build each shadcn-html component markup correctly."
 ---
 
 Every component in shadcn-html ships with a `component-skill.md` file — a structured Markdown reference that documents the HTML pattern for that component in full. Skill files tell you exactly which elements to use, which attributes to set, what variants and sizes are available, and what the accessibility requirements are. They are the single source of truth for how to write a component's markup, and they are purpose-built to be useful both to human developers and to AI coding assistants.
@@ -10,7 +10,7 @@ Every component in shadcn-html ships with a `component-skill.md` file — a stru
 
 A component skill is a Markdown file that focuses purely on the **HTML structure** and its configuration options. It does not contain CSS or JavaScript — those live in their own files alongside the skill. The skill answers: *"What HTML do I write to use this component correctly?"*
 
-```
+```text
 dist/components/{name}/
 ├── component-skill.md   ← the skill file (HTML reference)
 ├── {name}.css           ← component stylesheet
@@ -32,7 +32,7 @@ Every component skill follows a consistent seven-section template, in this order
 | **3. Structure** | Complete HTML markup showing the component's element hierarchy, class names, and required attributes |
 | **4. Variants** | Table of `data-variant` values with descriptions and example markup for each |
 | **5. Sizes** | Table of `data-size` values (if the component supports sizing) |
-| **6. Accessibility** | Required ARIA attributes, keyboard interactions, and screen reader considerations |
+| **6. ARIA** | Required ARIA attributes, keyboard interactions, and screen reader considerations |
 | **7. Notes** | Edge cases, composition tips, caveats, and integration notes |
 
 The consistent structure means once you've read one skill file, you know where to find any piece of information in any other.
@@ -41,7 +41,7 @@ The consistent structure means once you've read one skill file, you know where t
 
 Here is the full skill file for the Badge component — one of the simplest in the library — showing all sections in practice:
 
-```markdown
+````markdown
 # Pattern: Badge
 
 ## Native basis
@@ -88,7 +88,7 @@ pure visual indicator.
   read inline by screen readers.
 - If the badge is purely decorative, add
   `aria-hidden="true"`.
-```
+````
 
 ## Using skills with AI assistants
 

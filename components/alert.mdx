@@ -1,7 +1,7 @@
 ---
 title: "Alert — Inline Static Notification Component | Shadcn HTML"
 sidebarTitle: Alert
-description: "Static inline notification banners for persistent contextual feedback. CSS-only with default, destructive, warning, info, and success variants. No JavaScript required."
+description: "Static inline notification banners for persistent contextual feedback. CSS-only with default and destructive variants. No JavaScript required."
 ---
 
 The **Alert** component displays a persistent, inline notification message directly within the page flow. Unlike a [Toast](/components/toast), an alert does not appear, animate, or dismiss automatically — it is a static element you place in your markup wherever context-specific feedback belongs, such as a form validation summary, a feature announcement, or a system status notice. It is CSS-only with no JavaScript dependency, and uses `role="alert"` (for urgent messages) or `aria-live="polite"` (for informational ones) to integrate cleanly with screen readers.
@@ -40,12 +40,9 @@ Set `data-variant` on the `.alert` element to communicate intent.
 |---|---|
 | *(default)* | Standard informational notice |
 | `destructive` | Error, danger, or irreversible action warning |
-| `warning` | Non-critical caution or advisory notice |
-| `info` | Neutral informational context |
-| `success` | Confirmation of a completed action |
 
 ```html
-<!-- Destructive / error -->
+<!-- Destructive -->
 <div class="alert" data-variant="destructive" role="alert">
   <svg class="alert-icon" aria-hidden="true" width="16" height="16"
        viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -57,48 +54,6 @@ Set `data-variant` on the `.alert` element to communicate intent.
     <p class="alert-description">Your session has expired. Please sign in again.</p>
   </div>
 </div>
-
-<!-- Warning -->
-<div class="alert" data-variant="warning" role="alert">
-  <svg class="alert-icon" aria-hidden="true" width="16" height="16"
-       viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-    <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/>
-    <path d="M12 9v4M12 17h.01"/>
-  </svg>
-  <div class="alert-content">
-    <h5 class="alert-title">Deprecation notice</h5>
-    <p class="alert-description">
-      This API endpoint will be removed in version 4.0. Migrate before December 31.
-    </p>
-  </div>
-</div>
-
-<!-- Info -->
-<div class="alert" data-variant="info">
-  <svg class="alert-icon" aria-hidden="true" width="16" height="16"
-       viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-    <circle cx="12" cy="12" r="10"/>
-    <path d="M12 16v-4M12 8h.01"/>
-  </svg>
-  <div class="alert-content">
-    <h5 class="alert-title">Dark mode available</h5>
-    <p class="alert-description">
-      You can now switch themes from your profile settings.
-    </p>
-  </div>
-</div>
-
-<!-- Success -->
-<div class="alert" data-variant="success">
-  <svg class="alert-icon" aria-hidden="true" width="16" height="16"
-       viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-    <path d="M20 6 9 17l-5-5"/>
-  </svg>
-  <div class="alert-content">
-    <h5 class="alert-title">Payment successful</h5>
-    <p class="alert-description">Your subscription has been activated.</p>
-  </div>
-</div>
 ```
 
 ## Alert with Action
@@ -106,7 +61,7 @@ Set `data-variant` on the `.alert` element to communicate intent.
 Add an `.alert-action` container after `.alert-content` for contextual CTAs.
 
 ```html
-<div class="alert" data-variant="info">
+<div class="alert">
   <svg class="alert-icon" aria-hidden="true" width="16" height="16"
        viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
     <circle cx="12" cy="12" r="10"/>

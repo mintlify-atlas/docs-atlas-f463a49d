@@ -1,7 +1,7 @@
 ---
 title: "Accordion — Collapsible Content Sections | Shadcn HTML"
 sidebarTitle: Accordion
-description: "Accessible collapsible sections built on native <details> and <summary> elements. Multi-open needs zero JS; single-open adds a tiny toggle handler. Animated with CSS."
+description: "Collapsible sections built on native details and summary elements. Multi-open needs zero JS; single-open uses a small toggle handler. CSS-only animation."
 ---
 
 The **Accordion** component renders a list of collapsible disclosure sections using the browser's native `<details>` and `<summary>` elements. Because the browser natively handles open/close state, keyboard toggling (Enter/Space), and screen-reader announcements, a multi-open accordion requires **absolutely no JavaScript**. Single-open behaviour — where opening one item closes the others — adds a small `toggle` event listener. Content height transitions are CSS-only, using the `::details-content` pseudo-element with a `block-size` transition and `@starting-style` for the enter animation.

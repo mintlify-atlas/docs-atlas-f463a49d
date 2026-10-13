@@ -38,13 +38,12 @@ Apply the `slider` class to any `<input type="range">`. Always add a `<label>` f
 Use an `<output>` element with a matching `for` attribute to display the current value. Wire the live update with an inline `oninput` or your own script.
 
 ```html
-<div style="display:flex;justify-content:space-between;align-items:center;">
+<div style="display:flex;justify-content:space-between;align-items:center;gap:1rem;">
   <label class="label" for="temperature" style="margin:0;">Temperature</label>
   <output id="temperature-val"
-          for="temperature"
-          style="font-size:0.8125rem;color:var(--muted-foreground);font-family:var(--font-mono);">
-    0.5
-  </output>
+          class="text-sm text-muted-foreground"
+          style="font-family:var(--font-mono);"
+          for="temperature">0.5</output>
 </div>
 <input class="slider" type="range" id="temperature"
        min="0" max="1" step="0.1" value="0.5"
@@ -135,12 +134,11 @@ A slider with a label, live value readout, and form submission.
 
 ```html
 <form>
-  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.5rem;">
+  <div style="display:flex;justify-content:space-between;align-items:center;gap:1rem;margin-bottom:0.5rem;">
     <label class="label" for="brightness" style="margin:0;">Brightness</label>
     <output id="brightness-val" for="brightness"
-            style="font-size:0.8125rem;color:var(--muted-foreground);font-family:var(--font-mono);">
-      75
-    </output>
+            class="text-sm text-muted-foreground"
+            style="font-family:var(--font-mono);">75</output>
   </div>
   <input class="slider" type="range"
          id="brightness" name="brightness"

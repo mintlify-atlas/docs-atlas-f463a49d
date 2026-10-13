@@ -1,7 +1,7 @@
 ---
 title: "Navigation Menu Component — Shadcn HTML Site Nav"
 sidebarTitle: Navigation Menu
-description: "Build accessible top-level site navigation with dropdown submenus using the Popover API and CSS anchor positioning. No framework required."
+description: "Build accessible site navigation bars with rich dropdown panels. Uses the native Popover API, CSS anchor positioning, and popovertarget for zero JS wiring."
 ---
 
 The **Navigation Menu** component provides top-level site navigation, typically placed in a header. It supports simple links and trigger buttons that open rich dropdown panels — product listings, feature grids, or grouped links with descriptions. Dropdown panels are powered by the browser-native **Popover API** via declarative `popovertarget` attributes, so open/close requires zero JavaScript click handlers. CSS anchor positioning aligns each panel to its trigger, and a `:has()` selector rotates the chevron icon automatically when a dropdown is open.
@@ -140,9 +140,9 @@ Dropdown panels opened via the Popover API render in the browser's top layer. Th
 The JS file runs automatically on load and via `MutationObserver`. It iterates every `.nav-menu-trigger` + `.nav-menu-content` pair and assigns unique, auto-generated CSS custom properties:
 
 ```css
-/* Set by JS — example output */
-.nav-menu-trigger { anchor-name: --nav-dd-solutions; }
-.nav-menu-content { position-anchor: --nav-dd-solutions; }
+/* Set by JS — example output (id="nav-dd-solutions") */
+.nav-menu-trigger { anchor-name: --nav-menu-nav-dd-solutions; }
+.nav-menu-content { position-anchor: --nav-menu-nav-dd-solutions; }
 ```
 
 This is necessary because CSS anchor names must be unique per page. If you only have a single dropdown on the page you can set them manually in a `<style>` block and omit the JS import.

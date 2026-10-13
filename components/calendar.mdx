@@ -1,7 +1,7 @@
 ---
-title: "Calendar — Shadcn HTML Month Grid Date Component"
+title: "Calendar — Shadcn HTML Accessible Month Grid Component"
 sidebarTitle: Calendar
-description: "An accessible month-grid calendar for date display and selection. JS-rendered <table> with role=\"grid\", keyboard navigation, and today/selected/disabled states."
+description: "Accessible month-grid calendar for date display and selection. A JS-rendered <table> with role=\"grid\", keyboard navigation, and data-attribute day states."
 ---
 
 The **Calendar** component renders a month grid that lets users view and select dates. The grid is built on a native `<table>` with `role="grid"` for accessible two-dimensional keyboard navigation. A JavaScript module handles month rendering, navigation between months, and day selection — attaching `data-today`, `data-selected`, `data-outside`, and `data-disabled` data attributes to drive all visual states purely in CSS. Use the calendar for date pickers, booking UIs, event browsers, and any surface where a user needs to orient themselves within a month.
@@ -134,4 +134,3 @@ Visual state is controlled entirely through data attributes applied by the JS mo
 - The JS module is required for month rendering and navigation. Without it, you can still author a static calendar manually using the HTML structure above.
 - `aria-live="polite"` on `.calendar-heading` ensures screen readers announce the month when the user navigates forward or back.
 - Days from adjacent months rendered in the grid (`data-outside`) are visually muted. They can be clicked to jump to that month, depending on the JS configuration.
-- For a date-range selection variant, apply `data-range-start` and `data-range-end` to the respective cells and `data-in-range` to cells in between — the CSS layer handles the visual fill automatically.

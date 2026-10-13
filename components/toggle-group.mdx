@@ -1,7 +1,7 @@
 ---
-title: "Toggle Group — Single and Multiple Selection with Keyboard Nav"
+title: "Toggle Group — Button Selection with Keyboard Navigation"
 sidebarTitle: "Toggle Group"
-description: "Container for grouped toggle buttons with single or multiple selection, roving tabindex keyboard navigation, and ARIA group semantics. Requires toggle-group.js."
+description: "Grouped toggle buttons with single or multiple selection, roving tabindex keyboard navigation, and ARIA role=group semantics. Requires toggle-group.js."
 ---
 
 The Toggle Group component wraps multiple Toggle buttons into a single accessible group that supports both single-selection (radio-like) and multiple-selection (checkbox-like) modes. It is built on a `role="group"` container with `<button class="toggle">` children using `aria-pressed` for state. The JavaScript module implements **roving tabindex** so the entire group is a single tab stop, with Arrow keys moving focus between items — matching the [WAI-ARIA Toolbar/Group keyboard pattern](https://www.w3.org/WAI/ARIA/apg/patterns/toolbar/). Variant, size, and orientation are controlled with `data-*` attributes on the container and propagated to children via CSS.

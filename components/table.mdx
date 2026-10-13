@@ -1,7 +1,7 @@
 ---
-title: "Table — Shadcn HTML Data Table Component"
+title: "Shadcn HTML Table — Structured Data Display Component"
 sidebarTitle: Table
-description: "A styled data table built on semantic <table>, <thead>, <tbody>, and <tfoot> elements with responsive overflow scrolling and optional striped-row variants."
+description: "A styled data table built on semantic <table>, <thead>, <tbody>, and <tfoot> elements with responsive overflow scrolling and accessible captions."
 ---
 
 The **Table** component applies shadcn design tokens to the native HTML `<table>` element family, giving you consistent spacing, typography, and border treatment without sacrificing semantic markup. Every table should have a `<caption>` for an accessible name, `<th scope="col">` for column headers, and — when the table may exceed its container width — a `table-container` wrapper that enables horizontal scroll. Use this component for invoices, data lists, settings, and any tabular information that benefits from row/column relationships.
@@ -107,27 +107,6 @@ Use `<tfoot>` for summary rows such as totals:
   </table>
 </div>
 ```
-
-## Striped Rows Variant
-
-Add alternating row backgrounds by applying `data-striped` on the `<tbody>`:
-
-```html
-<tbody data-striped>
-  <tr class="table-row">
-    <td class="table-cell">Row 1</td>
-    <td class="table-cell">Value</td>
-  </tr>
-  <tr class="table-row">
-    <td class="table-cell">Row 2</td>
-    <td class="table-cell">Value</td>
-  </tr>
-</tbody>
-```
-
-<Tip>
-  Striped rows help users track across wide tables. Always combine with column headers so the visual rhythm is meaningful.
-</Tip>
 
 ## Responsive Layout
 

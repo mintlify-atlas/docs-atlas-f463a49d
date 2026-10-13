@@ -1,7 +1,7 @@
 ---
 title: "Toggle Component — Pressed State, Variants, and ARIA"
 sidebarTitle: "Toggle"
-description: "Two-state toggle button built on a native button element with aria-pressed. Supports outline and ghost variants plus three sizes. Requires toggle.js for interactivity."
+description: "Two-state button built on the native button element with aria-pressed. Default and outline variants, three sizes, and JS-powered aria-pressed toggling."
 ---
 
 The Toggle component is a two-state button that switches between "on" and "off" — ideal for toolbar formatting controls like Bold, Italic, or Underline, or for any feature that can be enabled and disabled. It is built directly on the native `<button>` element with `aria-pressed` to communicate state to assistive technology. The browser provides click and keyboard (Enter/Space) handling automatically. A small JavaScript module wires up `aria-pressed` toggling; the visual states are driven entirely by CSS reacting to `aria-pressed="true"`.

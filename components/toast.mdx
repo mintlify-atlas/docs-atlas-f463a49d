@@ -1,7 +1,7 @@
 ---
 title: "Toast — Auto-dismiss Notification Messages | Shadcn HTML"
 sidebarTitle: Toast
-description: "Stacking auto-dismiss toast notifications using the Popover API. Supports success, error, warning variants, configurable position, auto-dismiss timing, and screen reader announcements."
+description: "Stacking auto-dismiss toasts using the Popover API. Destructive, success, warning, and info variants, six corner positions, and configurable timing."
 ---
 
 The **Toast** component displays brief, non-blocking notification messages that appear at the edge of the screen and dismiss automatically after a set duration. It uses `popover="manual"` for top-layer rendering without light-dismiss interference, and requires JavaScript for triggering, auto-dismiss timers, stacking management, and `aria-live` region announcements. Toasts are ideal for post-action feedback — form submissions, file saves, error reporting — where a full-page alert would be intrusive.
@@ -66,8 +66,9 @@ Set `data-variant` on the toast element to communicate intent.
 |---|---|
 | *(default)* | Neutral informational notification |
 | `success` | Confirmation of a successful action |
-| `error` | Notification of a failure or error |
+| `destructive` | Notification of a failure or error |
 | `warning` | Non-blocking caution message |
+| `info` | Supplementary informational context |
 
 ```html
 <!-- Success toast with icon -->
@@ -92,8 +93,8 @@ Set `data-variant` on the toast element to communicate intent.
   </div>
 </div>
 
-<!-- Error toast -->
-<div class="toast" data-variant="error"
+<!-- Destructive toast -->
+<div class="toast" data-variant="destructive"
      role="status" aria-live="polite" aria-atomic="true"
      popover="manual">
   <div class="toast-content">
