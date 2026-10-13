@@ -1,0 +1,323 @@
+---
+title: "Form Component — Layouts, Validation, and Accessibility"
+sidebarTitle: Form
+description: "Form layout system with stacked, horizontal, and inline patterns. Field wrappers, error states, fieldset grouping, native HTML5 validation — CSS only."
+---
+
+The **Form** component is a CSS layout system for building consistent, accessible forms. It wraps the native `<form>` element with a set of utility classes — `.form-field`, `.form-field-inline`, `.form-field-row`, `.form-fieldset`, and `.form-actions` — that provide reliable spacing, label alignment, and validation-state styling. It composes with every other form control component (Input, Textarea, Select, Checkbox, Radio, Switch, Slider) and relies on the browser's native Constraint Validation API, so basic validation requires zero JavaScript.
+
+## CDN Import
+
+Only a CSS file is needed. Load it alongside the CSS for any controls you use.
+
+```html
+<!-- Form layout CSS -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/codylindley/shadcn-html@latest/dist/components/form/form.css">
+
+<!-- Example: also load Input and Textarea -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/codylindley/shadcn-html@latest/dist/components/input/input.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/codylindley/shadcn-html@latest/dist/components/textarea/textarea.css">
+```
+
+## Basic Usage
+
+Wrap your `<form>` in the `form` class and use `.form-field` for each labeled control.
+
+```html
+<form class="form">
+  <div class="form-field">
+    <label class="label" for="name">Username</label>
+    <input class="input" type="text" id="name" required>
+    <p class="field-description">This is your public display name.</p>
+  </div>
+
+  <div class="form-field">
+    <label class="label" for="email">Email</label>
+    <input class="input" type="email" id="email" required>
+    <p class="field-description">You can manage email addresses in your settings.</p>
+  </div>
+
+  <div class="form-field">
+    <label class="label" for="bio">Bio</label>
+    <textarea class="textarea" id="bio" placeholder="Tell us about yourself..."></textarea>
+    <p class="field-description">You can @mention other users and organizations.</p>
+  </div>
+
+  <div class="form-actions">
+    <button class="btn" type="submit" data-variant="default">Submit</button>
+    <button class="btn" type="reset" data-variant="outline">Reset</button>
+  </div>
+</form>
+```
+
+## Layout Patterns
+
+### Inline fields — checkbox and switch
+
+Use `.form-field-inline` to align a checkbox, radio, or switch horizontally with its label.
+
+```html
+<div class="form-field-inline">
+  <input class="checkbox" type="checkbox" id="terms">
+  <label for="terms" style="font-size:0.875rem;">Accept terms and conditions</label>
+</div>
+
+<div class="form-field-inline">
+  <input class="switch" type="checkbox" role="switch" id="newsletter">
+  <label for="newsletter" style="font-size:0.875rem;">Subscribe to newsletter</label>
+</div>
+```
+
+### Horizontal layout — label beside control
+
+Add `data-orientation="horizontal"` to `.form-field` to place the label to the left of the control.
+
+```html
+<form class="form">
+  <div class="form-field" data-orientation="horizontal">
+    <label class="label" for="username">Username</label>
+    <div>
+      <input class="input" type="text" id="username" placeholder="codylindley">
+      <p class="field-description">Your public display name.</p>
+    </div>
+  </div>
+
+  <div class="form-field" data-orientation="horizontal">
+    <label class="label" for="website">Website</label>
+    <div>
+      <input class="input" type="url" id="website" placeholder="https://example.com">
+    </div>
+  </div>
+
+  <div class="form-actions">
+    <button class="btn" type="submit" data-variant="default">Save</button>
+    <button class="btn" type="reset" data-variant="outline">Cancel</button>
+  </div>
+</form>
+```
+
+### Switch rows — notification style
+
+Use `.form-field-row` for notification-preference rows: label and description on the left, switch on the right.
+
+```html
+<form class="form">
+  <div class="form-field-row">
+    <div>
+      <label class="label" for="marketing-emails">Marketing emails</label>
+      <p class="field-description">Receive emails about new products, features, and more.</p>
+    </div>
+    <input class="switch" type="checkbox" role="switch" id="marketing-emails">
+  </div>
+
+  <div class="form-field-row">
+    <div>
+      <label class="label" for="security-emails">Security emails</label>
+      <p class="field-description">Receive emails about your account security.</p>
+    </div>
+    <input class="switch" type="checkbox" role="switch" id="security-emails" checked disabled>
+  </div>
+
+  <div class="form-actions">
+    <button class="btn" type="submit" data-variant="default">Save preferences</button>
+  </div>
+</form>
+```
+
+### Fieldset grouping
+
+Use `.form-fieldset` on a native `<fieldset>` to group related controls under a styled `<legend>`.
+
+```html
+<form class="form">
+  <div class="form-field">
+    <label class="label" for="full-name">Full name</label>
+    <input class="input" type="text" id="full-name" placeholder="Jane Doe" required>
+  </div>
+
+  <fieldset class="form-fieldset">
+    <legend>Notify me about...</legend>
+    <div class="form-group">
+      <div class="form-field-inline">
+        <input class="radio" type="radio" name="notify" id="notify-all" checked>
+        <label for="notify-all" style="font-size:0.875rem;">All new messages</label>
+      </div>
+      <div class="form-field-inline">
+        <input class="radio" type="radio" name="notify" id="notify-direct">
+        <label for="notify-direct" style="font-size:0.875rem;">Direct messages and mentions</label>
+      </div>
+      <div class="form-field-inline">
+        <input class="radio" type="radio" name="notify" id="notify-none">
+        <label for="notify-none" style="font-size:0.875rem;">Nothing</label>
+      </div>
+    </div>
+  </fieldset>
+
+  <div class="form-actions">
+    <button class="btn" type="submit" data-variant="default">Save preferences</button>
+  </div>
+</form>
+```
+
+## Validation & Error States
+
+### Native HTML5 validation
+
+Use standard HTML5 constraint attributes. The browser validates on submit and displays native error bubbles. The `:user-invalid` pseudo-class (defined in `input.css`) applies destructive styling automatically after the user has interacted with a field and left it invalid — no JavaScript needed.
+
+```html
+<form class="form">
+  <div class="form-field">
+    <label class="label" for="v-email">Email <span class="text-destructive" aria-hidden="true">*</span></label>
+    <input class="input" type="email" id="v-email"
+           required
+           placeholder="you@example.com">
+  </div>
+
+  <div class="form-field">
+    <label class="label" for="v-age">Age</label>
+    <input class="input" type="number" id="v-age"
+           min="18" max="120"
+           placeholder="18">
+    <p class="field-description">Must be 18 or older.</p>
+  </div>
+
+  <div class="form-field">
+    <label class="label" for="v-slug">Username</label>
+    <input class="input" type="text" id="v-slug"
+           pattern="[a-z0-9_-]+"
+           minlength="3"
+           placeholder="lowercase-only">
+    <p class="field-description">Lowercase letters, numbers, hyphens, and underscores only.</p>
+  </div>
+
+  <div class="form-actions">
+    <button class="btn" type="submit" data-variant="default">Create account</button>
+  </div>
+</form>
+```
+
+### Programmatic error display
+
+For custom or server-side validation, add `data-invalid` to `.form-field`, set `aria-invalid="true"` on the control, and add a `.field-error` paragraph with `role="alert"`.
+
+```html
+<form class="form" novalidate>
+  <div class="form-field" data-invalid>
+    <label class="label" for="err-user">Username</label>
+    <input class="input" type="text" id="err-user"
+           aria-invalid="true"
+           aria-describedby="err-user-msg"
+           value="ab">
+    <p class="field-error" id="err-user-msg" role="alert">
+      Username must be at least 3 characters.
+    </p>
+  </div>
+
+  <div class="form-field" data-invalid>
+    <label class="label" for="err-email">Email</label>
+    <input class="input" type="email" id="err-email"
+           aria-invalid="true"
+           aria-describedby="err-email-msg"
+           value="not-an-email">
+    <p class="field-error" id="err-email-msg" role="alert">
+      Please enter a valid email address.
+    </p>
+  </div>
+
+  <div class="form-actions">
+    <button class="btn" type="submit" data-variant="default">Try again</button>
+  </div>
+</form>
+```
+
+## Complete Form Example
+
+A full form composing multiple field types — input, select, textarea, radio group, and switch rows.
+
+```html
+<form class="form">
+  <div class="form-field">
+    <label class="label" for="comp-name">Username</label>
+    <input class="input" type="text" id="comp-name" placeholder="codylindley" required>
+    <p class="field-description">This is your public display name.</p>
+  </div>
+
+  <div class="form-field">
+    <label class="label" for="comp-email">Email</label>
+    <select class="select" id="comp-email">
+      <option value="m@example.com">m@example.com</option>
+      <option value="m@work.com">m@work.com</option>
+    </select>
+    <p class="field-description">Select the email to display publicly.</p>
+  </div>
+
+  <div class="form-field">
+    <label class="label" for="comp-bio">Bio</label>
+    <textarea class="textarea" id="comp-bio" placeholder="I like to..."></textarea>
+    <p class="field-description">You can @mention other users and organizations.</p>
+  </div>
+
+  <fieldset class="form-fieldset">
+    <legend>Notify me about...</legend>
+    <div class="form-group">
+      <div class="form-field-inline">
+        <input class="radio" type="radio" name="comp-notify" id="comp-all" checked>
+        <label for="comp-all" style="font-size:0.875rem;">All new messages</label>
+      </div>
+      <div class="form-field-inline">
+        <input class="radio" type="radio" name="comp-notify" id="comp-direct">
+        <label for="comp-direct" style="font-size:0.875rem;">Direct messages only</label>
+      </div>
+    </div>
+  </fieldset>
+
+  <div class="form-field-row">
+    <div>
+      <label class="label" for="comp-marketing">Marketing emails</label>
+      <p class="field-description">Receive emails about new products and features.</p>
+    </div>
+    <input class="switch" type="checkbox" role="switch" id="comp-marketing">
+  </div>
+
+  <div class="form-actions">
+    <button class="btn" type="submit" data-variant="default">Submit</button>
+  </div>
+</form>
+```
+
+## Data Attributes
+
+| Attribute | Element | Values | Description |
+|-----------|---------|--------|-------------|
+| `data-orientation` | `.form-field` | `horizontal` | Places label beside control instead of above |
+| `data-invalid` | `.form-field` | *(presence)* | Marks field invalid — description turns destructive color |
+| `data-disabled` | `.form-field-row` | *(presence)* | Reduces row opacity to 60% |
+
+## ARIA & Accessibility
+
+| Attribute | Element | Purpose |
+|-----------|---------|---------|
+| `for` / `id` | `<label>` → `<input>` | Associates label text with control |
+| `aria-describedby` | `<input>` | Points to `.field-description` or `.field-error` element |
+| `aria-invalid="true"` | `<input>` | Marks control as invalid for assistive technology |
+| `role="alert"` | `.field-error` | Announces error messages to screen readers immediately |
+| `required` | `<input>` | Triggers native browser required validation |
+| `novalidate` | `<form>` | Disables native bubbles when using custom JS validation |
+
+<Warning>
+  When using `novalidate` on a `<form>` for custom validation, you are responsible for setting `aria-invalid="true"` on invalid fields and injecting `.field-error` elements with `role="alert"` so screen reader users hear the error messages.
+</Warning>
+
+## Notes
+
+- `.form-field` provides consistent vertical spacing and stacks label above control by default.
+- `.form-field-inline` aligns checkbox, switch, or radio horizontally with its label.
+- `.form-field-row` creates a card-style row (border, padding, shadow) for notification-preference switch items — label and description on the left, control on the right.
+- `.form-actions` creates a flex row for submit/reset buttons with a small top padding.
+- `.form-fieldset` styles a native `<fieldset>` — removes the default border, and styles the `<legend>` as a label.
+- `.form-group` is a vertical stack (`gap: 0.75rem`) for grouping multiple inline fields inside a fieldset.
+- No JavaScript is needed for basic forms — use native Constraint Validation attributes (`required`, `pattern`, `min`, `max`, `minlength`, `maxlength`).
+- Prefer `:user-valid` / `:user-invalid` for post-interaction validation styling without JavaScript (defined in `input.css`).
+- For programmatic validation (e.g., server errors), set `data-invalid` on `.form-field` and `aria-invalid="true"` on the control via JavaScript.
+- The Form component composes with all other Shadcn HTML form controls: Input, Textarea, Select, Checkbox, Radio, Switch, and Slider.

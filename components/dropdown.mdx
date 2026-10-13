@@ -1,0 +1,206 @@
+---
+title: "Dropdown Menu Component — Shadcn HTML Popover Menus"
+sidebarTitle: Dropdown
+description: "Create accessible dropdown menus with the native Popover API and CSS anchor positioning. Supports icons, shortcuts, separators, and destructive items."
+---
+
+The **Dropdown Menu** component renders a floating action menu that opens when a trigger button is activated. It is built on the browser-native **Popover API** — the menu element carries the `popover` attribute, which grants it automatic top-layer rendering (no z-index battles), built-in light-dismiss (click outside to close), and a clean open/close lifecycle. CSS anchor positioning aligns the menu to its trigger without any JavaScript positioning logic. A small JS file handles ARIA state management, arrow-key navigation, typeahead, and checkbox/radio item toggling.
+
+## CDN Import
+
+```html
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/codylindley/shadcn-html@latest/dist/components/dropdown/dropdown.css">
+<script type="module" src="https://cdn.jsdelivr.net/gh/codylindley/shadcn-html@latest/dist/components/dropdown/dropdown.js"></script>
+```
+
+## Basic Usage
+
+Add `data-dropdown-trigger="<menu-id>"` to any button to wire it to a matching `<div id="<menu-id>" role="menu" popover>`. The JS pairs them automatically and sets up CSS anchor positioning.
+
+```html
+<!-- Trigger -->
+<button class="btn" data-variant="outline"
+        aria-haspopup="menu"
+        aria-expanded="false"
+        aria-controls="my-menu"
+        data-dropdown-trigger="my-menu">
+  Options
+  <svg aria-hidden="true" width="14" height="14"
+       viewBox="0 0 24 24" fill="none"
+       stroke="currentColor" stroke-width="2">
+    <path d="m6 9 6 6 6-6"/>
+  </svg>
+</button>
+
+<!-- Menu -->
+<div id="my-menu" role="menu" popover
+     class="dropdown-content"
+     aria-label="Options menu">
+  <div role="group" aria-label="Navigation">
+    <button role="menuitem" class="dropdown-item" tabindex="-1">
+      Profile
+    </button>
+    <button role="menuitem" class="dropdown-item" tabindex="-1">
+      Settings
+    </button>
+  </div>
+
+  <div class="dropdown-separator" role="separator"></div>
+
+  <div role="group" aria-label="Actions">
+    <button role="menuitem" class="dropdown-item" tabindex="-1">
+      Export
+      <span class="dropdown-shortcut">⌘E</span>
+    </button>
+    <button role="menuitem" class="dropdown-item"
+            data-variant="destructive" tabindex="-1">
+      Delete
+      <span class="dropdown-shortcut">⌘⌫</span>
+    </button>
+  </div>
+</div>
+```
+
+## Variants
+
+### Full-Featured Menu
+
+A production-ready menu with a label header, grouped items, icons, keyboard shortcuts, a disabled item, and a destructive action.
+
+```html
+<button class="btn" data-variant="default"
+        aria-haspopup="menu" aria-expanded="false"
+        aria-controls="full-menu"
+        data-dropdown-trigger="full-menu">
+  Options
+  <svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24"
+       fill="none" stroke="currentColor" stroke-width="2">
+    <path d="m6 9 6 6 6-6"/>
+  </svg>
+</button>
+
+<div id="full-menu" role="menu" popover
+     class="dropdown-content" aria-label="Options menu"
+     style="min-width:12rem;">
+  <div class="dropdown-label">My Account</div>
+  <div role="group" aria-label="Navigation">
+    <button role="menuitem" class="dropdown-item" tabindex="-1">
+      Profile <span class="dropdown-shortcut">⇧⌘P</span>
+    </button>
+    <button role="menuitem" class="dropdown-item" tabindex="-1">
+      Settings <span class="dropdown-shortcut">⌘S</span>
+    </button>
+    <button role="menuitem" class="dropdown-item" tabindex="-1" disabled>
+      Upload <span class="dropdown-shortcut">⌘U</span>
+    </button>
+  </div>
+  <div class="dropdown-separator" role="separator"></div>
+  <div role="group" aria-label="Actions">
+    <button role="menuitem" class="dropdown-item" tabindex="-1">
+      Export <span class="dropdown-shortcut">⌘E</span>
+    </button>
+    <button role="menuitem" class="dropdown-item"
+            data-variant="destructive" tabindex="-1">
+      Delete <span class="dropdown-shortcut">⌘⌫</span>
+    </button>
+  </div>
+</div>
+```
+
+### Checkbox & Radio Items
+
+Use `role="menuitemcheckbox"` for toggle items and `role="menuitemradio"` inside a `role="group"` for mutually exclusive choices. Add the `.dropdown-check` or `.dropdown-radio` class for the indicator styling.
+
+```html
+<button class="btn" data-variant="outline"
+        aria-haspopup="menu" aria-expanded="false"
+        aria-controls="view-menu"
+        data-dropdown-trigger="view-menu">
+  View
+</button>
+
+<div id="view-menu" role="menu" popover
+     class="dropdown-content" aria-label="View options"
+     style="min-width:11rem;">
+  <div class="dropdown-label">Appearance</div>
+  <div role="group" aria-label="Toggle panels">
+    <button role="menuitemcheckbox"
+            class="dropdown-item dropdown-check"
+            aria-checked="true" tabindex="-1">Status Bar</button>
+    <button role="menuitemcheckbox"
+            class="dropdown-item dropdown-check"
+            aria-checked="false" tabindex="-1">Activity Bar</button>
+  </div>
+  <div class="dropdown-separator" role="separator"></div>
+  <div class="dropdown-label">Layout</div>
+  <div role="group" aria-label="Layout style">
+    <button role="menuitemradio"
+            class="dropdown-item dropdown-radio"
+            aria-checked="true" tabindex="-1">Sidebar Left</button>
+    <button role="menuitemradio"
+            class="dropdown-item dropdown-radio"
+            aria-checked="false" tabindex="-1">Sidebar Right</button>
+  </div>
+</div>
+```
+
+| Class / Attribute | Purpose |
+|---|---|
+| `.dropdown-content` | Menu container (also needs `role="menu"` and `popover`) |
+| `.dropdown-item` | Standard menu item button |
+| `.dropdown-separator` | Horizontal divider (also needs `role="separator"`) |
+| `.dropdown-label` | Non-interactive section header |
+| `.dropdown-shortcut` | Keyboard shortcut badge, right-aligned |
+| `.dropdown-check` | Checkbox item indicator styling |
+| `.dropdown-radio` | Radio item indicator styling |
+| `data-variant="destructive"` | Red hover state for dangerous actions |
+
+## ARIA & Accessibility
+
+| Attribute | Element | Value |
+|---|---|---|
+| `role="menu"` | Menu container div | Always required |
+| `role="menuitem"` | Standard item buttons | Always required |
+| `role="menuitemcheckbox"` | Toggleable item buttons | For on/off states; pair with `aria-checked` |
+| `role="menuitemradio"` | Radio item buttons | For exclusive choices; pair with `aria-checked` |
+| `role="separator"` | `.dropdown-separator` | Marks the divider as a structural separator |
+| `role="group"` | Item grouping div | Optional; use with `aria-label` for named sections |
+| `aria-haspopup="menu"` | Trigger button | Tells screen readers the button opens a menu |
+| `aria-expanded` | Trigger button | `"true"` when open, `"false"` when closed (managed by JS) |
+| `aria-controls` | Trigger button | ID of the menu element |
+| `aria-label` | Menu container | Describes the menu's purpose |
+| `aria-checked` | Checkbox/radio items | `"true"` or `"false"` (toggled by JS on activation) |
+| `tabindex="-1"` | All menu items | Items are not in the tab order — arrow keys move focus |
+| `data-highlighted` | Focused item | Added by JS for the hover/focus style |
+
+### Keyboard Interactions
+
+| Key | Behaviour |
+|---|---|
+| `Enter` / `Space` | Opens menu (on trigger); activates item (on item) |
+| `ArrowDown` | Moves focus to the next enabled menu item (wraps) |
+| `ArrowUp` | Moves focus to the previous enabled menu item (wraps) |
+| `Home` | Moves focus to the first menu item |
+| `End` | Moves focus to the last menu item |
+| `Escape` | Closes the menu and returns focus to the trigger |
+| *Letter key* | Typeahead — jumps to the first item whose text starts with the typed character |
+
+## Wiring
+
+| Data attribute | Element | Purpose |
+|---|---|---|
+| `data-dropdown-trigger="<id>"` | Trigger button | Links the button to the menu with the matching `id` |
+| `data-highlighted` | Menu item | Set by JS on keyboard/mouse focus for styling |
+| `data-init` | Trigger button | Added by JS to prevent double-initialisation |
+
+The JS sets a unique CSS `anchor-name` on each trigger and a matching `position-anchor` on the menu. This means **no** `style` attributes or positioning classes are needed on your part.
+
+## Notes
+
+- Always add the `popover` attribute to the menu element — it renders in the browser's top layer, preventing overflow clipping from ancestor elements with `overflow: hidden`.
+- CSS anchor positioning (`position-anchor` + `anchor()`) handles alignment. `position-try-fallbacks: flip-block` automatically flips the menu above the trigger when there is insufficient space below.
+- The Popover API handles light-dismiss (click outside) natively — no extra event listeners needed.
+- For submenus, nest another `[popover]` element triggered by a `menuitem` button with `aria-haspopup="menu"`.
+- `Escape` is handled natively by the Popover API and also explicitly by the JS keyboard handler, ensuring focus always returns to the trigger.
+- Open/close animations use `@starting-style` for the entry keyframe and `transition: display allow-discrete` for the exit.
+- Both `prefers-reduced-motion` and `forced-colors` are respected by the CSS.

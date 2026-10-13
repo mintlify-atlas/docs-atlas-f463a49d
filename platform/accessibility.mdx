@@ -1,0 +1,282 @@
+---
+title: "Accessibility Patterns and WAI-ARIA in Shadcn HTML"
+sidebarTitle: Accessibility
+description: "Shadcn HTML follows WAI-ARIA Authoring Practices: semantic HTML first, ARIA where needed, full keyboard support, and motion/contrast media query support."
+---
+
+Accessibility in shadcn HTML starts before any ARIA attribute is written. By building each component on the most semantic native HTML element available — `<button>`, `<dialog>`, `<details>`, `<input>` — a significant portion of accessibility is handled by the browser for free. Focus trapping in modals, Escape-to-close behavior, keyboard activation of controls, and correct announcements to screen readers all come built in. ARIA is only layered on top when the native element cannot fully express the semantics of the widget being built.
+
+## Semantic HTML First
+
+Components start from the most semantic native element available. A `<button>` is already a button — no `role="button"` needed. A `<dialog>` already traps focus and handles Escape. ARIA is only added when the native element doesn't express the full semantics of the widget.
+
+<CardGroup cols={2}>
+  <Card title="Avoid: unnecessary ARIA">
+    ```html
+    <!-- Don't add ARIA roles to native elements -->
+    <div role="button" tabindex="0"
+      onclick="...">
+      Click me
+    </div>
+    ```
+  </Card>
+  <Card title="Prefer: native elements">
+    ```html
+    <!-- Native button: focusable, keyboard
+         activatable, announced correctly -->
+    <button class="btn">
+      Click me
+    </button>
+    ```
+  </Card>
+</CardGroup>
+
+## WAI-ARIA Roles
+
+When no native element expresses the widget semantics, ARIA roles tell assistive technology what the element represents. All patterns follow the [WAI-ARIA Authoring Practices Guide (APG)](https://www.w3.org/WAI/ARIA/apg/).
+
+| Role | Component | Purpose |
+|---|---|---|
+| `menu` | Dropdown, Context Menu | A list of actions or options |
+| `menuitem` | Dropdown, Context Menu | A single action in a menu |
+| `menuitemcheckbox` | Dropdown | A togglable menu item |
+| `menuitemradio` | Dropdown | A mutually exclusive menu option |
+| `tablist` | Tabs | Container for tab triggers |
+| `tab` | Tabs | A single tab trigger |
+| `tabpanel` | Tabs | Content area associated with a tab |
+| `listbox` | Combobox | A list of selectable options |
+| `option` | Combobox | A single option in a listbox |
+| `toolbar` | Toolbar | A container for grouped actions |
+| `treeitem` | Tree View | A node in a hierarchical tree |
+| `dialog` | Dialog, Sheet | A modal or non-modal overlay (native via `<dialog>`) |
+| `alertdialog` | Alert Dialog | A dialog requiring acknowledgment |
+| `alert` | Alert | An important, time-sensitive message |
+| `status` | Toast | A polite status notification |
+
+## ARIA Attribute Reference
+
+### State Attributes
+
+ARIA state attributes communicate dynamic state changes to assistive technology. These are managed by JavaScript at runtime.
+
+| Attribute | Values | Usage |
+|---|---|---|
+| `aria-expanded` | `true` / `false` | Dropdown triggers, popover triggers, accordion headers — indicates whether controlled content is visible |
+| `aria-selected` | `true` / `false` | Tab triggers, combobox options — indicates the active selection |
+| `aria-checked` | `true` / `false` / `mixed` | Menu item checkboxes, menu item radios, toggle buttons |
+| `aria-pressed` | `true` / `false` | Toggle buttons — indicates pressed/active state |
+| `aria-disabled` | `true` | Non-native disabled elements (menu items, links) where HTML `disabled` isn't available |
+| `aria-invalid` | `true` | Form inputs with validation errors |
+| `aria-busy` | `true` | Loading states — tells screen readers content is still loading |
+
+### Relationship Attributes
+
+These attributes create semantic connections between elements, allowing assistive technology to navigate related content.
+
+| Attribute | Purpose | Example |
+|---|---|---|
+| `aria-controls` | Links a trigger to the element it controls | Tab trigger → tab panel |
+| `aria-labelledby` | Labels an element using another element's text | Tab panel labeled by its tab trigger |
+| `aria-describedby` | Provides additional descriptive text | Input described by its help text |
+| `aria-activedescendant` | Points to the visually focused item in a composite widget | Combobox input → highlighted option |
+| `aria-haspopup` | Indicates a trigger will open a popup | `menu`, `dialog`, or `listbox` |
+| `aria-owns` | Creates parent-child relationship in the accessibility tree | Combobox input owns the listbox |
+| `aria-live` | Marks a region for screen reader announcements | Toast, Alert — `polite` or `assertive` |
+| `aria-atomic` | Entire region is announced as a whole | Toast notifications |
+| `aria-label` | Provides accessible name for elements with no visible text | Icon-only buttons |
+
+### Relationship Attributes in Practice
+
+```html
+<div role="tablist" aria-label="Settings">
+  <button role="tab"
+    id="tab-1"
+    aria-selected="true"
+    aria-controls="panel-1"
+    tabindex="0">
+    General
+  </button>
+  <button role="tab"
+    id="tab-2"
+    aria-selected="false"
+    aria-controls="panel-2"
+    tabindex="-1">
+    Advanced
+  </button>
+</div>
+
+<div role="tabpanel"
+  id="panel-1"
+  aria-labelledby="tab-1">
+  General settings content
+</div>
+
+<div role="tabpanel"
+  id="panel-2"
+  aria-labelledby="tab-2"
+  hidden>
+  Advanced settings content
+</div>
+```
+
+## Keyboard Navigation
+
+Every interactive component is fully keyboard accessible. Patterns follow WAI-ARIA APG conventions so users get consistent behavior across the web.
+
+| Key | Menus & Dropdowns | Tabs | Dialogs |
+|---|---|---|---|
+| `↑` `↓` | Navigate between menu items | Navigate tabs (vertical) | — |
+| `←` `→` | — | Navigate tabs (horizontal) | — |
+| `Home` | Jump to first item | Jump to first tab | — |
+| `End` | Jump to last item | Jump to last tab | — |
+| `Enter` / `Space` | Activate item | Activate tab | Activate focused button |
+| `Escape` | Close menu, return focus to trigger | — | Close dialog, return focus to trigger |
+| `Tab` | Close menu and move to next focusable | Move into tab panel | Trapped within dialog |
+| Type-ahead | Jump to item starting with typed character | — | — |
+
+## Roving Tabindex
+
+Composite widgets — tabs, toolbars, menus — use roving tabindex so the entire widget acts as a single tab stop. Only one item has `tabindex="0"` at a time; all others have `tabindex="-1"`. Arrow keys move focus between items.
+
+```html
+<!-- Only the active tab is in the tab order -->
+<div role="tablist">
+  <button role="tab" tabindex="0"  aria-selected="true">Tab 1</button>
+  <button role="tab" tabindex="-1" aria-selected="false">Tab 2</button>
+  <button role="tab" tabindex="-1" aria-selected="false">Tab 3</button>
+</div>
+
+<!-- User presses → arrow → focus moves to Tab 2:
+     Tab 1: tabindex="-1", Tab 2: tabindex="0" -->
+```
+
+```javascript
+// Move focus to the next item in the group
+function focusItem(items, index) {
+  items.forEach((item, i) => {
+    item.setAttribute('tabindex', i === index ? '0' : '-1');
+  });
+  items[index].focus();
+}
+```
+
+**Used by:** Tabs, Toolbar, Toggle Group, Dropdown Menu, Tree View.
+
+## Focus Management
+
+When overlays open and close, focus must move predictably.
+
+| Pattern | How it works |
+|---|---|
+| **Focus trapping** | `<dialog>` with `.showModal()` traps focus natively — Tab cycles within the dialog only. No JS focus-trap library needed. |
+| **Focus restoration** | When a dialog or menu closes, focus returns to the trigger element that opened it. JS stores a reference to the trigger before opening. |
+| **Focus-visible** | `:focus-visible` shows focus rings only on keyboard navigation, not mouse clicks. Applied to every interactive component. |
+
+```javascript
+// Store trigger reference before opening
+dialog._trigger = triggerButton;
+dialog.showModal();
+
+// Restore focus when dialog closes
+dialog.addEventListener('close', () => {
+  if (dialog._trigger) dialog._trigger.focus();
+});
+```
+
+## Live Regions
+
+Live regions announce dynamic content changes to screen readers without moving focus. Toast notifications and alerts use these to ensure users are informed of updates.
+
+| Value | Behavior | Used for |
+|---|---|---|
+| `aria-live="polite"` | Announced after the screen reader finishes its current output | Info and success toasts |
+| `aria-live="assertive"` | Interrupts the screen reader immediately | Error/destructive toasts and alerts |
+| `aria-atomic="true"` | Entire region is announced as a whole | All toast notifications |
+
+```html
+<!-- Success toast: polite announcement -->
+<div class="toast" role="status"
+  aria-live="polite" aria-atomic="true">
+  Settings saved successfully.
+</div>
+
+<!-- Error toast: assertive (immediate) announcement -->
+<div class="toast" data-variant="destructive"
+  role="alert" aria-live="assertive" aria-atomic="true">
+  Failed to save. Please try again.
+</div>
+```
+
+## Screen Reader Support
+
+| Pattern | How it works |
+|---|---|
+| **Decorative icons** | Icons next to text labels get `aria-hidden="true"` so they're not announced redundantly. |
+| **Icon-only buttons** | Buttons with no visible text need `aria-label` to provide an accessible name. |
+| **Visually hidden text** | Text that should be announced but not visible uses a CSS visually-hidden utility (clipped off-screen, still in the accessibility tree). |
+| **Form labels** | Every form input has a visible `<label>` with a matching `for`/`id` pair, or `aria-label` for unlabeled inputs. |
+
+```html
+<!-- Icon-only button: needs aria-label -->
+<button class="btn" data-size="icon" aria-label="Close">
+  <svg aria-hidden="true">...</svg>
+</button>
+
+<!-- Button with text: icon is decorative -->
+<button class="btn">
+  <svg aria-hidden="true">...</svg>
+  Save Changes
+</button>
+```
+
+## Color & Contrast
+
+The token system handles color contrast — all semantic color pairs (e.g., `--primary` and `--primary-foreground`) are designed to meet WCAG AA contrast ratios. Three CSS media queries extend this for users who need more than the defaults.
+
+### `prefers-contrast`
+
+When users request higher contrast, components add visible borders and increase contrast between elements:
+
+```css
+@media (prefers-contrast: more) {
+  .btn {
+    outline: 2px solid currentColor;
+  }
+}
+```
+
+### `forced-colors` (Windows High Contrast Mode)
+
+In Windows High Contrast Mode, the browser replaces all colors with system colors. Components declare system color fallbacks so they remain usable:
+
+```css
+@media (forced-colors: active) {
+  .btn {
+    border: 1px solid ButtonText;
+    color: ButtonText;
+    background: ButtonFace;
+  }
+}
+```
+
+### `prefers-reduced-motion`
+
+All animation components respect this media query. Transitions and animations are suppressed or simplified when users have indicated they prefer reduced motion.
+
+```css
+@media (prefers-reduced-motion: reduce) {
+  .popover,
+  dialog.dialog,
+  .accordion-item ::details-content {
+    transition: none;
+  }
+}
+```
+
+<Warning>
+  `prefers-reduced-motion` is an **accessibility requirement** — not optional. Some users experience nausea, disorientation, or seizures from animation. Every component with motion in shadcn HTML implements this media query.
+</Warning>
+
+<Tip>
+  Each component's `component-skill.md` file includes a dedicated ARIA section listing the exact attributes required for that component. See the [WAI-ARIA Authoring Practices Guide](https://www.w3.org/WAI/ARIA/apg/) for the full specifications these patterns implement.
+</Tip>

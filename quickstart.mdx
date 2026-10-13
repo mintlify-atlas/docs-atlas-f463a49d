@@ -1,47 +1,271 @@
 ---
-title: "Quickstart"
-description: "Begin with a guide on the fastest path to a successful outcome"
+title: "Quickstart: Build a Button + Dialog Page in 5 Minutes"
+sidebarTitle: Quickstart
+description: "Build a working HTML page with a themed button that opens a modal dialog from scratch — no npm, no build step, just a text editor and a browser."
 ---
 
-Describe how someone begins using your product. What is the first thing they need to do? Are there any prerequisites?
+This guide takes you from an empty file to a fully working page — a styled button wired to a modal dialog — in under five minutes. You will write a single HTML file, serve it locally, and see shadcn/ui design tokens, Lucide icons, and a native `<dialog>` element all working together. No package manager, no bundler, no framework. By the end you will understand the data-attribute wiring model that every interactive component in shadcn HTML uses.
 
-A quickstart should take someone from zero to using your product. They'll get a quick win and a sense of what they can accomplish.
+## What you will build
+
+A page with a **Default** variant button. Clicking it opens a centered modal dialog with a title, description, and two footer buttons — Cancel (closes the dialog) and Confirm. The dialog uses the native `<dialog>` element with `showModal()`, so the browser handles the focus trap, the Escape key, and the `::backdrop` overlay automatically.
 
 ## Prerequisites
 
-Before you begin, you must have:
-
-- Requirement one (for example, Node.js 18+, a free account, an API key)
-- Requirement two (for example, a compatible device, a compatible browser, a compatible operating system)
-
-## Get started
-
-<Steps>
-  <Step title="Install">
-    Describe how to install your product or sign up.
-
-    ```bash
-    npm install your-package
-    ```
-  </Step>
-  <Step title="Configure">
-    Describe any setup or configuration needed before first use.
-
-    ```bash
-    your-cli init
-    ```
-  </Step>
-  <Step title="Run it">
-    Show the first thing a user does to see it working.
-
-    ```bash
-    your-cli start
-    ```
-  </Step>
-</Steps>
+- A text editor
+- A local HTTP server — ES modules do not run from `file://`
 
 <Tip>
-  Give people a way to get help. This could be a link to a support page, a chat with a customer support agent, or a forum for your product.
-
-  Example: Need help? Reach out to us at [support@yourcompany.com](mailto:support@yourcompany.com).
+  The quickest local server is `npx serve .` in your project folder. You can also use the VS Code **Live Server** extension or Python's `python3 -m http.server 8080`.
 </Tip>
+
+## Complete working page
+
+Create a file named `index.html` and paste the following. Every line is explained in the sections below.
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="color-scheme" content="light dark">
+  <title>Shadcn HTML — Quickstart</title>
+
+  <!-- Step 1: Theme tokens (load first) -->
+  <link
+    rel="stylesheet"
+    href="https://cdn.jsdelivr.net/gh/codylindley/shadcn-html@latest/dist/theme/default-semantic-tokens.css"
+  >
+
+  <!-- Step 2: Component CSS -->
+  <link
+    rel="stylesheet"
+    href="https://cdn.jsdelivr.net/gh/codylindley/shadcn-html@latest/dist/components/button/button.css"
+  >
+  <link
+    rel="stylesheet"
+    href="https://cdn.jsdelivr.net/gh/codylindley/shadcn-html@latest/dist/components/dialog/dialog.css"
+  >
+</head>
+<body style="display:flex;align-items:center;justify-content:center;min-height:100vh;margin:0;">
+
+  <!-- Step 3: The trigger button -->
+  <button
+    class="btn"
+    data-variant="default"
+    data-dialog-trigger="my-dialog"
+    aria-haspopup="dialog"
+  >
+    Open Dialog
+  </button>
+
+  <!-- Step 4: The dialog -->
+  <dialog
+    id="my-dialog"
+    class="dialog"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="my-dialog-title"
+  >
+    <div class="dialog-content">
+      <div class="dialog-header">
+        <h2 class="dialog-title" id="my-dialog-title">Confirm action</h2>
+        <p class="dialog-description">
+          Are you sure you want to continue? This action cannot be undone.
+        </p>
+      </div>
+      <div class="dialog-footer">
+        <button class="btn" data-variant="outline" data-dialog-close>
+          Cancel
+        </button>
+        <button class="btn" data-variant="default">
+          Confirm
+        </button>
+      </div>
+    </div>
+  </dialog>
+
+  <!-- Step 5: Lucide icons (after body content) -->
+  <script src="https://unpkg.com/lucide@1.8.0"></script>
+  <script>lucide.createIcons();</script>
+
+  <!-- Step 6: Component JS (ES module) -->
+  <script
+    type="module"
+    src="https://cdn.jsdelivr.net/gh/codylindley/shadcn-html@latest/dist/components/dialog/dialog.js"
+  ></script>
+</body>
+</html>
+```
+
+Serve the folder with your local server and open `http://localhost:3000` (or whichever port your server uses). Click **Open Dialog** — the dialog appears centered with a backdrop blur. Press **Escape** or click **Cancel** to close it.
+
+## How it works
+
+### The theme tokens
+
+```html
+<link
+  rel="stylesheet"
+  href="https://cdn.jsdelivr.net/gh/codylindley/shadcn-html@latest/dist/theme/default-semantic-tokens.css"
+>
+```
+
+This single file sets every CSS custom property the system uses — `--primary`, `--background`, `--border`, `--radius`, and ~40 more. It defines both `:root` (light) and `.dark` (dark) values. Every component CSS file references these tokens; nothing is hardcoded. Load this file first, before any component CSS.
+
+### The button
+
+```html
+<button
+  class="btn"
+  data-variant="default"
+  data-dialog-trigger="my-dialog"
+  aria-haspopup="dialog"
+>
+  Open Dialog
+</button>
+```
+
+| Attribute | Purpose |
+|---|---|
+| `class="btn"` | Applies the button base styles from `button.css` |
+| `data-variant="default"` | Selects the filled primary-color variant |
+| `data-dialog-trigger="my-dialog"` | Tells `dialog.js` which dialog to open — value must match the dialog's `id` |
+| `aria-haspopup="dialog"` | Informs screen readers that activating this button opens a dialog |
+
+The `data-variant` system is how all shadcn HTML components handle appearance — you set the variant on the element itself, and the CSS uses attribute selectors like `.btn[data-variant="default"]` to apply the right styles. This keeps HTML readable and eliminates the need for long BEM class names.
+
+### The dialog
+
+```html
+<dialog
+  id="my-dialog"
+  class="dialog"
+  role="dialog"
+  aria-modal="true"
+  aria-labelledby="my-dialog-title"
+>
+  <div class="dialog-content">
+    <div class="dialog-header">
+      <h2 class="dialog-title" id="my-dialog-title">Confirm action</h2>
+      <p class="dialog-description">
+        Are you sure you want to continue? This action cannot be undone.
+      </p>
+    </div>
+    <div class="dialog-footer">
+      <button class="btn" data-variant="outline" data-dialog-close>
+        Cancel
+      </button>
+      <button class="btn" data-variant="default">
+        Confirm
+      </button>
+    </div>
+  </div>
+</dialog>
+```
+
+The `<dialog>` element is a native browser primitive. When opened with `showModal()`, the browser automatically:
+
+- Traps focus inside the dialog
+- Closes on **Escape** key
+- Renders a `::backdrop` pseudo-element behind the dialog
+
+`dialog.css` adds the visual styling (centered layout, backdrop blur, enter/exit animations via `@starting-style`). `dialog.js` wires the triggers and close buttons.
+
+| Attribute / class | Purpose |
+|---|---|
+| `id="my-dialog"` | Matches `data-dialog-trigger="my-dialog"` on the button |
+| `class="dialog"` | Applies dialog styles from `dialog.css` |
+| `role="dialog"` | Explicit ARIA role (redundant on `<dialog>` but improves compatibility) |
+| `aria-modal="true"` | Signals that content behind the dialog is inert |
+| `aria-labelledby="my-dialog-title"` | Associates the dialog with its visible title for screen readers |
+| `data-dialog-close` | Any element with this attribute inside the dialog calls `dialog.close()` on click |
+
+### The JavaScript wiring
+
+```html
+<script
+  type="module"
+  src="https://cdn.jsdelivr.net/gh/codylindley/shadcn-html@latest/dist/components/dialog/dialog.js"
+></script>
+```
+
+`dialog.js` scans the document for elements with `data-dialog-trigger` and wires click handlers to call `showModal()` on the matching dialog. It also wires `data-dialog-close` buttons to call `dialog.close()`, and closes the dialog when the user clicks the backdrop (which registers as a click directly on the `<dialog>` element). The module uses a `MutationObserver` so dynamically added triggers are wired automatically — no manual re-initialization needed.
+
+<Note>
+  ES modules (`type="module"`) require an HTTP origin. If you open `index.html` directly from your filesystem (`file://`), the module will fail to load. Always serve via a local server.
+</Note>
+
+## Adding a Lucide icon to the button
+
+Swap the button text for an icon label pair using `<i data-lucide="...">`:
+
+```html
+<button
+  class="btn"
+  data-variant="default"
+  data-dialog-trigger="my-dialog"
+  aria-haspopup="dialog"
+>
+  <i data-lucide="message-circle"></i>
+  Open Dialog
+</button>
+```
+
+The Lucide script replaces each `<i data-lucide="name">` with an inline SVG after the page loads. Icons inside buttons auto-size to `1rem`.
+
+## Enabling dark mode
+
+Add `class="dark"` to `<html>` to switch to the dark theme:
+
+```html
+<html lang="en" class="dark">
+```
+
+Or toggle it dynamically:
+
+```html
+<button
+  class="btn"
+  data-variant="outline"
+  onclick="document.documentElement.classList.toggle('dark')"
+>
+  Toggle dark mode
+</button>
+```
+
+The token cascade handles every color change automatically.
+
+## Next steps
+
+<CardGroup cols={2}>
+  <Card
+    title="Theming"
+    icon="palette"
+    href="/concepts/theming"
+  >
+    Export a custom theme from tweakcn.com and swap it into your project by replacing a single CSS file.
+  </Card>
+  <Card
+    title="Component Skills"
+    icon="book-open"
+    href="/concepts/component-skills"
+  >
+    Understand the component skill format and learn how to use it to generate accurate markup with an AI coding agent.
+  </Card>
+  <Card
+    title="Data Attribute API"
+    icon="code"
+    href="/concepts/data-attribute-api"
+  >
+    Explore the full data-attribute wiring system — variants, sizes, triggers, and close conventions across all components.
+  </Card>
+  <Card
+    title="All Components"
+    icon="layers"
+    href="/components/button"
+  >
+    Browse every available component with live demos, variant tables, size options, and copy-ready markup.
+  </Card>
+</CardGroup>

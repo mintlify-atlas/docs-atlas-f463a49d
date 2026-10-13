@@ -1,0 +1,137 @@
+---
+title: "Calendar — Shadcn HTML Month Grid Date Component"
+sidebarTitle: Calendar
+description: "An accessible month-grid calendar for date display and selection. JS-rendered <table> with role=\"grid\", keyboard navigation, and today/selected/disabled states."
+---
+
+The **Calendar** component renders a month grid that lets users view and select dates. The grid is built on a native `<table>` with `role="grid"` for accessible two-dimensional keyboard navigation. A JavaScript module handles month rendering, navigation between months, and day selection — attaching `data-today`, `data-selected`, `data-outside`, and `data-disabled` data attributes to drive all visual states purely in CSS. Use the calendar for date pickers, booking UIs, event browsers, and any surface where a user needs to orient themselves within a month.
+
+## CDN Import
+
+Calendar requires both the CSS and the JS module:
+
+```html
+<link
+  rel="stylesheet"
+  href="https://cdn.jsdelivr.net/gh/codylindley/shadcn-html@latest/dist/components/calendar/calendar.css"
+>
+<script
+  type="module"
+  src="https://cdn.jsdelivr.net/gh/codylindley/shadcn-html@latest/dist/components/calendar/calendar.js"
+></script>
+```
+
+## Basic Usage
+
+Place a `<div class="calendar">` in your markup. The JS module populates the header and grid automatically:
+
+```html
+<div class="calendar"></div>
+```
+
+<Note>
+  The calendar renders itself on `DOMContentLoaded`. Point the module at a specific container by adding a unique `id` or `data-calendar` attribute if you need multiple calendars on one page.
+</Note>
+
+## Structure
+
+The JS module produces the following HTML structure. You can also author it manually for static displays:
+
+```html
+<div class="calendar">
+  <!-- Navigation header -->
+  <div class="calendar-header">
+    <button class="calendar-nav" data-action="prev-month" aria-label="Previous month">
+      <!-- chevron-left icon -->
+    </button>
+    <span class="calendar-heading" aria-live="polite">April 2026</span>
+    <button class="calendar-nav" data-action="next-month" aria-label="Next month">
+      <!-- chevron-right icon -->
+    </button>
+  </div>
+
+  <!-- Month grid -->
+  <table class="calendar-grid" role="grid" aria-label="April 2026">
+    <thead>
+      <tr>
+        <th class="calendar-day-label" abbr="Sunday"   scope="col">Su</th>
+        <th class="calendar-day-label" abbr="Monday"   scope="col">Mo</th>
+        <th class="calendar-day-label" abbr="Tuesday"  scope="col">Tu</th>
+        <th class="calendar-day-label" abbr="Wednesday" scope="col">We</th>
+        <th class="calendar-day-label" abbr="Thursday" scope="col">Th</th>
+        <th class="calendar-day-label" abbr="Friday"   scope="col">Fr</th>
+        <th class="calendar-day-label" abbr="Saturday" scope="col">Sa</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="calendar-day" data-outside="">30</td>
+        <td class="calendar-day" data-outside="">31</td>
+        <td class="calendar-day">1</td>
+        <td class="calendar-day">2</td>
+        <td class="calendar-day">3</td>
+        <td class="calendar-day">4</td>
+        <td class="calendar-day">5</td>
+      </tr>
+      <tr>
+        <td class="calendar-day">6</td>
+        <td class="calendar-day" data-today="">15</td>
+        <!-- ... -->
+      </tr>
+    </tbody>
+  </table>
+</div>
+```
+
+## Day Cell States
+
+Visual state is controlled entirely through data attributes applied by the JS module:
+
+| Attribute | Description | Visual treatment |
+| --- | --- | --- |
+| _(none)_ | Regular day in the current month | Default muted appearance |
+| `data-today` | Today's date | Ring/highlight using `--primary` colour |
+| `data-selected` | The user-selected date | Filled primary background |
+| `data-outside` | Day from the previous or next month | Reduced opacity, muted colour |
+| `data-disabled` | A non-selectable date | Further reduced opacity, `cursor: not-allowed` |
+
+## Keyboard Navigation
+
+| Key | Action |
+| --- | --- |
+| `←` / `→` | Move to the previous / next day |
+| `↑` / `↓` | Move to the same weekday in the previous / next week |
+| `Enter` / `Space` | Select the focused day |
+| `Page Up` | Navigate to the previous month |
+| `Page Down` | Navigate to the next month |
+| `Home` | Move to the first day of the current week |
+| `End` | Move to the last day of the current week |
+
+<Tip>
+  Pair the calendar with a text `<input type="date">` as a fallback for mobile users who prefer the native date picker. The calendar can read and write to the input's value.
+</Tip>
+
+## ARIA & Accessibility
+
+| Element / Attribute | Requirement | Notes |
+| --- | --- | --- |
+| `role="grid"` | `<table>` | **Required** — enables 2D keyboard navigation in assistive technology |
+| `aria-label` on `<table>` | **Required** | Should include the visible month and year (e.g. "April 2026") |
+| `aria-live="polite"` on heading | **Required** | Announces the new month name when the user navigates months |
+| `aria-label` on nav buttons | **Required** | "Previous month" / "Next month" |
+| `abbr` on `<th>` day labels | Recommended | Provides full weekday name for screen readers (e.g. `abbr="Sunday"`) |
+| `scope="col"` on `<th>` | **Required** | Associates each column with its weekday header |
+| `data-disabled` days | Visual only | Also set `aria-disabled="true"` and `tabindex="-1"` on disabled cells |
+| `data-selected` day | Visual only | Also set `aria-selected="true"` on the selected cell |
+
+<Note>
+  Always set `aria-selected="true"` on the selected day cell in addition to `data-selected` — the data attribute drives CSS, but the ARIA attribute communicates state to screen readers.
+</Note>
+
+## Notes
+
+- **Native basis** — `<table>` with `role="grid"`, `<button>` elements for navigation and day cells.
+- The JS module is required for month rendering and navigation. Without it, you can still author a static calendar manually using the HTML structure above.
+- `aria-live="polite"` on `.calendar-heading` ensures screen readers announce the month when the user navigates forward or back.
+- Days from adjacent months rendered in the grid (`data-outside`) are visually muted. They can be clicked to jump to that month, depending on the JS configuration.
+- For a date-range selection variant, apply `data-range-start` and `data-range-end` to the respective cells and `data-in-range` to cells in between — the CSS layer handles the visual fill automatically.

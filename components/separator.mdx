@@ -1,0 +1,122 @@
+---
+title: "Separator Component — Horizontal and Vertical Dividers"
+sidebarTitle: "Separator"
+description: "Accessible horizontal and vertical separators built on the native hr element and ARIA separator role, with label support and high-contrast mode handling."
+---
+
+The Separator component provides thin visual dividers for separating sections of content, navigation items, or toolbar groups. It is built on the native `<hr>` element for horizontal use — which carries an implicit `role="separator"` — and uses `<div role="separator">` for vertical orientation inside flex containers. The component is CSS-only with no JavaScript required, and includes support for labeled separators, high-contrast mode, and Windows Forced Colors.
+
+## CDN Import
+
+```html
+<!-- CSS -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/codylindley/shadcn-html@latest/dist/components/separator/separator.css">
+```
+
+## Basic Usage
+
+For a horizontal separator, use the `<hr>` element with the `.separator` class. The `<hr>` element already carries `role="separator"` implicitly.
+
+```html
+<hr class="separator">
+```
+
+## Vertical Orientation
+
+Vertical separators require a `<div>` with `role="separator"` and `data-orientation="vertical"`. The parent element must be a flex container for the vertical separator to display correctly.
+
+```html
+<div style="display:flex;align-items:center;height:1.25rem;gap:1rem;">
+  <span>Blog</span>
+  <div class="separator" data-orientation="vertical" role="separator"></div>
+  <span>Docs</span>
+  <div class="separator" data-orientation="vertical" role="separator"></div>
+  <span>Source</span>
+</div>
+```
+
+## Variants
+
+| `data-orientation` | Direction | Recommended Element |
+|---|---|---|
+| *(default)* | Horizontal | `<hr class="separator">` |
+| `vertical` | Vertical | `<div class="separator" data-orientation="vertical" role="separator">` |
+
+## Labeled Separator
+
+Place two `<hr>` elements around a text label inside a `.separator-label` container for a section divider with centered text.
+
+```html
+<div class="separator-label">
+  <hr class="separator">
+  <span>or continue with</span>
+  <hr class="separator">
+</div>
+```
+
+## In Navigation
+
+Vertical separators work well between inline navigation links.
+
+```html
+<nav style="display:flex;align-items:center;gap:0.75rem;height:1.25rem;">
+  <a href="/blog">Blog</a>
+  <div class="separator" data-orientation="vertical" role="separator"></div>
+  <a href="/docs">Docs</a>
+  <div class="separator" data-orientation="vertical" role="separator"></div>
+  <a href="https://github.com">Source</a>
+</nav>
+```
+
+## In a List
+
+When a separator appears inside a `<ul>` or `<ol>`, wrap it in a `<li role="separator">` to maintain valid list semantics.
+
+```html
+<ul>
+  <li>Dashboard</li>
+  <li>Settings</li>
+  <li role="separator"><hr class="separator"></li>
+  <li>Sign out</li>
+</ul>
+```
+
+## Decorative Separators
+
+When a separator is purely visual and carries no semantic meaning, hide it from assistive technology using `role="none"` or `aria-hidden="true"`.
+
+```html
+<!-- Using role="none" -->
+<hr class="separator" role="none">
+
+<!-- Using aria-hidden -->
+<hr class="separator" aria-hidden="true">
+```
+
+## ARIA & Accessibility
+
+| Attribute | Element | Purpose |
+|---|---|---|
+| *(implicit)* | `<hr>` | Carries `role="separator"` natively — no extra attribute needed |
+| `role="separator"` | `<div>` | Required on vertical separators using a non-`<hr>` element |
+| `role="none"` | `<hr>` | Marks a purely decorative separator — hidden from screen readers |
+| `aria-hidden="true"` | `<hr>` | Alternative way to hide decorative separators from AT |
+| `aria-orientation` | `<div role="separator">` | Implied by the role; defaults to horizontal — set explicitly if needed |
+
+## Notes
+
+<Note>
+The `<hr>` element has an implicit `role="separator"`, so horizontal separators need no extra ARIA. Vertical separators using `<div>` require `role="separator"` explicitly.
+</Note>
+
+<Tip>
+The vertical separator requires its parent to be a flex container. Without `display:flex` on the parent, the vertical separator will not render at the correct height.
+</Tip>
+
+<Warning>
+Decorative separators — those used purely for visual spacing with no semantic section boundary — should use `role="none"` or `aria-hidden="true"` to avoid polluting the accessibility tree.
+</Warning>
+
+- In `prefers-contrast: more` mode, the separator uses `--foreground` color and doubles in thickness (2px) for visibility.
+- In `forced-colors: active` mode, the separator uses the `CanvasText` system color so it remains visible in Windows High Contrast Mode.
+- Separators require no JavaScript — this is a purely CSS layout component.

@@ -1,0 +1,185 @@
+---
+title: "Native Web APIs Used Across Shadcn HTML Components"
+sidebarTitle: Native Web APIs
+description: "Shadcn HTML builds on 50+ native browser APIs — Popover, Dialog, anchor positioning, @starting-style, and more — instead of JavaScript libraries."
+---
+
+Shadcn HTML treats the browser as the component library. Before a single line of JavaScript is written, every feature request is first answered with a question: *can the platform do this already?* The result is a system where modal focus trapping comes from `<dialog>`, dropdown positioning comes from CSS anchor positioning, and enter animations come from `@starting-style` — not from npm packages. This native-first philosophy keeps bundle sizes near zero, keeps behavior predictable across frameworks, and ensures components degrade gracefully as the platform evolves.
+
+## The Native-First Principle
+
+Traditional UI libraries ship thousands of lines of JavaScript to replicate behaviors that modern browsers already provide. Shadcn HTML eliminates that overhead entirely by building directly on the platform.
+
+<CardGroup cols={2}>
+  <Card title="Traditional approach">
+    ```html
+    <!-- Dropdown: Floating UI + JS toggle
+         + click-outside + focus trap
+         + scroll lock + virtual positioning -->
+
+    <div class="dropdown-trigger" onclick="...">
+      Open Menu
+    </div>
+    <div class="dropdown-panel"
+      style="position:absolute;top:...;left:...">
+      ...
+    </div>
+    ```
+  </Card>
+  <Card title="Shadcn HTML approach">
+    ```html
+    <!-- Popover API + CSS Anchor Positioning
+         Browser handles: positioning, light-dismiss,
+         top-layer, and auto-flip -->
+
+    <button popovertarget="menu">
+      Open Menu
+    </button>
+    <div id="menu" popover
+      class="dropdown-content">
+      ...
+    </div>
+    ```
+  </Card>
+</CardGroup>
+
+## Instead Of… We Use…
+
+| Instead of… | Shadcn HTML uses… |
+|---|---|
+| JS modal libraries | `<dialog>` + `showModal()` |
+| JS dropdown positioning | Popover API |
+| JS accordion toggle | `<details>` / `<summary>` |
+| JS enter animations | `@starting-style` |
+| Floating UI / Popper.js | CSS anchor positioning |
+| JS class toggling for parent state | `:has()` selector |
+| JS textarea auto-resize scripts | `field-sizing: content` |
+| Sass / Less / PostCSS | Native CSS nesting, `@layer`, container queries |
+
+## API Reference
+
+Every native platform API used in shadcn HTML, what it replaces, and which components rely on it.
+
+### HTML Elements & Attributes
+
+| Native API | Replaces | Components |
+|---|---|---|
+| [`<dialog>`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/dialog) | JS modal + overlay + focus trap | Dialog, Alert Dialog, Sheet, Command |
+| [`<details>` / `<summary>`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/details) | JS toggle + height animation | Accordion, Collapsible |
+| [`<details name>` (exclusive)](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/details#name) | JS single-expand accordion logic | Accordion (single mode) |
+| [`<progress>`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/progress) | Custom div-based progress bars | Progress |
+| [`<meter>`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/meter) | Custom gauge components | Password strength, storage indicators |
+| [`<output>`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/output) | Manual `aria-live` regions | Slider displays, form totals, live results |
+| [`inert`](https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes/inert) | JS focus trap + `aria-hidden` toggling | Overlays, collapsed sidebars, loading states |
+| [Popover API](https://developer.mozilla.org/en-US/docs/Web/API/Popover_API) | JS show/hide, z-index management, click-outside | Popover, Dropdown, Tooltip, Toast, Combobox, Context Menu, Nav Menu |
+| [`popover="hint"`](https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes/popover) | Custom tooltip z-index management | Tooltip, descriptive hovers |
+| [Invoker Commands (`commandfor` / `command`)](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/button#commandfor) | JS click handlers calling `showModal()` / `togglePopover()` | Dialog, Alert Dialog, Sheet, Popover |
+
+### CSS Layout & Positioning
+
+| Native API | Replaces | Components |
+|---|---|---|
+| [CSS Anchor Positioning](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_anchor_positioning) | Floating UI, Popper.js | Dropdown, Popover, Tooltip, Combobox, Nav Menu |
+| [Container Queries](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_containment/Container_queries) | Viewport media queries | Card, Table |
+| [Subgrid](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_grid_layout/Subgrid) | Manually synchronized column widths | Form layouts, settings pages, description lists |
+| [Logical properties](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_logical_properties_and_values) | Separate LTR/RTL stylesheets | All components (RTL support) |
+| [Dynamic viewport units (`dvh` / `svh` / `lvh`)](https://developer.mozilla.org/en-US/docs/Web/CSS/length#relative_length_units_based_on_viewport) | JS `innerHeight` hacks for mobile chrome | Full-screen overlays, mobile layout |
+
+### CSS Animations & Transitions
+
+| Native API | Replaces | Components |
+|---|---|---|
+| [`@starting-style` + `allow-discrete`](https://developer.mozilla.org/en-US/docs/Web/CSS/@starting-style) | JS class toggling for enter/exit animations | All overlays (Dialog, Sheet, Dropdown, Tooltip, Command, Accordion) |
+| [Individual transforms](https://developer.mozilla.org/en-US/docs/Web/CSS/translate) | Compound `transform` strings | Accordion, composable animations |
+| [`interpolate-size: allow-keywords`](https://developer.mozilla.org/en-US/docs/Web/CSS/interpolate-size) | JS height measurement + `max-height` hacks | Accordion, Collapsible, expanding UI |
+| [Scroll-driven animations](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_scroll-driven_animations) | Scroll listeners + `IntersectionObserver` for effects | Progress indicators, scroll reveals, parallax |
+| [View Transitions API](https://developer.mozilla.org/en-US/docs/Web/API/View_Transitions_API) | JS DOM-diffing + class-toggled crossfades | SPA navigation, tab switches, list reordering |
+| [`@property`](https://developer.mozilla.org/en-US/docs/Web/CSS/@property) | JS-animated values, non-animatable custom properties | Progress rings, gradient transitions |
+
+### CSS Colors & Theming
+
+| Native API | Replaces | Components |
+|---|---|---|
+| [`oklch()` + relative color syntax](https://developer.mozilla.org/en-US/docs/Web/CSS/color_value/oklch) | Hardcoded hex/hsl, manual color derivation | All tokens, all focus/hover states |
+| [`color-mix()`](https://developer.mozilla.org/en-US/docs/Web/CSS/color_value/color-mix) | Sass `darken()` / `lighten()`, hardcoded variants | Hover/disabled states, tinted backgrounds |
+| [`light-dark()`](https://developer.mozilla.org/en-US/docs/Web/CSS/color_value/light-dark) | Media queries or class toggles for dark mode values | Inline light/dark switching |
+| [`color-scheme`](https://developer.mozilla.org/en-US/docs/Web/CSS/color-scheme) | Manual dark overrides on native controls | Design tokens (global) |
+| [`accent-color`](https://developer.mozilla.org/en-US/docs/Web/CSS/accent-color) | Custom-styled replacement form controls | Slider, Checkbox, Radio, Progress |
+
+### CSS Selectors & Pseudo-classes
+
+| Native API | Replaces | Components |
+|---|---|---|
+| [`:has()`](https://developer.mozilla.org/en-US/docs/Web/CSS/:has) | JS class propagation | Label, Tabs, Avatar, Form |
+| [`:focus-visible`](https://developer.mozilla.org/en-US/docs/Web/CSS/:focus-visible) | JS focus-ring detection | All interactive components |
+| [`:user-valid` / `:user-invalid`](https://developer.mozilla.org/en-US/docs/Web/CSS/:user-valid) | JS blur + class toggling for validation | Input, Textarea, Select, Checkbox |
+| [`:is()` / `:where()`](https://developer.mozilla.org/en-US/docs/Web/CSS/:is) | Repeated selectors, specificity hacks | Component resets, grouped selectors |
+| [`::backdrop` + `backdrop-filter`](https://developer.mozilla.org/en-US/docs/Web/CSS/::backdrop) | JS-managed overlay divs, canvas blur | Dialog, Alert Dialog, Sheet, Command |
+| [`::details-content`](https://developer.mozilla.org/en-US/docs/Web/CSS/::details-content) | JS measured height + animation | Accordion, Collapsible |
+| [`:popover-open`](https://developer.mozilla.org/en-US/docs/Web/CSS/:popover-open) | JS class toggling for open state | All popover components |
+| [`:indeterminate`](https://developer.mozilla.org/en-US/docs/Web/CSS/:indeterminate) | JS class for indeterminate state | Progress, Checkbox |
+
+### CSS Typography & Form
+
+| Native API | Replaces | Components |
+|---|---|---|
+| [`text-wrap: balance`](https://developer.mozilla.org/en-US/docs/Web/CSS/text-wrap) | JS text-balancing libraries | Typography (headings) |
+| [`text-wrap: pretty`](https://developer.mozilla.org/en-US/docs/Web/CSS/text-wrap) | Manual `&nbsp;` for orphan prevention | Typography (body text) |
+| [`field-sizing: content`](https://developer.mozilla.org/en-US/docs/Web/CSS/field-sizing) | JS auto-resize scripts | Textarea, Input |
+| [`hanging-punctuation`](https://developer.mozilla.org/en-US/docs/Web/CSS/hanging-punctuation) | Negative text-indent hacks | Blockquotes, pull quotes |
+
+### CSS Scrolling
+
+| Native API | Replaces | Components |
+|---|---|---|
+| [`scroll-snap`](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_scroll_snap) | JS snap-to-slide calculations | Carousel |
+| [`overscroll-behavior: contain`](https://developer.mozilla.org/en-US/docs/Web/CSS/overscroll-behavior) | JS scroll-lock libraries | Command, Dropdown, Sheet, Scroll Area |
+| [`scrollbar-gutter: stable`](https://developer.mozilla.org/en-US/docs/Web/CSS/scrollbar-gutter) | Padding hacks for scrollbar width | Command, Scroll Area |
+
+### CSS Architecture
+
+| Native API | Replaces | Components |
+|---|---|---|
+| [CSS nesting / `@layer`](https://developer.mozilla.org/en-US/docs/Web/CSS/@layer) | Sass, Less, PostCSS | All components |
+| [`@scope`](https://developer.mozilla.org/en-US/docs/Web/CSS/@scope) | BEM naming, Shadow DOM, CSS modules | Scoped component styles |
+| [`@supports`](https://developer.mozilla.org/en-US/docs/Web/CSS/@supports) | Modernizr, JS feature detection | Progressive enhancement |
+| [`@media (scripting)`](https://developer.mozilla.org/en-US/docs/Web/CSS/@media/scripting) | `<noscript>` only | No-JS fallbacks |
+| [CSS math (`clamp` / `min` / `max` / `round`)](https://developer.mozilla.org/en-US/docs/Web/CSS/clamp) | JS responsive calculations | Fluid typography, responsive spacing |
+| [`content-visibility`](https://developer.mozilla.org/en-US/docs/Web/CSS/content-visibility) | JS lazy rendering | Accordion, Collapsible, Tree View |
+
+### CSS Accessibility
+
+| Native API | Replaces | Components |
+|---|---|---|
+| [`prefers-reduced-motion`](https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-reduced-motion) | No motion accommodation | All animated components (critical for a11y) |
+| [`prefers-color-scheme`](https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-color-scheme) | JS-only dark mode detection | Auto dark mode |
+| [`prefers-contrast`](https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-contrast) | No contrast accommodation | All components (high contrast support) |
+| [`forced-colors`](https://developer.mozilla.org/en-US/docs/Web/CSS/@media/forced-colors) | Broken styles in Windows High Contrast | All components (system color fallbacks) |
+
+### JavaScript APIs
+
+| Native API | Replaces | Components |
+|---|---|---|
+| [Web Animations API](https://developer.mozilla.org/en-US/docs/Web/API/Web_Animations_API) | CSS class toggling for sequenced animations | Toast |
+| [`Intl.DateTimeFormat`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/DateTimeFormat) | moment.js, date-fns | Calendar |
+| [`Intl.NumberFormat`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/NumberFormat) | numeral.js, manual formatting | Statistic, Number Input |
+| [`Intl.RelativeTimeFormat`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/RelativeTimeFormat) | timeago.js, moment `.fromNow()` | Timeline, activity feeds |
+| [`Intl.ListFormat`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/ListFormat) | Manual join/comma logic | Tag lists, multi-select displays |
+| [Drag and Drop API](https://developer.mozilla.org/en-US/docs/Web/API/HTML_Drag_and_Drop_API) | SortableJS, drag libraries | Sortable |
+| [`CustomEvent`](https://developer.mozilla.org/en-US/docs/Web/API/CustomEvent) | Framework event buses | Calendar, inter-component communication |
+| [`checkVisibility()`](https://developer.mozilla.org/en-US/docs/Web/API/Element/checkVisibility) | Manual offset/dimension calculations | Tree View |
+| [`IntersectionObserver`](https://developer.mozilla.org/en-US/docs/Web/API/IntersectionObserver) | Scroll listeners + `getBoundingClientRect()` | Lazy loading, infinite scroll, reveal effects |
+| [`ResizeObserver`](https://developer.mozilla.org/en-US/docs/Web/API/ResizeObserver) | Window resize listeners + polling | Responsive components, Carousel |
+| [`MutationObserver`](https://developer.mozilla.org/en-US/docs/Web/API/MutationObserver) | Polling loops, framework lifecycle | Auto-init for dynamically added components |
+| [Clipboard API](https://developer.mozilla.org/en-US/docs/Web/API/Clipboard_API) | `execCommand('copy')` | Copy buttons, share links, code blocks |
+| [`CloseWatcher`](https://developer.mozilla.org/en-US/docs/Web/API/CloseWatcher) | Manual Escape key listeners | Custom overlays, full-screen views |
+| [`ElementInternals`](https://developer.mozilla.org/en-US/docs/Web/API/ElementInternals) | Hidden `<input>` proxy patterns | Custom form controls (Web Components) |
+| [`FormData`](https://developer.mozilla.org/en-US/docs/Web/API/FormData) | Manual value collection loops | Form, search, filters |
+| [`AbortController`](https://developer.mozilla.org/en-US/docs/Web/API/AbortController) | Boolean flags, manual cleanup | Search-as-you-type, debounced fetches |
+| [`structuredClone()`](https://developer.mozilla.org/en-US/docs/Web/API/structuredClone) | lodash `cloneDeep`, JSON round-trip | State management, undo/redo |
+| [Navigation API](https://developer.mozilla.org/en-US/docs/Web/API/Navigation_API) | History API hacks, router libraries | SPA router, pagination |
+| [View Transitions API (JS)](https://developer.mozilla.org/en-US/docs/Web/API/View_Transitions_API) | DOM-diffing + class-toggled crossfades | SPA navigation, content swaps |
+
+<Note>
+  These APIs are supported in the latest versions of Chrome, Edge, Firefox, and Safari. Some newer features — Invoker Commands, CSS Anchor Positioning, `::details-content`, `field-sizing`, `interpolate-size`, View Transitions, and Scroll-Driven Animations — may have varying cross-browser support. Check [web.dev/baseline](https://web.dev/baseline) for current compatibility status and each component's `component-skill.md` for the specific APIs it uses.
+</Note>

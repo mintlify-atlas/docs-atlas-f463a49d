@@ -1,0 +1,184 @@
+---
+title: "Install Shadcn HTML via CDN — No npm, No Build Step"
+sidebarTitle: Installation
+description: "Get shadcn HTML running in any HTML page using jsDelivr CDN. Add a theme, icons, and component files — no npm, no bundler, no configuration needed."
+---
+
+Every file in shadcn HTML is a static asset — a CSS file or a plain ES module JavaScript file. There is no package to install, no build pipeline to configure, and no framework to integrate. The fastest path to a working UI is to reference the files directly from the [jsDelivr](https://www.jsdelivr.com) CDN, which serves them straight from the GitHub repository. This page walks through the four-step CDN setup, covers version pinning for production stability, and explains the self-hosting option for teams that prefer to keep all assets local.
+
+## CDN setup
+
+<Steps>
+  <Step title="Add the theme tokens">
+    The theme CSS file defines every design token for the default light and dark theme — colors, radii, shadows, spacing. It must load before any component CSS so the tokens are available when component styles are parsed.
+
+    ```html
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/gh/codylindley/shadcn-html@latest/dist/theme/default-semantic-tokens.css"
+    >
+    ```
+
+    <Tip>
+      To switch themes, replace this single file with a different token set. The token shape is compatible with [tweakcn.com](https://tweakcn.com) theme exports — export a theme there and drop its `:root` and `.dark` blocks into the token file.
+    </Tip>
+  </Step>
+
+  <Step title="Add Lucide icons">
+    Shadcn HTML uses [Lucide](https://lucide.dev) for icons — roughly 1,500 icons delivered via unpkg. Add the UMD script and initialize it with `lucide.createIcons()`. The script replaces every `<i data-lucide="name"></i>` element with an inline SVG on page load.
+
+    ```html
+    <script src="https://unpkg.com/lucide@1.8.0"></script>
+    <script>lucide.createIcons();</script>
+    ```
+
+    Use icons anywhere in your markup:
+
+    ```html
+    <i data-lucide="check"></i>
+    <i data-lucide="arrow-right"></i>
+    <i data-lucide="settings"></i>
+    ```
+
+    <Note>
+      Icons are optional. If your project does not use them, you can skip this step entirely.
+    </Note>
+  </Step>
+
+  <Step title="Add component CSS and JS">
+    Each component lives in its own folder. Include only the components you need — they are fully independent of each other. CSS-only components (like Button and Badge) need only a `<link>`. Interactive components also need a `<script type="module">`.
+
+    ```html
+    <!-- CSS — include every component you use -->
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/gh/codylindley/shadcn-html@latest/dist/components/button/button.css"
+    >
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/gh/codylindley/shadcn-html@latest/dist/components/dialog/dialog.css"
+    >
+
+    <!-- JS — only for interactive components -->
+    <script
+      type="module"
+      src="https://cdn.jsdelivr.net/gh/codylindley/shadcn-html@latest/dist/components/dialog/dialog.js"
+    ></script>
+    ```
+
+    The CDN URL pattern for any component is:
+
+    ```
+    https://cdn.jsdelivr.net/gh/codylindley/shadcn-html@latest/dist/components/{name}/{name}.css
+    https://cdn.jsdelivr.net/gh/codylindley/shadcn-html@latest/dist/components/{name}/{name}.js
+    ```
+
+    <Note>
+      Component JS files are ES modules (`type="module"`). ES modules require an HTTP server — they do not work when opening an HTML file directly from the filesystem via `file://`. Use any local server, such as `npx serve` or VS Code Live Server.
+    </Note>
+  </Step>
+
+  <Step title="Read the component skill and write the HTML">
+    Each component folder contains a `component-skill.md` that documents the exact HTML structure, every variant and size, ARIA attributes, and data-attribute wiring conventions. Read the skill, copy the pattern, fill in your content.
+
+    ```html
+    <!-- Trigger button -->
+    <button
+      class="btn"
+      data-variant="default"
+      data-dialog-trigger="confirm"
+      aria-haspopup="dialog"
+    >
+      Open Dialog
+    </button>
+
+    <!-- Dialog -->
+    <dialog
+      id="confirm"
+      class="dialog"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="confirm-title"
+    >
+      <div class="dialog-content">
+        <div class="dialog-header">
+          <h2 class="dialog-title" id="confirm-title">Are you sure?</h2>
+          <p class="dialog-description">This action cannot be undone.</p>
+        </div>
+        <div class="dialog-footer">
+          <button class="btn" data-variant="outline" data-dialog-close>Cancel</button>
+          <button class="btn" data-variant="default">Confirm</button>
+        </div>
+      </div>
+    </dialog>
+    ```
+
+    The CSS and JS handle everything else — styling, animation, focus management, backdrop click to close, and Escape key.
+  </Step>
+</Steps>
+
+## Component folder structure
+
+Every component follows the same layout. When in doubt about what files to include or what HTML to write, the `component-skill.md` file is your starting point.
+
+```
+components/
+└── dialog/
+    ├── component-skill.md    ← HTML structure, attributes, ARIA (read this first)
+    ├── dialog.css            ← stylesheet (include via <link>)
+    └── dialog.js             ← interaction behavior (include via <script type="module">)
+```
+
+Some components — like Button and Badge — are CSS-only. No JavaScript file exists for them and none is needed.
+
+## Version pinning
+
+The CDN URLs above use `@latest`, which always resolves to the most recent commit on the main branch. For production projects, pin to a specific release tag so your UI does not change unexpectedly when new versions ship.
+
+```html
+<!-- Pinned to v0.1.1 -->
+<link
+  rel="stylesheet"
+  href="https://cdn.jsdelivr.net/gh/codylindley/shadcn-html@v0.1.1/dist/theme/default-semantic-tokens.css"
+>
+```
+
+Replace `@latest` with `@v0.1.1` (or any tag from the [releases page](https://github.com/codylindley/shadcn-html/tags)) in every URL — the theme, and every component CSS and JS file you reference.
+
+<Tip>
+  During active prototyping, `@latest` is convenient. Before deploying to production, pin all URLs to a specific version tag.
+</Tip>
+
+## Self-hosting
+
+If you prefer to keep all assets local — for air-gapped environments, stricter CSP policies, or to give an AI agent direct filesystem access to component skills — download the full repository and drop the `dist/` folder into your project.
+
+[**Download latest (.zip) →**](https://github.com/codylindley/shadcn-html/archive/refs/heads/main.zip)
+
+Once extracted, replace the CDN URLs with relative paths:
+
+```html
+<!-- Self-hosted example -->
+<link rel="stylesheet" href="./dist/theme/default-semantic-tokens.css">
+<link rel="stylesheet" href="./dist/components/button/button.css">
+<link rel="stylesheet" href="./dist/components/dialog/dialog.css">
+<script type="module" src="./dist/components/dialog/dialog.js"></script>
+```
+
+<Note>
+  Self-hosting is the recommended setup when working with AI coding agents. Point the agent at your local `dist/` folder and it can read every `component-skill.md` directly, giving it exact markup, variant tables, ARIA patterns, and wiring conventions for every component without needing to fetch anything from the network.
+</Note>
+
+## Dark mode
+
+Dark mode is automatic. Add `class="dark"` to the `<html>` element to switch. The token cascade handles every color change — no per-component overrides needed.
+
+```html
+<html lang="en" class="dark">
+```
+
+Remove the class to return to light mode. You can toggle it with one line of JavaScript:
+
+```js
+document.documentElement.classList.toggle('dark');
+```

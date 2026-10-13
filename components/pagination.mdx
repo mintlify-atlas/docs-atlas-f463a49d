@@ -1,0 +1,163 @@
+---
+title: "Pagination Component — Shadcn HTML Page Navigation"
+sidebarTitle: Pagination
+description: "Add page navigation to lists and tables with accessible HTML pagination. CSS-only component using nav, ul, and aria-current. No JavaScript required."
+---
+
+The **Pagination** component provides numbered page navigation for long lists, tables, and search results. It is built on a `<nav>` landmark containing an unordered list of `<a>` elements — native links that work with the browser's focus management and history stack out of the box. The active page is marked with `aria-current="page"` and the `.pagination-active` modifier class. This is a CSS-only component — no JavaScript is needed for rendering or styling.
+
+## CDN Import
+
+```html
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/codylindley/shadcn-html@latest/dist/components/pagination/pagination.css">
+```
+
+<Note>
+No `<script>` tag is needed. All styling is handled by CSS alone.
+</Note>
+
+## Basic Usage
+
+Wrap the list in `<nav class="pagination" aria-label="Pagination">`. Each page number and navigation control sits in a `<li>` inside `.pagination-list`.
+
+```html
+<nav class="pagination" aria-label="Pagination">
+  <ul class="pagination-list">
+    <li>
+      <a class="pagination-prev" href="#"
+         aria-label="Go to previous page">
+        <svg aria-hidden="true" width="16" height="16"
+             viewBox="0 0 24 24" fill="none"
+             stroke="currentColor" stroke-width="2">
+          <path d="m15 18-6-6 6-6"/>
+        </svg>
+        Previous
+      </a>
+    </li>
+    <li><a class="pagination-link" href="#">1</a></li>
+    <li>
+      <a class="pagination-link pagination-active" href="#"
+         aria-current="page">2</a>
+    </li>
+    <li><a class="pagination-link" href="#">3</a></li>
+    <li>
+      <span class="pagination-ellipsis" aria-hidden="true">&hellip;</span>
+    </li>
+    <li><a class="pagination-link" href="#">10</a></li>
+    <li>
+      <a class="pagination-next" href="#"
+         aria-label="Go to next page">
+        Next
+        <svg aria-hidden="true" width="16" height="16"
+             viewBox="0 0 24 24" fill="none"
+             stroke="currentColor" stroke-width="2">
+          <path d="m9 18 6-6-6-6"/>
+        </svg>
+      </a>
+    </li>
+  </ul>
+</nav>
+```
+
+## Variants
+
+### Simple — Page Numbers Only
+
+A minimal pagination bar with no Previous/Next controls, suitable for compact layouts.
+
+```html
+<nav class="pagination" aria-label="Pagination">
+  <ul class="pagination-list">
+    <li><a class="pagination-link" href="#">1</a></li>
+    <li>
+      <a class="pagination-link pagination-active" href="#"
+         aria-current="page">2</a>
+    </li>
+    <li><a class="pagination-link" href="#">3</a></li>
+    <li><a class="pagination-link" href="#">4</a></li>
+    <li><a class="pagination-link" href="#">5</a></li>
+  </ul>
+</nav>
+```
+
+### Compact — Icons Only with Page Counter
+
+Use icon-only Previous/Next buttons alongside a plain text page counter. Add `aria-disabled="true"` when navigation is unavailable (first or last page).
+
+```html
+<nav class="pagination" aria-label="Pagination">
+  <ul class="pagination-list">
+    <li>
+      <a class="pagination-prev" href="#"
+         aria-label="Go to previous page"
+         aria-disabled="true">
+        <svg aria-hidden="true" width="16" height="16"
+             viewBox="0 0 24 24" fill="none"
+             stroke="currentColor" stroke-width="2">
+          <path d="m15 18-6-6 6-6"/>
+        </svg>
+      </a>
+    </li>
+    <li>
+      <span style="font-size:0.875rem;color:var(--muted-foreground);padding:0 0.5rem;">
+        Page 1 of 10
+      </span>
+    </li>
+    <li>
+      <a class="pagination-next" href="#"
+         aria-label="Go to next page">
+        <svg aria-hidden="true" width="16" height="16"
+             viewBox="0 0 24 24" fill="none"
+             stroke="currentColor" stroke-width="2">
+          <path d="m9 18 6-6-6-6"/>
+        </svg>
+      </a>
+    </li>
+  </ul>
+</nav>
+```
+
+| Class | Element | Purpose |
+|---|---|---|
+| `.pagination` | `<nav>` | Root navigation landmark |
+| `.pagination-list` | `<ul>` | List of page controls |
+| `.pagination-link` | `<a>` | Individual page number link |
+| `.pagination-active` | `<a>` | Active page modifier (use with `aria-current="page"`) |
+| `.pagination-prev` | `<a>` | Previous page control |
+| `.pagination-next` | `<a>` | Next page control |
+| `.pagination-ellipsis` | `<span>` | Collapsed page range indicator |
+
+## ARIA & Accessibility
+
+| Attribute | Element | Purpose |
+|---|---|---|
+| `aria-label="Pagination"` | `<nav>` | Names the navigation region |
+| `aria-current="page"` | Active `.pagination-link` | Identifies the current page to assistive technology |
+| `aria-label="Go to previous/next page"` | Prev/Next links | Descriptive label for icon-only or ambiguous controls |
+| `aria-disabled="true"` | Prev/Next links | Marks controls as unavailable at page boundaries |
+| `aria-hidden="true"` | `.pagination-ellipsis` | Hides the decorative ellipsis from screen readers |
+
+### Keyboard Interactions
+
+All controls are native `<a>` elements — keyboard navigation is handled by the browser automatically.
+
+| Key | Action |
+|---|---|
+| `Tab` | Moves focus to the next pagination control |
+| `Shift + Tab` | Moves focus to the previous pagination control |
+| `Enter` | Activates (follows) the focused link |
+
+<Warning>
+`aria-disabled="true"` does not prevent a link from being focused or clicked — it is an advisory state only. To truly prevent activation, either omit the `href` attribute or add a click handler that calls `event.preventDefault()`.
+</Warning>
+
+## Notes
+
+- Always use `<a>` elements (not `<button>`) for page links — they support browser history, middle-click to open in a new tab, and right-click context menus.
+- Mark the active page with both `aria-current="page"` (for screen readers) and `.pagination-active` (for visual styling).
+- On the first page, add `aria-disabled="true"` to the Previous link. On the last page, add it to Next.
+- The ellipsis `<span>` represents a gap in the page range and is never interactive — always add `aria-hidden="true"`.
+- Chevron SVG icons are preferred over text arrows for visual consistency with other navigation patterns.
+- CSS uses logical properties (`padding-inline`) so the layout automatically mirrors in RTL languages.
+- Hover transitions are suppressed via `prefers-reduced-motion`.
+- Border widths increase in `prefers-contrast: more` mode to improve visibility.

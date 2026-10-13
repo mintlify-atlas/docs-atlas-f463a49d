@@ -1,0 +1,136 @@
+---
+title: "Textarea Component — Multi-line Input with Auto-grow"
+sidebarTitle: Textarea
+description: "Multi-line text input built on <textarea> with CSS field-sizing: content for automatic height growth. No JavaScript, full validation support."
+---
+
+The **Textarea** component is a styled multi-line text field built on the native `<textarea>` element. Its headline feature is automatic height growth driven purely by the CSS property `field-sizing: content` — the element expands as the user types without a single line of JavaScript. It shares the same border, focus ring, disabled, and invalid styles as the Input component for a perfectly consistent form look.
+
+## CDN Import
+
+The textarea styles are distributed as a standalone CSS file.
+
+```html
+<!-- CSS -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/codylindley/shadcn-html@latest/dist/components/textarea/textarea.css">
+```
+
+<Note>
+  If you are already loading `input.css` on the page, you still need `textarea.css` — the two files are separate. When using the Form component, import both.
+</Note>
+
+## Basic Usage
+
+Apply the `textarea` class to any `<textarea>` element and pair it with a `<label>` for accessibility.
+
+```html
+<label class="label" for="message">Message</label>
+<textarea class="textarea" id="message" placeholder="Your message..."></textarea>
+```
+
+The textarea starts at a minimum height of `5rem` (approximately four lines) and grows vertically as the user types — no resize handle needed.
+
+## Variants & States
+
+| State | How to apply | Visual effect |
+|-------|-------------|---------------|
+| Default | — | Border `--input`, subtle shadow |
+| Focus | Native `:focus` | Ring `--ring` with soft glow |
+| Disabled | `disabled` attribute | 50% opacity, `not-allowed` cursor |
+| Invalid | `aria-invalid="true"` | Border `--destructive`, red ring on focus |
+
+### Disabled
+
+```html
+<label class="label" for="disabled-msg">Notes</label>
+<textarea class="textarea" id="disabled-msg" disabled placeholder="Not available"></textarea>
+```
+
+### Invalid (error state)
+
+Set `aria-invalid="true"` on the textarea and connect a `.field-error` paragraph via `aria-describedby`.
+
+```html
+<label class="label" for="bio">Bio</label>
+<textarea class="textarea" id="bio"
+          aria-invalid="true"
+          aria-describedby="bio-err">too short</textarea>
+<p class="field-error" id="bio-err">
+  Bio must be at least 20 characters.
+</p>
+```
+
+### With description
+
+Use `.field-description` below the textarea for contextual help text.
+
+```html
+<label class="label" for="feedback">Feedback</label>
+<textarea class="textarea" id="feedback"
+          placeholder="Share your thoughts..."
+          aria-describedby="feedback-desc"></textarea>
+<p class="field-description" id="feedback-desc">
+  Your feedback helps us improve the product.
+</p>
+```
+
+### Required field
+
+```html
+<label class="label" for="cover-letter">
+  Cover Letter <span class="text-destructive" aria-hidden="true">*</span>
+</label>
+<textarea class="textarea" id="cover-letter"
+          required
+          placeholder="Tell us why you'd be a great fit..."></textarea>
+```
+
+## Full Form Example
+
+A textarea combined with other fields inside a form wrapper.
+
+```html
+<form class="form">
+  <div class="form-field">
+    <label class="label" for="name">Name</label>
+    <input class="input" type="text" id="name" required placeholder="Jane Doe">
+  </div>
+  <div class="form-field">
+    <label class="label" for="comment">Comment</label>
+    <textarea class="textarea" id="comment"
+              placeholder="Write your comment..."
+              aria-describedby="comment-desc"></textarea>
+    <p class="field-description" id="comment-desc">
+      You can @mention other users and organizations.
+    </p>
+  </div>
+  <div class="form-actions">
+    <button class="btn" type="submit" data-variant="default">Post comment</button>
+    <button class="btn" type="reset" data-variant="outline">Cancel</button>
+  </div>
+</form>
+```
+
+## ARIA & Accessibility
+
+| Attribute | When to use | Value |
+|-----------|-------------|-------|
+| `id` + `for` | Always | Links `<label>` to `<textarea>` |
+| `aria-invalid="true"` | Validation error | Marks textarea as invalid for screen readers |
+| `aria-describedby` | Has description or error | Points to description/error element `id` |
+| `required` | Required field | Triggers native browser validation |
+| `disabled` | Non-interactive state | Prevents input and announces state to AT |
+
+<Tip>
+  The `field-sizing: content` property is supported in all modern browsers. In older browsers that do not support it, the textarea renders at its minimum height and falls back to manual resize — no layout breakage occurs.
+</Tip>
+
+## Notes
+
+- Uses `field-sizing: content` for automatic height growth — no JavaScript is required.
+- The minimum height is `5rem` (approximately four lines); the textarea grows beyond that as content is added.
+- Shares the same border, focus, disabled, and invalid visual styles as the `.input` class for a consistent appearance across form fields.
+- Always pair with a visible `<label>` using matching `for`/`id`. Use the `sr-only` utility for screen-reader-only labels.
+- Use `aria-invalid="true"` together with `aria-describedby` pointing to a `.field-error` paragraph to surface validation errors accessibly.
+- The `prefers-reduced-motion` media query suppresses focus transitions for motion-sensitive users.
+- In Windows High Contrast Mode, system colors are applied automatically via `forced-colors: active` styles.

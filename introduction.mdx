@@ -1,0 +1,101 @@
+---
+title: "Shadcn HTML: The AI Prototyping UI Component System"
+sidebarTitle: Introduction
+description: "Shadcn HTML is a zero-dependency UI system built on semantic HTML, modern CSS, and vanilla JS — powered by shadcn/ui design tokens. No framework, no build step."
+---
+
+Shadcn HTML is a portable UI component system designed to be the simplest possible foundation for building interfaces — whether you're writing markup by hand or directing an AI to generate it. It combines the full [shadcn/ui](https://ui.shadcn.com) semantic token model with native HTML elements, plain CSS, and just enough vanilla JavaScript to cover what HTML and CSS alone cannot express. There are no frameworks to install, no bundlers to configure, and no abstraction layers to get wrong. Every component is a self-contained folder of static files you can drop into any project and immediately start using.
+
+## What shadcn HTML is
+
+Shadcn HTML is the substrate that makes AI-driven UI prototyping reliable. Because every component is grounded in semantic HTML structure, standardized `data-*` attribute wiring, and published component skills — structured markdown documents that spell out exactly what markup to write — an AI agent has a precise, unambiguous target. No guessing about component APIs, no framework-specific idioms to trip over. The component skill is the spec; the CSS and JS are the implementation.
+
+<Note>
+  Shadcn HTML is **not** a React library or a JavaScript framework. It is a collection of static CSS and JS files built on the native web platform. It runs in any browser without installation.
+</Note>
+
+## Key differentiators
+
+| Feature | Shadcn HTML | Framework UI library |
+|---|---|---|
+| **Dependencies** | Zero | Dozens |
+| **Build step** | None | Required |
+| **Package manager** | Not needed | npm / pnpm / yarn |
+| **Delivery** | CDN `<link>` + `<script>` | Bundle |
+| **AI compatibility** | Native — skills are plain markdown | Requires framework context |
+| **Theming** | Swap one CSS file | Rebuild / re-bundle |
+
+## The five layers
+
+Every component in shadcn HTML is a self-contained folder built from up to five layers. Understanding these layers tells you everything about how the system works.
+
+**1. Semantic tokens** — `default-semantic-tokens.css` defines every design token for the default light and dark theme using CSS custom properties. Color pairs, radii, shadows, spacing — all of it. To switch themes, you swap this one file. The token shape is fully compatible with [tweakcn.com](https://tweakcn.com) theme exports.
+
+**2. Component CSS** — each component's stylesheet is built entirely on those tokens. No hardcoded color values. Dark mode is automatic because the token cascade handles it.
+
+**3. Semantic HTML** — components are native HTML elements. A button is a `<button>`. A modal is a `<dialog>`. A disclosure is `<details>` / `<summary>`. Variants and wiring are expressed through `data-*` attributes, not class name permutations.
+
+**4. Vanilla JavaScript** — interaction logic lives here, but only when HTML and CSS genuinely cannot express the behavior. Many components — like Button and Badge — are CSS-only. When JS is present, it's a plain ES module with no dependencies.
+
+**5. Component skill** — a `component-skill.md` file in each component folder that documents the exact HTML structure, all variants and sizes, ARIA attributes, and data-attribute wiring. This is what an AI reads before generating markup.
+
+```
+components/
+└── dialog/
+    ├── component-skill.md    ← HTML structure, attributes, ARIA (read this first)
+    ├── dialog.css            ← stylesheet (uses design tokens)
+    └── dialog.js             ← interaction behavior (when needed)
+```
+
+## Design philosophy: native web platform first
+
+Shadcn HTML bets on the browser. If a native HTML element or CSS feature can express a behavior, that is how we implement it — no JavaScript workaround, no third-party library. This keeps the system lean, accessible, and forward-compatible as the platform evolves.
+
+| Instead of… | Shadcn HTML uses… |
+|---|---|
+| JS modal with overlay `<div>` | `<dialog>` + `showModal()` + `::backdrop` |
+| JS show/hide dropdowns | `popover` API |
+| JS accordion toggle | `<details>` / `<summary>` |
+| JS enter/exit animations | `@starting-style` + `transition-behavior: allow-discrete` |
+| Floating UI / Popper.js | CSS anchor positioning |
+| JS class toggling for parent state | `:has()` selector |
+| JS textarea auto-resize | `field-sizing: content` |
+| Sass / Less / PostCSS | Native CSS nesting, `@layer`, container queries |
+| JS focus traps | `inert` attribute |
+| JS scroll-lock libraries | `overscroll-behavior: contain` |
+| `darken()` / `lighten()` in Sass | `color-mix(in oklch, ...)` |
+
+This philosophy means every component works without a JavaScript runtime, degrades gracefully when scripting is unavailable, and respects user preferences like `prefers-reduced-motion` and `forced-colors` by default.
+
+## Explore the system
+
+<CardGroup cols={2}>
+  <Card
+    title="Installation"
+    icon="download"
+    href="/installation"
+  >
+    Add shadcn HTML to any page in under two minutes via jsDelivr CDN — no npm, no bundler, no configuration.
+  </Card>
+  <Card
+    title="Theming"
+    icon="palette"
+    href="/concepts/theming"
+  >
+    Swap the entire visual style of every component by replacing a single CSS file. Compatible with tweakcn.com exports.
+  </Card>
+  <Card
+    title="Component Skills"
+    icon="book-open"
+    href="/concepts/component-skills"
+  >
+    Learn how the structured skill format works and how to point an AI at the right skill file to generate accurate markup.
+  </Card>
+  <Card
+    title="Components"
+    icon="layers"
+    href="/components"
+  >
+    Browse the full component library with live demos — buttons, dialogs, forms, navigation, data display, and more.
+  </Card>
+</CardGroup>

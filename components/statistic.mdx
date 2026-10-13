@@ -1,0 +1,134 @@
+---
+title: "Statistic — Shadcn HTML Metric Display Component"
+sidebarTitle: Statistic
+description: "A numeric metric display component with a label, value, and optional trend indicator. Ideal for dashboards, KPI panels, and summary sections."
+---
+
+The **Statistic** component presents a key metric — a label, a large numeric value, and an optional trend indicator — in a compact, scannable layout. It is built entirely from `<div>` and `<p>` containers styled with shadcn design tokens. No JavaScript is required. Use statistics in dashboard summaries, KPI cards, report headers, and anywhere a single number needs to communicate at a glance alongside context about how it has changed over time.
+
+## CDN Import
+
+Statistic is CSS-only. No script tag is required.
+
+```html
+<link
+  rel="stylesheet"
+  href="https://cdn.jsdelivr.net/gh/codylindley/shadcn-html@latest/dist/components/statistic/statistic.css"
+>
+```
+
+## Basic Usage
+
+A minimal statistic with a title, a value, and a description:
+
+```html
+<div class="statistic">
+  <p class="statistic-title">Total Revenue</p>
+  <p class="statistic-value">$45,231.89</p>
+  <p class="statistic-description">+20.1% from last month</p>
+</div>
+```
+
+## Structure
+
+| Class | Element | Purpose |
+| --- | --- | --- |
+| `statistic` | `<div>` | Outer container |
+| `statistic-title` | `<p>` | Short label describing the metric (e.g. "Subscribers") |
+| `statistic-value` | `<p>` | The prominent numeric or formatted value |
+| `statistic-description` | `<p>` | Supporting context — period, comparison, or unit |
+| `statistic-trend` | `<span>` | Inline trend chip; coloured via `data-trend` |
+
+## Variants
+
+### With trend indicator
+
+Embed a `statistic-trend` span inside the description to surface directional change:
+
+```html
+<div class="statistic">
+  <p class="statistic-title">Subscriptions</p>
+  <p class="statistic-value">+2,350</p>
+  <p class="statistic-description">
+    <span class="statistic-trend" data-trend="up">
+      ↑ +12.5%
+    </span>
+    from last month
+  </p>
+</div>
+```
+
+```html
+<div class="statistic">
+  <p class="statistic-title">Churn Rate</p>
+  <p class="statistic-value">3.2%</p>
+  <p class="statistic-description">
+    <span class="statistic-trend" data-trend="down">
+      ↓ −0.8%
+    </span>
+    from last month
+  </p>
+</div>
+```
+
+| `data-trend` | Colour | Meaning |
+| ------------ | ------ | ------- |
+| `up`         | Green (success) | Positive directional change |
+| `down`       | Red (destructive) | Negative directional change |
+
+<Note>
+  Trend direction should always be communicated in text as well as colour — never rely on colour alone. The arrow characters (↑ / ↓) or explicit labels like "+12.5%" satisfy this requirement.
+</Note>
+
+### Dashboard grid
+
+Place multiple statistics in a CSS grid for a KPI panel:
+
+```html
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(10rem,1fr));gap:1.5rem;">
+  <div class="statistic">
+    <p class="statistic-title">Total Revenue</p>
+    <p class="statistic-value">$45,231</p>
+    <p class="statistic-description">
+      <span class="statistic-trend" data-trend="up">↑ +20.1%</span>
+      from last month
+    </p>
+  </div>
+  <div class="statistic">
+    <p class="statistic-title">New Users</p>
+    <p class="statistic-value">+2,350</p>
+    <p class="statistic-description">
+      <span class="statistic-trend" data-trend="up">↑ +180.1%</span>
+      from last month
+    </p>
+  </div>
+  <div class="statistic">
+    <p class="statistic-title">Active Now</p>
+    <p class="statistic-value">573</p>
+    <p class="statistic-description">
+      <span class="statistic-trend" data-trend="down">↓ −201</span>
+      since last hour
+    </p>
+  </div>
+</div>
+```
+
+<Tip>
+  For a richer card treatment, nest each `.statistic` inside a `.card` `.card-content` block. The statistic component is intentionally unsurfaced so it composes freely.
+</Tip>
+
+## ARIA & Accessibility
+
+| Concern | Guidance |
+| --- | --- |
+| Reading order | Title → value → description reads naturally in DOM order |
+| Trend colour | Always pair `data-trend` colour with a visible text indicator (percentage, arrow symbol) |
+| Live updates | If values refresh automatically, wrap the statistic in `aria-live="polite"` so screen readers announce changes |
+| Abbreviations | Expand abbreviated units in a `<title>` or `aria-label` when they may be ambiguous (e.g. "K" for thousands) |
+
+## Notes
+
+- **Native basis** — `<div>` containers with semantic `<p>` children.
+- Statistic is CSS-only — no JavaScript file to load.
+- The component is intentionally bare: it has no border, shadow, or background of its own. Compose it inside a `.card` or your own surface element to add visual framing.
+- `statistic-value` uses a large, bold font size that inherits from the design token scale — avoid overriding the font-weight so all statistics remain visually consistent across a dashboard.

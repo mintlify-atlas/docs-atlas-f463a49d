@@ -1,0 +1,171 @@
+---
+title: "Checkbox Component — Checked, Indeterminate, and Groups"
+sidebarTitle: Checkbox
+description: "Custom-styled checkbox built on <input type='checkbox'>. Supports checked, unchecked, indeterminate states, groups with fieldset, and validation."
+---
+
+The **Checkbox** component is a custom-styled toggle control built on the native `<input type="checkbox">` element. It uses `appearance: none` to replace the OS default rendering with a CSS-only checkmark drawn via a `::after` pseudo-element, matching the shadcn/ui design tokens. Because the underlying element is a real checkbox, all keyboard behavior, form integration, and screen reader support come from the browser at no extra cost.
+
+## CDN Import
+
+No JavaScript is needed for basic checked/unchecked behavior.
+
+```html
+<!-- CSS -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/codylindley/shadcn-html@latest/dist/components/checkbox/checkbox.css">
+```
+
+<Note>
+  The indeterminate state must be set via JavaScript (`checkbox.indeterminate = true`) since HTML has no attribute for it. See the [Indeterminate state](#indeterminate-state) section below.
+</Note>
+
+## Basic Usage
+
+Apply the `checkbox` class to `<input type="checkbox">` and link a `<label>` with `for`/`id`.
+
+```html
+<div style="display:flex;align-items:center;gap:0.5rem;">
+  <input class="checkbox" type="checkbox" id="terms">
+  <label class="label" for="terms" style="margin:0;">
+    Accept terms and conditions
+  </label>
+</div>
+```
+
+## States
+
+| State | How to apply | Visual effect |
+|-------|-------------|---------------|
+| Unchecked | Default | Empty box with `--input` border |
+| Checked | `checked` attribute | Filled `--primary` background with white checkmark |
+| Indeterminate | `checkbox.indeterminate = true` (JS) | Dash/line indicator instead of checkmark |
+| Disabled | `disabled` attribute | 50% opacity, `not-allowed` cursor |
+| Disabled + Checked | `disabled checked` | Checked appearance at 50% opacity |
+| Invalid | `aria-invalid="true"` | Border `--destructive` |
+
+### Checked by default
+
+```html
+<div style="display:flex;align-items:center;gap:0.5rem;">
+  <input class="checkbox" type="checkbox" id="notifications" checked>
+  <label class="label" for="notifications" style="margin:0;">
+    Enable email notifications
+  </label>
+</div>
+```
+
+### Disabled states
+
+```html
+<!-- Disabled unchecked -->
+<input class="checkbox" type="checkbox" id="disabled-off" disabled>
+<label for="disabled-off">Unavailable option</label>
+
+<!-- Disabled checked -->
+<input class="checkbox" type="checkbox" id="disabled-on" disabled checked>
+<label for="disabled-on">Required setting (locked)</label>
+```
+
+### Indeterminate state
+
+The indeterminate state is used in "select all" patterns where some — but not all — child checkboxes are checked. Set it with JavaScript.
+
+```html
+<input class="checkbox" type="checkbox" id="select-all">
+<label class="label" for="select-all" style="margin:0;">Select all</label>
+```
+
+```html
+<script>
+  document.getElementById('select-all').indeterminate = true;
+</script>
+```
+
+### Invalid (error state)
+
+```html
+<div style="display:flex;align-items:center;gap:0.5rem;">
+  <input class="checkbox" type="checkbox" id="agree"
+         aria-invalid="true"
+         aria-describedby="agree-err"
+         required>
+  <label for="agree">I agree to the terms</label>
+</div>
+<p class="field-error" id="agree-err">You must accept the terms to continue.</p>
+```
+
+## With Description
+
+For a checkbox that needs additional context, stack the label and description in a wrapper.
+
+```html
+<div style="display:flex;align-items:flex-start;gap:0.5rem;">
+  <input class="checkbox" type="checkbox" id="notify"
+         style="margin-top:0.125rem;">
+  <div>
+    <label class="label" for="notify" style="margin:0;">
+      Enable notifications
+    </label>
+    <p class="field-description">
+      You can enable or disable notifications at any time.
+    </p>
+  </div>
+</div>
+```
+
+## Checkbox Group
+
+Group related checkboxes in a `<fieldset>` with a `<legend>` for accessible labeling.
+
+```html
+<fieldset style="border:none;padding:0;">
+  <legend class="label">Select items to display</legend>
+
+  <div style="display:flex;align-items:center;gap:0.5rem;margin-top:0.5rem;">
+    <input class="checkbox" type="checkbox" id="item-1" checked>
+    <label for="item-1">Recents</label>
+  </div>
+
+  <div style="display:flex;align-items:center;gap:0.5rem;margin-top:0.5rem;">
+    <input class="checkbox" type="checkbox" id="item-2">
+    <label for="item-2">Home</label>
+  </div>
+
+  <div style="display:flex;align-items:center;gap:0.5rem;margin-top:0.5rem;">
+    <input class="checkbox" type="checkbox" id="item-3">
+    <label for="item-3">Applications</label>
+  </div>
+</fieldset>
+```
+
+## Keyboard Interaction
+
+| Key | Action |
+|-----|--------|
+| `Space` | Toggle checked / unchecked |
+| `Tab` | Move focus to the next control |
+| `Shift+Tab` | Move focus to the previous control |
+
+All keyboard behavior is provided natively by `<input type="checkbox">`.
+
+## ARIA & Accessibility
+
+| Attribute | When to use | Value |
+|-----------|-------------|-------|
+| `id` + `for` | Always | Links `<label>` to `<input>` |
+| `aria-invalid="true"` | Validation error | Marks checkbox as invalid for screen readers |
+| `aria-describedby` | Has description or error | Points to description/error element `id` |
+| `required` | Required field | Triggers native browser validation |
+| `<fieldset>` + `<legend>` | Checkbox group | Provides implicit `role="group"` with accessible name |
+
+<Tip>
+  In Windows High Contrast Mode (`forced-colors: active`), the checkbox reverts to `appearance: auto` so the OS renders it natively — ensuring it remains visible regardless of color theme.
+</Tip>
+
+## Notes
+
+- Styled with `appearance: none` and a CSS-only checkmark via `::after` — no SVG or icon font is needed.
+- The indeterminate state cannot be set with HTML attributes; it requires `checkbox.indeterminate = true` in JavaScript.
+- Use `<fieldset>` + `<legend>` for checkbox groups — this provides an implicit `role="group"` with an accessible name announced by screen readers.
+- `<fieldset disabled>` propagates the disabled state to all checkboxes inside it natively.
+- The `:user-invalid` pseudo-class applies invalid styling automatically after the user has interacted with a `required` checkbox and left it unchecked — no extra JavaScript needed.

@@ -1,0 +1,133 @@
+---
+title: "Avatar — Shadcn HTML User Image Component"
+sidebarTitle: Avatar
+description: "A circular user image component built on <img> with an automatic text-initial fallback. Supports three sizes, status badges, and grouped avatar stacks."
+---
+
+The **Avatar** component displays a user's profile picture in a circular container. It is built on a native `<img>` element wrapped in a `<span>`, and includes a fallback `<span>` that shows the user's initials whenever the image fails to load or no URL is provided. A lightweight JavaScript module handles the `onerror` fallback logic and CSS `:has()` toggling so you get graceful degradation with zero manual event wiring. Use avatars to represent users in navigation bars, comment threads, team lists, and data tables.
+
+## CDN Import
+
+Avatar requires both the CSS and the JS module:
+
+```html
+<link
+  rel="stylesheet"
+  href="https://cdn.jsdelivr.net/gh/codylindley/shadcn-html@latest/dist/components/avatar/avatar.css"
+>
+<script
+  type="module"
+  src="https://cdn.jsdelivr.net/gh/codylindley/shadcn-html@latest/dist/components/avatar/avatar.js"
+></script>
+```
+
+## Basic Usage
+
+Provide both an `<img>` and a fallback `<span>`. The image is shown when it loads; the fallback appears automatically on error.
+
+```html
+<span class="avatar" data-size="default">
+  <img class="avatar-image" src="https://example.com/photo.jpg" alt="@cody" />
+  <span class="avatar-fallback">CL</span>
+</span>
+```
+
+## Sizes
+
+Control the avatar diameter with `data-size` on the root `<span>`.
+
+```html
+<!-- Small — 2rem -->
+<span class="avatar" data-size="sm">
+  <img class="avatar-image" src="https://example.com/photo.jpg" alt="@alice" />
+  <span class="avatar-fallback">AL</span>
+</span>
+
+<!-- Default — 2.5rem -->
+<span class="avatar" data-size="default">
+  <img class="avatar-image" src="https://example.com/photo.jpg" alt="@bob" />
+  <span class="avatar-fallback">BO</span>
+</span>
+
+<!-- Large — 3rem -->
+<span class="avatar" data-size="lg">
+  <img class="avatar-image" src="https://example.com/photo.jpg" alt="@carol" />
+  <span class="avatar-fallback">CA</span>
+</span>
+```
+
+| `data-size` | Diameter |
+| ----------- | -------- |
+| `sm`        | 2rem     |
+| `default`   | 2.5rem   |
+| `lg`        | 3rem     |
+
+## Variants
+
+### Fallback only
+
+Omit the `<img>` when no photo is available:
+
+```html
+<span class="avatar" data-size="default">
+  <span class="avatar-fallback">JD</span>
+</span>
+```
+
+### Avatar with status badge
+
+Append an `avatar-badge` element to indicate online/offline status:
+
+```html
+<span class="avatar" data-size="default">
+  <img class="avatar-image" src="https://example.com/photo.jpg" alt="@dan" />
+  <span class="avatar-fallback">DA</span>
+  <span class="avatar-badge" aria-label="Online"></span>
+</span>
+```
+
+### Avatar group
+
+Stack multiple avatars with a count overflow indicator:
+
+```html
+<div class="avatar-group">
+  <span class="avatar" data-size="default">
+    <img class="avatar-image" src="https://example.com/alice.jpg" alt="Alice" />
+    <span class="avatar-fallback">AL</span>
+  </span>
+  <span class="avatar" data-size="default">
+    <img class="avatar-image" src="https://example.com/bob.jpg" alt="Bob" />
+    <span class="avatar-fallback">BO</span>
+  </span>
+  <span class="avatar" data-size="default">
+    <img class="avatar-image" src="https://example.com/carol.jpg" alt="Carol" />
+    <span class="avatar-fallback">CA</span>
+  </span>
+  <span class="avatar-group-count">+3</span>
+</div>
+```
+
+<Tip>
+  Keep fallback initials to one or two characters. Single-character initials work best at the `sm` size.
+</Tip>
+
+## ARIA & Accessibility
+
+| Attribute / Element | Requirement | Notes |
+| --- | --- | --- |
+| `<img alt="...">` | **Required** | Describe the user — e.g. `alt="@username"` or the person's full name |
+| `avatar-fallback` text | Meaningful initials | Will be read by screen readers when the image is absent |
+| `avatar-badge` | `aria-label` recommended | Convey the status in text, e.g. `aria-label="Online"` |
+| Avatar group count | Visible text | The `.avatar-group-count` text (e.g. "+3") is read inline — no extra ARIA needed |
+
+<Note>
+  Do not set `alt=""` on an avatar image unless the user's name is already present in adjacent visible text. An empty `alt` silences the image from screen readers entirely.
+</Note>
+
+## Notes
+
+- **Native basis** — `<img>` element wrapped in a `<span>`, with a sibling `<span>` for initials fallback.
+- The JS module listens for image `error` events and toggles visibility via CSS classes — no manual `onerror` wiring needed.
+- The `:has()` CSS selector is used to switch between image and fallback states; this is supported in all modern browsers.
+- Avatar has no border by default; add `border: 2px solid var(--background)` inline for the stacked group overlap effect.

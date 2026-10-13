@@ -1,0 +1,210 @@
+---
+title: "Tabs Component — Shadcn HTML Tabbed Panels"
+sidebarTitle: Tabs
+description: "Build accessible tabbed interfaces with keyboard navigation using semantic HTML, WAI-ARIA roles, and vanilla JavaScript. No framework required."
+---
+
+The **Tabs** component organises related content into switchable panels, letting users navigate between views without a page reload. There is no native HTML element that provides this pattern — it is built entirely from `div`, `button`, and standard ARIA roles (`tablist`, `tab`, `tabpanel`). Use tabs when you have several distinct categories of content that belong in the same context but should not all be visible at once, such as account settings, dashboard views, or product detail sections.
+
+## CDN Import
+
+```html
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/codylindley/shadcn-html@latest/dist/components/tabs/tabs.css">
+<script type="module" src="https://cdn.jsdelivr.net/gh/codylindley/shadcn-html@latest/dist/components/tabs/tabs.js"></script>
+```
+
+<Note>
+The JavaScript file handles panel switching and full WAI-ARIA keyboard navigation automatically — including roving `tabindex`, arrow key cycling, `Home`/`End` jumps, and skipping disabled tabs.
+</Note>
+
+## Basic Usage
+
+A minimal tabs instance needs a `.tabs` wrapper, a `.tab-list` with `role="tablist"`, at least two `.tab-trigger` buttons with `role="tab"`, and a matching `.tab-content` panel for each trigger. Wire them together with matching `id`/`aria-controls`/`aria-labelledby` pairs.
+
+```html
+<div class="tabs">
+  <div class="tab-list" role="tablist" aria-label="Account settings">
+    <button class="tab-trigger" role="tab"
+            aria-selected="true"
+            aria-controls="panel-account"
+            id="tab-account">Account</button>
+    <button class="tab-trigger" role="tab"
+            aria-selected="false"
+            aria-controls="panel-password"
+            id="tab-password"
+            tabindex="-1">Password</button>
+  </div>
+
+  <div class="tab-content" role="tabpanel"
+       id="panel-account"
+       aria-labelledby="tab-account"
+       tabindex="0">
+    Account settings content…
+  </div>
+
+  <div class="tab-content" role="tabpanel"
+       id="panel-password"
+       aria-labelledby="tab-password"
+       tabindex="0"
+       hidden>
+    Password settings content…
+  </div>
+</div>
+```
+
+<Tip>
+Always add the `hidden` attribute to every inactive panel at page load. This hides panels from screen readers — not just visually — so assistive technology skips them correctly.
+</Tip>
+
+## Variants
+
+### Pill (Default)
+
+The default style renders triggers inside a muted pill container. The active trigger gets a white background and a subtle shadow.
+
+```html
+<div class="tabs">
+  <div class="tab-list" role="tablist" aria-label="Dashboard">
+    <button class="tab-trigger" role="tab"
+            aria-selected="true"
+            aria-controls="panel-overview"
+            id="tab-overview">Overview</button>
+    <button class="tab-trigger" role="tab"
+            aria-selected="false"
+            aria-controls="panel-analytics"
+            id="tab-analytics"
+            tabindex="-1">Analytics</button>
+  </div>
+  <div class="tab-content" role="tabpanel"
+       id="panel-overview" aria-labelledby="tab-overview" tabindex="0">
+    Overview content…
+  </div>
+  <div class="tab-content" role="tabpanel"
+       id="panel-analytics" aria-labelledby="tab-analytics" tabindex="0" hidden>
+    Analytics content…
+  </div>
+</div>
+```
+
+### Line
+
+Add `data-variant="line"` to `.tab-list` for an underline indicator style. The background becomes transparent and the active trigger gets a coloured bottom border instead of a fill.
+
+```html
+<div class="tabs">
+  <div class="tab-list" role="tablist" aria-label="Dashboard" data-variant="line">
+    <button class="tab-trigger" role="tab"
+            aria-selected="true"
+            aria-controls="line-overview"
+            id="line-tab-overview">Overview</button>
+    <button class="tab-trigger" role="tab"
+            aria-selected="false"
+            aria-controls="line-analytics"
+            id="line-tab-analytics"
+            tabindex="-1">Analytics</button>
+    <button class="tab-trigger" role="tab"
+            aria-selected="false"
+            aria-controls="line-reports"
+            id="line-tab-reports"
+            tabindex="-1"
+            disabled>Reports</button>
+  </div>
+  <div class="tab-content" role="tabpanel"
+       id="line-overview" aria-labelledby="line-tab-overview" tabindex="0">
+    Overview…
+  </div>
+  <div class="tab-content" role="tabpanel"
+       id="line-analytics" aria-labelledby="line-tab-analytics" tabindex="0" hidden>
+    Analytics…
+  </div>
+  <div class="tab-content" role="tabpanel"
+       id="line-reports" aria-labelledby="line-tab-reports" tabindex="0" hidden>
+    Reports…
+  </div>
+</div>
+```
+
+### Vertical
+
+Set `aria-orientation="vertical"` on `.tab-list`. The CSS uses `:has()` to automatically switch the `.tabs` container to a side-by-side flex layout — no extra classes needed.
+
+```html
+<div class="tabs">
+  <div class="tab-list" role="tablist"
+       aria-label="Settings"
+       aria-orientation="vertical">
+    <button class="tab-trigger" role="tab"
+            aria-selected="true"
+            aria-controls="vert-general"
+            id="vert-tab-general">General</button>
+    <button class="tab-trigger" role="tab"
+            aria-selected="false"
+            aria-controls="vert-security"
+            id="vert-tab-security"
+            tabindex="-1">Security</button>
+  </div>
+
+  <div class="tab-content" role="tabpanel"
+       id="vert-general" aria-labelledby="vert-tab-general" tabindex="0">
+    General settings…
+  </div>
+  <div class="tab-content" role="tabpanel"
+       id="vert-security" aria-labelledby="vert-tab-security" tabindex="0" hidden>
+    Security settings…
+  </div>
+</div>
+```
+
+| `data-variant` on `.tab-list` | Style |
+|---|---|
+| *(none)* | Pill — muted background, active tab gets fill + shadow |
+| `line` | Underline — transparent background, active tab gets primary border-bottom |
+
+## ARIA & Accessibility
+
+| Attribute | Element | Value |
+|---|---|---|
+| `role="tablist"` | `.tab-list` | Always required |
+| `role="tab"` | each `.tab-trigger` | Always required |
+| `role="tabpanel"` | each `.tab-content` | Always required |
+| `aria-selected` | each tab trigger | `"true"` for active, `"false"` for inactive |
+| `aria-controls` | each tab trigger | ID of the associated panel |
+| `aria-labelledby` | each panel | ID of the associated tab trigger |
+| `aria-label` | `.tab-list` | Human-readable name for the tab group |
+| `aria-orientation` | `.tab-list` | `"horizontal"` (default) or `"vertical"` |
+| `tabindex="0"` | active tab trigger | Puts the active tab in the natural tab order |
+| `tabindex="-1"` | inactive tab triggers | Removes from tab order; arrow-key only |
+| `tabindex="0"` | panels | Makes panels focusable for keyboard users |
+
+### Keyboard Interactions
+
+| Key | Behaviour |
+|---|---|
+| `Tab` | Moves focus to the active tab trigger, then into the active panel |
+| `ArrowRight` | Moves focus to and activates the next tab (horizontal orientation) |
+| `ArrowLeft` | Moves focus to and activates the previous tab (horizontal orientation) |
+| `ArrowDown` | Moves focus to and activates the next tab (vertical orientation) |
+| `ArrowUp` | Moves focus to and activates the previous tab (vertical orientation) |
+| `Home` | Moves focus to and activates the first enabled tab |
+| `End` | Moves focus to and activates the last enabled tab |
+| `Space` / `Enter` | Activates the focused tab (manual activation mode) |
+
+## Wiring
+
+The JavaScript file initialises itself automatically on `DOMContentLoaded` and then watches for new `.tab-list` elements via `MutationObserver`.
+
+| Data attribute | Element | Purpose |
+|---|---|---|
+| `data-init` | `.tab-list` | Added by JS to mark an already-initialised tablist |
+
+No manual initialisation call is required. If you inject a tabs widget dynamically the observer picks it up automatically.
+
+## Notes
+
+- **Roving tabindex** — Only the active tab has `tabindex="0"`. Inactive tabs use `tabindex="-1"` so `Tab` jumps from the trigger straight into the active panel.
+- **Wrap-around** — Arrow key navigation wraps at both ends of the tablist, skipping any `disabled` tabs.
+- **Disabled tabs** — Add the native `disabled` attribute. The JS skips disabled tabs during arrow-key navigation, and CSS applies `opacity: 0.5`.
+- **Vertical layout** — The CSS detects `aria-orientation="vertical"` with `:has()` and switches to a row flex layout automatically. The JS already handles `ArrowUp`/`ArrowDown` for vertical orientation.
+- **Lazy content** — Panels can be rendered empty and populated on first activation; the `hidden` attribute toggle happens before any custom logic runs.
+- **Reduced motion** — Trigger transitions are suppressed via `prefers-reduced-motion`.
+- **Forced colours** — The active tab indicator maps to the system `Highlight` colour in Windows High Contrast mode.

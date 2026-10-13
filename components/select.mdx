@@ -1,0 +1,144 @@
+---
+title: "Select Component — Styled Native Dropdown with Label"
+sidebarTitle: Select
+description: "Styled dropdown built on the native <select> element. Custom chevron arrow, option groups, disabled state, full keyboard navigation — CSS only."
+---
+
+The **Select** component is a styled dropdown built directly on the native `<select>` element. Native selects come with full keyboard navigation (arrow keys, type-ahead), form integration, and accessibility support baked in by the browser. The component applies `appearance: none` to remove the default OS styling and replaces it with a consistent chevron arrow rendered as an inline SVG background image, matching the shadcn/ui design language.
+
+## CDN Import
+
+Only a CSS file is needed — no JavaScript.
+
+```html
+<!-- CSS -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/codylindley/shadcn-html@latest/dist/components/select/select.css">
+```
+
+## Basic Usage
+
+Apply the `select` class to any `<select>` element. Always pair it with a `<label>`.
+
+```html
+<label class="label" for="fruit">Fruit</label>
+<select class="select" id="fruit">
+  <option value="" disabled selected>Select a fruit</option>
+  <option value="apple">Apple</option>
+  <option value="banana">Banana</option>
+  <option value="cherry">Cherry</option>
+</select>
+```
+
+<Tip>
+  Use `<option value="" disabled selected>` as the first option to create a placeholder prompt. This pattern keeps the field's initial value empty so native `required` validation still fires on submit.
+</Tip>
+
+## Variants & States
+
+| State | How to apply | Visual effect |
+|-------|-------------|---------------|
+| Default | — | Border `--input`, chevron arrow, subtle shadow |
+| Focus | Native `:focus` | Ring `--ring` with soft glow |
+| Disabled | `disabled` attribute | 50% opacity, `not-allowed` cursor |
+| Invalid | `aria-invalid="true"` | Border `--destructive`, red ring on focus |
+
+### Disabled select
+
+```html
+<label class="label" for="region">Region</label>
+<select class="select" id="region" disabled>
+  <option value="us">United States</option>
+  <option value="eu">Europe</option>
+</select>
+```
+
+### Invalid state
+
+```html
+<label class="label" for="country">Country</label>
+<select class="select" id="country"
+        aria-invalid="true"
+        aria-describedby="country-err">
+  <option value="" disabled selected>Pick a country</option>
+  <option value="us">United States</option>
+</select>
+<p class="field-error" id="country-err">Please select a country.</p>
+```
+
+## With Option Groups
+
+Use `<optgroup>` to group related options under a non-selectable heading.
+
+```html
+<label class="label" for="timezone">Timezone</label>
+<select class="select" id="timezone">
+  <option value="" disabled selected>Select a timezone</option>
+  <optgroup label="Americas">
+    <option value="us-east">New York (UTC-5)</option>
+    <option value="us-west">Los Angeles (UTC-8)</option>
+  </optgroup>
+  <optgroup label="Europe">
+    <option value="eu-london">London (UTC+0)</option>
+    <option value="eu-paris">Paris (UTC+1)</option>
+  </optgroup>
+</select>
+```
+
+## With Description
+
+Use `.field-description` below the select for contextual help text.
+
+```html
+<label class="label" for="plan">Billing plan</label>
+<select class="select" id="plan" aria-describedby="plan-desc">
+  <option value="free">Free</option>
+  <option value="pro">Pro — $12/mo</option>
+  <option value="enterprise">Enterprise — Contact us</option>
+</select>
+<p class="field-description" id="plan-desc">
+  You can upgrade or downgrade your plan at any time.
+</p>
+```
+
+## Inside a Form
+
+```html
+<form class="form">
+  <div class="form-field">
+    <label class="label" for="role">Role</label>
+    <select class="select" id="role" required>
+      <option value="" disabled selected>Select your role</option>
+      <option value="developer">Developer</option>
+      <option value="designer">Designer</option>
+      <option value="manager">Product Manager</option>
+    </select>
+    <p class="field-description">Choose the role that best describes your work.</p>
+  </div>
+  <div class="form-actions">
+    <button class="btn" type="submit" data-variant="default">Save</button>
+  </div>
+</form>
+```
+
+## ARIA & Accessibility
+
+| Attribute | When to use | Value |
+|-----------|-------------|-------|
+| `id` + `for` | Always | Links `<label>` to `<select>` |
+| `aria-invalid="true"` | Validation error | Marks select as invalid for screen readers |
+| `aria-describedby` | Has description or error | Points to description/error element `id` |
+| `required` | Required field | Triggers native browser validation |
+| `disabled` on `<option>` | Placeholder options | Prevents selection and announces state |
+
+<Warning>
+  The dropdown list rendered by the browser cannot be fully styled with CSS. If you need custom option styling, a custom search/filter, or multi-select with checkboxes, use the **Combobox** component instead.
+</Warning>
+
+## Notes
+
+- Uses `appearance: none` with a custom chevron rendered via a CSS `background-image` SVG — no icon fonts or external assets required.
+- The native `<select>` dropdown list is rendered by the operating system and cannot be styled with CSS.
+- The `<select>` element provides full keyboard navigation natively: arrow keys to move between options, type-ahead to jump to an option by first letter.
+- Use `<optgroup label="...">` to group related options with a non-interactive label heading.
+- For a fully custom dropdown with styling control over the option list, use the **Combobox** component.
+- Disabled options (`<option disabled>`) are announced by screen readers as unavailable.

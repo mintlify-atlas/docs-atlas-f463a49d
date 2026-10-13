@@ -1,0 +1,181 @@
+---
+title: "Icon Component — Lucide Icons, Sizes, and ARIA Patterns"
+sidebarTitle: "Icon"
+description: "Render ~1,500 Lucide icons via CDN with data-lucide. Control size, color, stroke width, and animation using data attributes and CSS tokens."
+---
+
+The Icon component integrates the [Lucide](https://lucide.dev) icon library into Shadcn HTML with a single `<i data-lucide="name">` element. When the Lucide CDN script loads, it replaces every `<i data-lucide>` element with a fully-formed inline SVG. Icons inherit `currentColor` for their stroke, so they automatically match the text color of their parent. Size and animation are controlled via `data-*` attributes, and the CSS ships `prefers-reduced-motion`, `prefers-contrast`, and `forced-colors` support out of the box. There is no JavaScript to write — just include the script and call `lucide.createIcons()`.
+
+## CDN Import
+
+The Icon component requires both the CSS file for sizing/animation and the Lucide CDN script to replace `<i>` elements with SVGs.
+
+```html
+<!-- CSS -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/codylindley/shadcn-html@latest/dist/components/icon/icon.css">
+
+<!-- Lucide icon library (required) -->
+<script src="https://unpkg.com/lucide@1.8.0"></script>
+<script>lucide.createIcons();</script>
+```
+
+<Tip>
+Place the `<script>` tags just before `</body>` so icons are replaced after the DOM has loaded. If you need icons in dynamically inserted HTML, call `lucide.createIcons()` again after inserting your markup.
+</Tip>
+
+## Basic Usage
+
+Use any icon name from [lucide.dev/icons](https://lucide.dev/icons/) as the `data-lucide` attribute value.
+
+```html
+<i data-lucide="home"></i>
+<i data-lucide="settings"></i>
+<i data-lucide="user"></i>
+<i data-lucide="search"></i>
+<i data-lucide="bell"></i>
+<i data-lucide="mail"></i>
+```
+
+## Sizes
+
+Control icon dimensions with the `data-size` attribute. The default size is `1rem` (16 px).
+
+```html
+<i data-lucide="star" data-size="xs"></i>
+<i data-lucide="star" data-size="sm"></i>
+<i data-lucide="star"></i>
+<i data-lucide="star" data-size="md"></i>
+<i data-lucide="star" data-size="lg"></i>
+<i data-lucide="star" data-size="xl"></i>
+```
+
+| `data-size` | Pixels | Rems |
+|---|---|---|
+| `xs` | 12 px | 0.75rem |
+| `sm` | 14 px | 0.875rem |
+| *(default)* | 16 px | 1rem |
+| `md` | 20 px | 1.25rem |
+| `lg` | 24 px | 1.5rem |
+| `xl` | 32 px | 2rem |
+
+You can also size icons with inline styles or HTML `width`/`height` attributes:
+
+```html
+<!-- Inline style -->
+<i data-lucide="star" style="width:20px;height:20px;"></i>
+
+<!-- HTML attributes (passed through by Lucide) -->
+<i data-lucide="star" width="20" height="20"></i>
+
+<!-- Font-relative sizing -->
+<i data-lucide="star" style="width:1.25em;height:1.25em;"></i>
+```
+
+## Color
+
+Icons inherit `currentColor` for their stroke, so they follow whatever text color is set on the parent element or on the icon itself.
+
+```html
+<!-- Inherits parent text color automatically -->
+<span style="color:var(--primary);">
+  <i data-lucide="star"></i>
+</span>
+
+<!-- Set color directly on the icon -->
+<i data-lucide="circle-check" data-size="lg" style="color:oklch(0.72 0.19 142);"></i>
+<i data-lucide="alert-triangle" data-size="lg" style="color:oklch(0.77 0.17 75);"></i>
+<i data-lucide="x-circle" data-size="lg" style="color:var(--destructive);"></i>
+<i data-lucide="info" data-size="lg" style="color:oklch(0.62 0.21 255);"></i>
+```
+
+## Stroke Width
+
+Adjust line thickness with the `stroke-width` attribute. The default is `2`.
+
+```html
+<i data-lucide="heart" data-size="lg" stroke-width="1"></i>
+<i data-lucide="heart" data-size="lg" stroke-width="1.5"></i>
+<i data-lucide="heart" data-size="lg" stroke-width="2"></i>
+<i data-lucide="heart" data-size="lg" stroke-width="3"></i>
+```
+
+## Filled Icons
+
+Pass `fill="currentColor"` and set `stroke-width="0"` for a solid silhouette, or keep a stroke value for a filled-with-outline look.
+
+```html
+<!-- Fill only -->
+<i data-lucide="star" data-size="lg" fill="currentColor" stroke-width="0"></i>
+<i data-lucide="heart" data-size="lg" fill="currentColor" stroke-width="0"></i>
+
+<!-- Fill with outline -->
+<i data-lucide="star" data-size="lg" fill="currentColor" stroke-width="1" style="color:oklch(0.77 0.17 75);"></i>
+```
+
+## With Buttons
+
+Icons inside buttons inherit the button's color automatically. For icon-only buttons, always add `aria-label`.
+
+```html
+<!-- Icon + label button -->
+<button class="btn" data-variant="default">
+  <i data-lucide="save"></i>
+  Save
+</button>
+
+<button class="btn" data-variant="outline">
+  <i data-lucide="download"></i>
+  Download
+</button>
+
+<!-- Icon-only button — aria-label required -->
+<button class="btn" data-variant="outline" data-size="icon" aria-label="Settings">
+  <i data-lucide="settings"></i>
+</button>
+```
+
+## Animation
+
+Add `data-animate="spin"` for a continuously rotating icon — useful for loading spinners. The animation is automatically suppressed when the user has `prefers-reduced-motion` enabled.
+
+```html
+<!-- Standalone spinner -->
+<i data-lucide="loader-circle" data-size="md" data-animate="spin"></i>
+
+<!-- Loading button state -->
+<button class="btn" data-variant="outline" disabled aria-busy="true">
+  <i data-lucide="loader-circle" data-animate="spin"></i>
+  Loading…
+</button>
+```
+
+## ARIA & Accessibility
+
+| Scenario | Pattern |
+|---|---|
+| Decorative (icon next to visible text) | No extra attributes needed — Lucide adds `aria-hidden="true"` by default |
+| Meaningful standalone icon (preferred) | Wrap with `<span>` and add a `.sr-only` visually-hidden text sibling |
+| Meaningful standalone icon (alternative) | Add `role="img"` and `aria-label` directly on the `<i>` element |
+
+```html
+<!-- Preferred: visually-hidden text (survives browser translation) -->
+<span style="display:inline-flex;align-items:center;">
+  <i data-lucide="phone" aria-hidden="true"></i>
+  <span class="sr-only">Phone number</span>
+</span>
+
+<!-- Alternative: aria-label -->
+<i data-lucide="alert-triangle" aria-label="Warning" role="img"></i>
+```
+
+<Note>
+Prefer visually-hidden `.sr-only` text over `aria-label` for standalone icons — `aria-label` text is not translated by browser translation tools, while visible (even if hidden) text is.
+</Note>
+
+## Notes
+
+- Browse all ~1,500 available icons at [lucide.dev/icons](https://lucide.dev/icons/).
+- `prefers-contrast: more` automatically increases stroke width to `2.5` for improved visibility.
+- `forced-colors: active` maps icon color to the `CanvasText` system color in Windows High Contrast Mode.
+- `pointer-events: none` is set in the CSS — icons never capture clicks; the parent element handles interaction.
+- Call `lucide.createIcons()` after any dynamic DOM insertions that add new `<i data-lucide>` elements.

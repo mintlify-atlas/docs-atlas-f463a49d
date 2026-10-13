@@ -1,0 +1,183 @@
+---
+title: "Input Component — Text Fields, States, and Variants"
+sidebarTitle: Input
+description: "Styled text input built on the native <input> element. Supports sizes, validation states, icons, file inputs, and readonly — zero JavaScript."
+---
+
+The **Input** component is a fully styled text field built directly on the native `<input>` element. Because it uses the browser's built-in control, you get autofill, mobile keyboards, native form validation, and assistive technology support for free. Reach for it whenever you need a single-line text entry — from simple name fields to search bars, password fields, and file selectors.
+
+## CDN Import
+
+No JavaScript is required for the input. Only the CSS file is needed.
+
+```html
+<!-- CSS -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/codylindley/shadcn-html@latest/dist/components/input/input.css">
+```
+
+<Note>
+  The `input.css` file also defines the `.label`, `.field-description`, and `.field-error` helper classes used throughout form patterns.
+</Note>
+
+## Basic Usage
+
+Pair every `<input class="input">` with a `<label>` that shares matching `for`/`id` attributes.
+
+```html
+<label class="label" for="email">Email</label>
+<input class="input" type="email" id="email" placeholder="you@example.com">
+```
+
+### With description
+
+Use `.field-description` below the input for help text. Point to it with `aria-describedby`.
+
+```html
+<label class="label" for="username">Username</label>
+<input class="input" type="text" id="username"
+       placeholder="codylindley"
+       aria-describedby="username-desc">
+<p class="field-description" id="username-desc">
+  Choose a unique username for your account.
+</p>
+```
+
+## Variants & States
+
+| State | How to apply | Visual effect |
+|-------|-------------|---------------|
+| Default | — | Border `--input`, subtle shadow |
+| Focus | Native `:focus` | Ring `--ring` with soft glow |
+| Disabled | `disabled` attribute | 50% opacity, `not-allowed` cursor |
+| Readonly | `readonly` attribute | Muted background, 70% opacity, no focus ring change |
+| Invalid | `aria-invalid="true"` | Border `--destructive`, red ring on focus |
+| Required | `required` attribute | Works with native browser validation |
+
+### Disabled
+
+```html
+<label class="label" for="disabled-field">Email</label>
+<input class="input" type="text" id="disabled-field" disabled placeholder="Disabled">
+```
+
+### Readonly
+
+Use `readonly` for non-editable values the user can still select and copy — such as API keys.
+
+```html
+<label class="label" for="api-key">API Key</label>
+<input class="input" type="text" id="api-key" readonly value="sk-1234567890abcdef">
+<p class="field-description">Your API key is read-only.</p>
+```
+
+### Invalid (error state)
+
+Set `aria-invalid="true"` and link a `.field-error` message via `aria-describedby`.
+
+```html
+<label class="label" for="bad-email">Email</label>
+<input class="input" type="email" id="bad-email"
+       aria-invalid="true" value="not-an-email"
+       aria-describedby="email-err">
+<p class="field-error" id="email-err">
+  Please enter a valid email address.
+</p>
+```
+
+### Required
+
+```html
+<label class="label" for="full-name">
+  Name <span class="text-destructive" aria-hidden="true">*</span>
+</label>
+<input class="input" type="text" id="full-name" required placeholder="Jane Doe">
+```
+
+## Sizes
+
+Control height and font size with the `data-size` attribute.
+
+| `data-size` | Height | Padding | Font size |
+|-------------|--------|---------|-----------|
+| `sm` | `2rem` | `0 0.625rem` | `0.8125rem` |
+| *(default)* | `2.5rem` | `0 0.75rem` | `0.875rem` |
+| `lg` | `2.75rem` | `0 1rem` | `1rem` |
+
+```html
+<input class="input" data-size="sm" type="text" placeholder="Small">
+<input class="input" type="text" placeholder="Default">
+<input class="input" data-size="lg" type="text" placeholder="Large">
+```
+
+## Additional Patterns
+
+### With icon
+
+Wrap the input in a relative container and position the icon absolutely inside it.
+
+```html
+<div style="position:relative;">
+  <i data-lucide="search"
+     class="text-muted-foreground"
+     style="position:absolute;left:0.75rem;top:50%;transform:translateY(-50%);width:1rem;height:1rem;"></i>
+  <input class="input" style="padding-left:2.25rem;" type="search" placeholder="Search...">
+</div>
+```
+
+### Password
+
+```html
+<label class="label" for="password">Password</label>
+<input class="input" type="password" id="password" placeholder="Enter your password">
+```
+
+### File input
+
+The `.input` class styles the file selector button automatically.
+
+```html
+<label class="label" for="avatar">Picture</label>
+<input class="input" type="file" id="avatar">
+<p class="field-description">Select a picture to upload.</p>
+```
+
+### With button (inline action)
+
+```html
+<div style="display:flex;gap:0.5rem;">
+  <input class="input" type="search" placeholder="Search...">
+  <button class="btn" data-variant="default">Search</button>
+</div>
+```
+
+### Textarea (auto-grow)
+
+Apply `.input` to a `<textarea>` for identical styling. It auto-grows via `field-sizing: content` — no JavaScript needed.
+
+```html
+<label class="label" for="message">Message</label>
+<textarea class="input" id="message" placeholder="Your message..."></textarea>
+```
+
+## ARIA & Accessibility
+
+| Attribute | When to use | Value |
+|-----------|-------------|-------|
+| `id` + `for` | Always | Links `<label>` to `<input>` |
+| `aria-invalid="true"` | Validation error | Marks input as invalid for screen readers |
+| `aria-describedby` | Has description or error | Points to description/error element `id` |
+| `required` | Required field | Triggers native browser validation |
+| `type` | Always | Use semantic types: `email`, `tel`, `url`, `search`, `password`, `number` |
+
+<Tip>
+  For visually hidden labels (e.g., inside a search bar), add the `sr-only` utility class to the `<label>` rather than omitting it — the label is still announced by screen readers.
+</Tip>
+
+## Notes
+
+- Always pair inputs with `<label>` using matching `for`/`id` — never skip the label.
+- Use semantic `type` values (`email`, `tel`, `url`, `search`, `password`, `number`) to trigger the correct mobile keyboard and enable native validation.
+- Textarea auto-grows via the CSS `field-sizing: content` property — zero JavaScript required.
+- Use `readonly` for non-editable values (like generated tokens) that the user may still need to copy.
+- The `prefers-reduced-motion` media query suppresses focus and hover transitions for users who prefer less animation.
+- In Windows High Contrast Mode (`forced-colors: active`), system colors are automatically applied so the input remains visible.

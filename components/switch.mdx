@@ -1,0 +1,180 @@
+---
+title: "Switch Component — Toggle Switch with ARIA and Sizes"
+sidebarTitle: Switch
+description: "Toggle switch built on <input type='checkbox' role='switch'>. Pure CSS thumb animation, on/off semantics, two sizes, disabled state — no JavaScript."
+---
+
+The **Switch** component is a toggle switch built on `<input type="checkbox" role="switch">`. Adding `role="switch"` to the native checkbox tells assistive technologies to announce on/off semantics rather than checked/unchecked, which is the correct pattern for settings toggles. The thumb slides between off and on positions entirely via CSS `translateX()` on the `:checked` pseudo-class — no JavaScript is required.
+
+## CDN Import
+
+No JavaScript is needed for the toggle behavior.
+
+```html
+<!-- CSS -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/codylindley/shadcn-html@latest/dist/components/switch/switch.css">
+```
+
+## Basic Usage
+
+Apply the `switch` class to `<input type="checkbox">` and add `role="switch"`. Pair with a `<label>`.
+
+```html
+<div style="display:flex;align-items:center;gap:0.5rem;">
+  <input class="switch" type="checkbox" role="switch" id="airplane">
+  <label for="airplane">Airplane Mode</label>
+</div>
+```
+
+## States
+
+| State | How to apply | Visual effect |
+|-------|-------------|---------------|
+| Off | Default | Track in `--input` color, thumb left |
+| On | `checked` attribute | Track in `--primary` color, thumb slides right |
+| Disabled (off) | `disabled` attribute | 50% opacity, `not-allowed` cursor |
+| Disabled (on) | `disabled checked` | On appearance at 50% opacity |
+| Invalid | `aria-invalid="true"` | Track in `--destructive` color |
+
+### On by default
+
+```html
+<div style="display:flex;align-items:center;gap:0.5rem;">
+  <input class="switch" type="checkbox" role="switch" id="dark-mode" checked>
+  <label for="dark-mode">Dark mode</label>
+</div>
+```
+
+### Disabled
+
+```html
+<!-- Disabled off -->
+<div style="display:flex;align-items:center;gap:0.5rem;">
+  <input class="switch" type="checkbox" role="switch" id="feature-off" disabled>
+  <label for="feature-off">Beta feature (unavailable)</label>
+</div>
+
+<!-- Disabled on -->
+<div style="display:flex;align-items:center;gap:0.5rem;">
+  <input class="switch" type="checkbox" role="switch" id="feature-required" disabled checked>
+  <label for="feature-required">Required setting (locked on)</label>
+</div>
+```
+
+### Invalid state
+
+```html
+<div style="display:flex;align-items:center;gap:0.5rem;">
+  <input class="switch" type="checkbox" role="switch" id="consent"
+         aria-invalid="true"
+         aria-describedby="consent-err">
+  <label for="consent">I consent to data processing</label>
+</div>
+<p class="field-error" id="consent-err">You must consent to continue.</p>
+```
+
+## Sizes
+
+Control the track width and height with `data-size`.
+
+| `data-size` | Track width | Track height |
+|-------------|-------------|--------------|
+| `sm` | `1.75rem` | `1rem` |
+| *(default)* | `2.25rem` | `1.25rem` |
+
+```html
+<!-- Small -->
+<input class="switch" data-size="sm" type="checkbox" role="switch" id="sw-sm">
+<label for="sw-sm">Small switch</label>
+
+<!-- Default -->
+<input class="switch" type="checkbox" role="switch" id="sw-default">
+<label for="sw-default">Default switch</label>
+```
+
+## With Description
+
+For notification-style rows, arrange the label and description on the left and the switch on the right using a grid layout.
+
+```html
+<div style="display:grid;grid-template-columns:1fr auto;gap:0 0.75rem;align-items:center;">
+  <label for="share" style="font-size:0.875rem;font-weight:500;">
+    Share across devices
+  </label>
+  <input class="switch" type="checkbox" role="switch" id="share"
+         style="grid-row:1/3;">
+  <span style="font-size:0.8125rem;color:var(--muted-foreground);">
+    Sync settings across all your devices.
+  </span>
+</div>
+```
+
+## Using `.switch-item` Wrapper
+
+Wrap the switch and label in a `.switch-item` container to get automatic disabled label dimming via `:has(.switch:disabled)`.
+
+```html
+<div class="switch-item" style="display:flex;align-items:center;gap:0.5rem;">
+  <input class="switch" type="checkbox" role="switch" id="wifi" disabled>
+  <label for="wifi">Wi-Fi (disabled)</label>
+</div>
+```
+
+## Inside a Form (notification rows)
+
+```html
+<form class="form">
+  <div class="form-field-row">
+    <div>
+      <label class="label" for="marketing-sw">Marketing emails</label>
+      <p class="field-description">Receive emails about new products and features.</p>
+    </div>
+    <input class="switch" type="checkbox" role="switch" id="marketing-sw">
+  </div>
+
+  <div class="form-field-row">
+    <div>
+      <label class="label" for="security-sw">Security emails</label>
+      <p class="field-description">Receive emails about your account security.</p>
+    </div>
+    <input class="switch" type="checkbox" role="switch" id="security-sw" checked disabled>
+  </div>
+
+  <div class="form-actions">
+    <button class="btn" type="submit" data-variant="default">Save preferences</button>
+  </div>
+</form>
+```
+
+## Keyboard Interaction
+
+| Key | Action |
+|-----|--------|
+| `Space` | Toggle the switch on / off |
+| `Tab` / `Shift+Tab` | Move focus to / from the switch |
+
+## ARIA & Accessibility
+
+| Attribute | Element | Purpose |
+|-----------|---------|---------|
+| `type="checkbox"` | `<input>` | Provides native toggle behavior and keyboard support |
+| `role="switch"` | `<input>` | Communicates on/off semantics to screen readers |
+| `checked` | `<input>` | Initial on state |
+| `disabled` | `<input>` | Disables interaction and announces state |
+| `aria-invalid="true"` | `<input>` | Marks the switch as in an error state |
+| `<label for="...">` | `<label>` | Associates visible label text with the switch |
+| `aria-label` | `<input>` | Use when no visible `<label>` is present |
+
+<Tip>
+  Always provide a visible label or `aria-label`. Screen readers announce the switch as "on" or "off" when using `role="switch"`, but they still need the label text to tell users *what* is being toggled.
+</Tip>
+
+## Notes
+
+- Pure CSS — no JavaScript is needed for the toggle animation.
+- The thumb slides between positions via `:checked` state and `translateX()`.
+- Uses `appearance: none` with `::after` for the thumb circle.
+- Wrap in `.switch-item` for automatic disabled label dimming via the `:has(.switch:disabled)` CSS selector.
+- `aria-invalid="true"` shows the track in the `--destructive` color.
+- The `prefers-reduced-motion` media query suppresses the thumb slide animation for motion-sensitive users.
+- In Windows High Contrast Mode, system colors are applied automatically.

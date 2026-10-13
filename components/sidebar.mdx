@@ -1,0 +1,249 @@
+---
+title: "Sidebar Component — Shadcn HTML App Navigation Panel"
+sidebarTitle: Sidebar
+description: "Build full application sidebars with collapsible groups, submenus, badges, and a mobile sheet overlay. Uses aside, nav, details, and dialog elements."
+---
+
+The **Sidebar** component provides a full application-level navigation panel — the kind you find in dashboards, admin interfaces, and SaaS apps. It is built on semantic HTML landmarks: `<aside>` for the complementary region, `<nav>` for navigation lists, `<details>`/`<summary>` for collapsible groups and submenus without any JavaScript toggle logic, and `<dialog>` for the mobile slide-in sheet overlay. A small JS file handles the collapse toggle, the `Cmd+B` / `Ctrl+B` keyboard shortcut, and mobile dialog management.
+
+## CDN Import
+
+```html
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/codylindley/shadcn-html@latest/dist/components/sidebar/sidebar.css">
+<script type="module" src="https://cdn.jsdelivr.net/gh/codylindley/shadcn-html@latest/dist/components/sidebar/sidebar.js"></script>
+```
+
+## Basic Usage
+
+The simplest sidebar — a header, a nav with one section title and two links, and a footer.
+
+```html
+<div class="sidebar-layout">
+  <aside class="app-sidebar" id="my-sidebar" data-state="expanded">
+    <div class="sidebar-header">
+      <a class="sidebar-logo" href="/">
+        <span class="sidebar-logo-text">MyApp</span>
+      </a>
+    </div>
+    <div class="sidebar-content">
+      <nav class="sidebar-nav">
+        <span class="sidebar-section-title">Main</span>
+        <a class="sidebar-link" href="#" aria-current="page">
+          Dashboard
+        </a>
+        <a class="sidebar-link" href="#">
+          Settings
+        </a>
+      </nav>
+    </div>
+    <div class="sidebar-footer">user@example.com</div>
+  </aside>
+
+  <main style="flex:1;min-width:0;">
+    <button class="sidebar-trigger"
+            data-sidebar-trigger="my-sidebar"
+            aria-label="Toggle sidebar">
+      ☰
+    </button>
+    <!-- page content -->
+  </main>
+</div>
+```
+
+## Full Application Layout
+
+A complete sidebar with collapsible groups, a submenu, a notification badge, the mobile sheet overlay, and the toggle trigger. This is the recommended production pattern.
+
+```html
+<div class="sidebar-layout">
+
+  <!-- ── Desktop sidebar ─────────────────────────────────── -->
+  <aside class="app-sidebar" id="main-sidebar" data-state="expanded">
+
+    <div class="sidebar-header">
+      <a class="sidebar-logo" href="/">
+        <i data-lucide="command"></i>
+        <span class="sidebar-logo-text">MyApp</span>
+      </a>
+    </div>
+
+    <div class="sidebar-content">
+
+      <!-- Collapsible group -->
+      <details class="sidebar-group" open>
+        <summary>
+          <span>Platform</span>
+          <i data-lucide="chevron-right"></i>
+        </summary>
+        <nav class="sidebar-nav">
+          <a class="sidebar-link" href="#" aria-current="page">
+            <i data-lucide="home"></i>
+            <span>Dashboard</span>
+          </a>
+          <a class="sidebar-link" href="#">
+            <i data-lucide="inbox"></i>
+            <span>Inbox</span>
+            <span class="sidebar-badge">12</span>
+          </a>
+
+          <!-- Nested submenu -->
+          <details class="sidebar-submenu">
+            <summary>
+              <i data-lucide="settings"></i>
+              <span>Settings</span>
+              <i data-lucide="chevron-right"></i>
+            </summary>
+            <nav class="sidebar-nav">
+              <a class="sidebar-link" href="#"><span>General</span></a>
+              <a class="sidebar-link" href="#"><span>Team</span></a>
+              <a class="sidebar-link" href="#"><span>Billing</span></a>
+            </nav>
+          </details>
+        </nav>
+      </details>
+
+      <!-- Second group -->
+      <details class="sidebar-group" open>
+        <summary>
+          <span>Projects</span>
+          <i data-lucide="chevron-right"></i>
+        </summary>
+        <nav class="sidebar-nav">
+          <a class="sidebar-link" href="#">
+            <i data-lucide="folder"></i>
+            <span>Design System</span>
+          </a>
+          <a class="sidebar-link" href="#">
+            <i data-lucide="folder"></i>
+            <span>Marketing</span>
+          </a>
+        </nav>
+      </details>
+
+    </div>
+
+    <div class="sidebar-footer">user@example.com</div>
+  </aside>
+
+  <!-- ── Mobile sidebar (dialog sheet) ───────────────────── -->
+  <dialog class="sidebar-mobile" id="mobile-sidebar">
+    <button class="sidebar-mobile-close" aria-label="Close sidebar">
+      <i data-lucide="x"></i>
+    </button>
+    <!-- mirror the same nav content from the desktop sidebar -->
+    <nav class="sidebar-nav" style="padding:1rem;">
+      <a class="sidebar-link" href="#" aria-current="page">Dashboard</a>
+      <a class="sidebar-link" href="#">Inbox</a>
+      <a class="sidebar-link" href="#">Settings</a>
+    </nav>
+  </dialog>
+
+  <!-- ── Main content ─────────────────────────────────────── -->
+  <main style="flex:1;min-width:0;padding:1rem;">
+    <!-- Desktop toggle -->
+    <button class="sidebar-trigger"
+            data-sidebar-trigger="main-sidebar"
+            aria-label="Toggle sidebar">
+      <i data-lucide="panel-left"></i>
+    </button>
+
+    <!-- Mobile open button -->
+    <button class="sidebar-trigger"
+            data-sidebar-mobile="mobile-sidebar"
+            aria-label="Open navigation">
+      <i data-lucide="menu"></i>
+    </button>
+
+    <p>Main content area</p>
+  </main>
+
+</div>
+```
+
+## Variants
+
+### Collapsed State
+
+Toggle `data-state="collapsed"` on `.app-sidebar` to shrink the sidebar to an icon-only rail (3.5 rem wide). Labels, section titles, badges, footer content, and logo text are hidden; icons remain visible.
+
+```html
+<aside class="app-sidebar" data-state="collapsed">
+  <!-- same inner structure -->
+</aside>
+```
+
+| `data-state` | Width | Behaviour |
+|---|---|---|
+| `expanded` (default) | 16 rem | Full sidebar — labels, titles, badges, and footer visible |
+| `collapsed` | 3.5 rem | Icon-only rail — text hidden via CSS |
+
+### Right-Side Sidebar
+
+Add `data-side="right"` to place the sidebar on the right edge of the layout. The border flips from the right to the left automatically.
+
+```html
+<aside class="app-sidebar" data-side="right" data-state="expanded">
+  <!-- content -->
+</aside>
+```
+
+| `data-side` | Position |
+|---|---|
+| *(none — default)* | Left side, right border |
+| `right` | Right side, left border |
+
+## ARIA & Accessibility
+
+| Attribute / Element | Where | Purpose |
+|---|---|---|
+| `<aside>` | `.app-sidebar` | Complementary landmark — announced by screen readers as "complementary" |
+| `<nav>` | `.sidebar-nav` | Navigation landmark inside the sidebar |
+| `aria-current="page"` | Active `.sidebar-link` | Marks the current page link for assistive technology |
+| `<dialog>` | `.sidebar-mobile` | Native modal with automatic focus trap and `Escape` close |
+| `aria-label="Close sidebar"` | `.sidebar-mobile-close` button | Descriptive label for the icon-only close button |
+| `aria-label="Toggle sidebar"` | `.sidebar-trigger` button | Descriptive label for the icon-only toggle button |
+
+### Keyboard Interactions
+
+| Key | Action |
+|---|---|
+| `Cmd+B` (macOS) | Toggle sidebar collapse / expand |
+| `Ctrl+B` (Windows / Linux) | Toggle sidebar collapse / expand |
+| `Escape` | Close the mobile sidebar dialog (native `<dialog>` behaviour) |
+| `Tab` | Move focus through sidebar links and controls |
+
+## Wiring
+
+| Data attribute | Element | Purpose |
+|---|---|---|
+| `data-state` | `.app-sidebar` | `"expanded"` or `"collapsed"` — toggled by JS |
+| `data-sidebar-trigger="<id>"` | Trigger button | Links the button to the sidebar with the matching `id` |
+| `data-sidebar-mobile="<id>"` | Mobile open button | Opens the `<dialog>` with the matching `id` via `showModal()` |
+| `data-side` | `.app-sidebar` | `"right"` to position on the right edge |
+| `data-init` | `.app-sidebar` | Added by JS to prevent double-initialisation |
+
+## Sidebar Design Tokens
+
+The sidebar uses its own isolated token group so it can be themed independently from the rest of the page — useful when the sidebar needs a contrasting background.
+
+| Token | Purpose |
+|---|---|
+| `--sidebar` | Sidebar background colour |
+| `--sidebar-foreground` | Default text colour inside the sidebar |
+| `--sidebar-primary` | Badge background and primary accent |
+| `--sidebar-primary-foreground` | Text on primary accent elements |
+| `--sidebar-accent` | Hover and active link background |
+| `--sidebar-accent-foreground` | Text on accent background |
+| `--sidebar-border` | Border between sidebar and content, and between groups |
+| `--sidebar-ring` | Focus ring colour on sidebar links |
+| `--sidebar-width` | Full expanded width (default `16rem`) |
+| `--sidebar-width-collapsed` | Collapsed icon-rail width (default `3.5rem`) |
+
+## Notes
+
+- **Mobile pattern** — The desktop `<aside>` is hidden below 768 px via CSS. Use `<dialog class="sidebar-mobile">` for the mobile slide-in sheet; it is rendered as a full-screen native modal with focus trap and backdrop.
+- **Collapsible groups** — `<details class="sidebar-group">` toggles open/closed natively without any JavaScript. Add the `open` attribute to start expanded.
+- **Submenus** — `<details class="sidebar-submenu">` creates an indented nested nav. Open submenu items are shown with a left border (`--sidebar-border`).
+- **Badges** — `<span class="sidebar-badge">` is hidden automatically in the collapsed state.
+- **Reduced motion** — All transitions (width, link background, group chevron rotation, mobile slide-in) are suppressed via `prefers-reduced-motion`.
+- **Scroll containment** — The `.sidebar-content` area uses `overflow-y: auto` with `overscroll-behavior: contain` to prevent scroll chaining into the page.

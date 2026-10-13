@@ -1,0 +1,228 @@
+---
+title: "CSS Cascade Layers Architecture in Shadcn HTML CSS"
+sidebarTitle: Cascade Layers
+description: "How shadcn HTML uses @layer to give component styles predictable cascade priority and let you override any default without !important."
+---
+
+Every component stylesheet in shadcn HTML wraps its rules inside `@layer components`. That single architectural decision solves one of the most persistent pain points in working with component libraries: the inability to override styles without resorting to specificity wars or `!important`. Because component styles are layered and your own CSS is not, the browser's cascade guarantees your overrides always win — no matter how complex the component's internal selectors become.
+
+## What Is `@layer`?
+
+[CSS Cascade Layers](https://developer.mozilla.org/en-US/docs/Web/CSS/@layer) are a native browser feature that lets stylesheets declare which *bucket* their rules belong to. When two selectors have the same specificity, the browser uses layer order to decide which one wins.
+
+**The key insight:** for normal rules, unlayered styles beat layered styles — regardless of selector specificity.
+
+```css
+/* Layered — from a component stylesheet */
+@layer components {
+  .btn { background: var(--primary); }
+}
+
+/* Unlayered — your CSS */
+.btn { background: tomato; }
+
+/* Result: tomato wins. Always. No !important needed. */
+```
+
+<Tip>
+  `@layer` is supported in all modern browsers with no polyfill required — Chrome/Edge 99+, Firefox 97+, and Safari 15.4+ (all March 2022).
+</Tip>
+
+## The Three-Layer Architecture
+
+Shadcn HTML uses a deliberate three-tier cascade, from lowest to highest priority:
+
+| Priority | Source | Description |
+|---|---|---|
+| **1 — Lowest** | `@layer components` | All component CSS — button, card, dialog, etc. |
+| **2** | `default-semantic-tokens.css` (unlayered) | Design tokens (`:root` custom properties). Always available to both component and user styles. |
+| **3 — Highest** | Your unlayered CSS | Any styles you write. Automatically beats the component layer. |
+
+<Note>
+  Tokens and your styles are both unlayered — between them, normal specificity and source order apply. They don't compete with each other because tokens only define `:root` custom properties, not component selectors.
+</Note>
+
+### Why Utilities Always Win Over Components
+
+Because the `utilities` layer is declared *after* `components`, utilities always take precedence over component defaults. And because your own unlayered CSS sits outside all layers, it beats everything — without `!important` or specificity climbing.
+
+To declare an explicit layer order at the top of your main stylesheet:
+
+```css
+/* Declare layer order: first listed = lowest priority */
+@layer components, utilities;
+
+/* Now utility-layer rules beat component-layer rules,
+   and your unlayered CSS beats everything. */
+```
+
+## How Each Component Uses `@layer`
+
+Every component CSS file wraps all of its rules inside a single layer declaration. Here are two examples:
+
+<CardGroup cols={2}>
+  <Card title="components/button/button.css">
+    ```css
+    @layer components {
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        background: var(--primary);
+        color: var(--primary-foreground);
+        border-radius: var(--radius-md);
+        /* ... all button rules ... */
+      }
+
+      .btn[data-variant="outline"] {
+        background: transparent;
+        border: 1px solid var(--border);
+      }
+    }
+    ```
+  </Card>
+  <Card title="components/card/card.css">
+    ```css
+    @layer components {
+      .card {
+        background-color: var(--card);
+        color: var(--card-foreground);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-xl);
+        /* ... all card rules ... */
+      }
+
+      .card-header {
+        padding: 1.5rem;
+      }
+    }
+    ```
+  </Card>
+</CardGroup>
+
+The design tokens file (`default-semantic-tokens.css`) is intentionally **not** layered — token values sit outside all layers so they're always available to both component and user styles.
+
+## Overriding Component Styles
+
+Write your overrides in a regular, unlayered stylesheet and load it after the component stylesheets. Because your CSS is unlayered, it automatically takes precedence.
+
+<CardGroup cols={2}>
+  <Card title="button.css (layered — component default)">
+    ```css
+    @layer components {
+      .btn {
+        border-radius: var(--radius-md);
+        font-weight: 500;
+        height: 2.25rem;
+      }
+    }
+    ```
+  </Card>
+  <Card title="my-overrides.css (unlayered — always wins)">
+    ```css
+    /* Make buttons fully rounded */
+    .btn {
+      border-radius: 9999px;
+    }
+
+    /* Make outline buttons thicker */
+    .btn[data-variant="outline"] {
+      border-width: 2px;
+    }
+    ```
+  </Card>
+</CardGroup>
+
+Load your override file **after** the component stylesheets:
+
+```html
+<link rel="stylesheet" href="theme/default-semantic-tokens.css">
+<link rel="stylesheet" href="components/button/button.css">
+<link rel="stylesheet" href="components/card/card.css">
+
+<!-- Your overrides — unlayered, beats the component layer -->
+<link rel="stylesheet" href="my-overrides.css">
+```
+
+## Using with Other CSS Frameworks
+
+If you're mixing shadcn HTML with another framework that uses its own `@layer` declarations, declare an explicit layer order at the top of your main stylesheet:
+
+```css
+/* Declare layer order: first listed = lowest priority */
+@layer components, utilities;
+
+/* Now framework utilities beat shadcn-html component styles,
+   and your unlayered CSS beats everything. */
+```
+
+Without an explicit order declaration, layers are ordered by first appearance in the stylesheet. The explicit declaration gives you full control regardless of import order.
+
+## Why Not Unlayered CSS?
+
+Traditional CSS libraries (Bootstrap, Bulma) ship unlayered styles. That creates a common frustrating problem when you try to customize them:
+
+<CardGroup cols={2}>
+  <Card title="Without @layer">
+    ```css
+    /* Library: high specificity */
+    .btn.btn-primary { background: blue; }
+
+    /* Your override: loses */
+    .btn { background: tomato; }  /* ✗ */
+
+    /* Forced to escalate */
+    .btn { background: tomato !important; }
+    ```
+  </Card>
+  <Card title="With @layer (shadcn HTML)">
+    ```css
+    /* Library: layered */
+    @layer components {
+      .btn { background: var(--primary); }
+    }
+
+    /* Your override: unlayered */
+    .btn { background: tomato; }  /* ✓ wins */
+
+    /* No !important needed. */
+    ```
+  </Card>
+</CardGroup>
+
+| Benefit | What it means |
+|---|---|
+| **Clean overrides** | Your CSS beats layered component defaults without `!important` or specificity hacks. |
+| **Predictable cascade** | Component internals can use any selector complexity — it won't leak into your layer. |
+| **Composable layers** | Works cleanly alongside other libraries or your own `@layer` declarations. |
+| **Future-proof** | `@layer` is a W3C standard built into every modern browser — not a framework convention. |
+
+<Warning>
+  Cascade layers *reverse* priority for `!important` rules — an `!important` declaration inside `@layer components` actually **beats** an unlayered `!important`. Shadcn HTML never uses `!important` internally, but be aware of this behavior if you're mixing in third-party CSS that does.
+</Warning>
+
+## Why Not `@scope` or Web Components?
+
+Shadow DOM creates a styling boundary that makes theming painful — external CSS can't reach inside, so every component needs its own token-plumbing or `::part()` surface. SSR is complex, framework interop suffers, and DevTools add an extra inspection boundary. `@scope` strips context from class names, making selectors ambiguous outside their block.
+
+Shadcn HTML uses `@layer` and descriptive, prefixed class names (`.card-header`, `.slider-track`) instead:
+
+| Approach | Why it works |
+|---|---|
+| **Plain HTML is the simplest target** | A `<button class="btn" data-variant="outline">` is just HTML — no custom element registration, no shadow root, nothing to get wrong. |
+| **Theming without boundaries** | Shadow DOM blocks external stylesheets. With plain HTML, CSS custom properties and overrides apply everywhere. |
+| **Flat, visible DOM** | Every component is directly visible in the main DOM tree, easier for DevTools and AI tooling to reason about. |
+| **Self-documenting class names** | `.card-header` carries its meaning in its name — it can be generated without knowing the surrounding markup. |
+| **The cascade delivers context for free** | `.card-title` inherits font and color tokens from its parent `.card` automatically. |
+
+## Browser Support
+
+`@layer` is supported in all modern browsers — no polyfill needed.
+
+| Browser | Supported since |
+|---|---|
+| Chrome / Edge | 99 (March 2022) |
+| Firefox | 97 (February 2022) |
+| Safari | 15.4 (March 2022) |
+
+See [caniuse.com/css-cascade-layers](https://caniuse.com/css-cascade-layers) and the [MDN @layer reference](https://developer.mozilla.org/en-US/docs/Web/CSS/@layer) for full details.

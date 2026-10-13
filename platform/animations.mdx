@@ -1,0 +1,234 @@
+---
+title: "CSS-Only Enter and Exit Animations in Shadcn HTML UI"
+sidebarTitle: Animations
+description: "All enter and exit animations in shadcn HTML are CSS-only — using @starting-style, allow-discrete transitions, and ::details-content. No JS libraries."
+---
+
+Every animation in shadcn HTML is pure CSS. There are no animation libraries, no `requestAnimationFrame` hacks, and no JavaScript class toggling to drive transitions. Enter animations are handled by `@starting-style`, exit animations are driven by `transition` with `allow-discrete`, and accordion height changes are animated through `::details-content` and `block-size: auto`. The result is smooth, predictable motion that respects user preferences and works entirely within the browser's own rendering pipeline.
+
+## The Challenge
+
+Animating elements that move from `display: none` to visible — popovers, dialogs, accordions — has historically been impossible in pure CSS. The element either exists or it doesn't; there was no in-between state to transition through. Component libraries solved this with JS class toggling and `requestAnimationFrame` hacks.
+
+Modern CSS solves this with two new features:
+
+- **`@starting-style`** — defines the initial state before an element appears (when it enters the top layer, gains `display`, or gets inserted into the DOM)
+- **`allow-discrete`** — lets `display` participate in transitions, keeping the element visible during the exit animation before hiding it
+
+## `@starting-style`
+
+The [`@starting-style`](https://developer.mozilla.org/en-US/docs/Web/CSS/@starting-style) at-rule defines the values a property should start from when the element first becomes visible. The browser applies these values first, then transitions to the element's actual computed styles.
+
+```css
+/* 1. The element's normal (visible) state */
+.popover:popover-open {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* 2. The starting state — before the transition begins */
+@starting-style {
+  .popover:popover-open {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+}
+
+/* Flow: @starting-style values → transition → :popover-open values
+   Result: a smooth fade-in + slide-up animation */
+```
+
+## `allow-discrete` Transitions
+
+The `display` property was historically not animatable — it snapped between `none` and `block` instantly. The [`allow-discrete`](https://developer.mozilla.org/en-US/docs/Web/CSS/transition-behavior) keyword in the `transition` shorthand tells the browser to keep the element visible during the exit transition before finally hiding it.
+
+```css
+.popover {
+  /* Animate opacity, transform, AND display */
+  transition:
+    opacity 150ms ease,
+    transform 150ms ease,
+    display 150ms allow-discrete;
+
+  /* Exit state: invisible */
+  opacity: 0;
+  transform: translateY(-4px);
+}
+
+/* Without allow-discrete: element disappears instantly on close
+   With allow-discrete: element fades out, THEN display changes to none */
+```
+
+## The Complete Popover / Dialog Pattern
+
+Most overlay components — popover, dropdown, tooltip, dialog, sheet, toast — follow the same three-part animation recipe.
+
+```css
+@layer components {
+  .popover {
+    /* 1. Base state (also the exit target) */
+    opacity: 0;
+    transform: translateY(-4px);
+    transition:
+      opacity 150ms ease,
+      transform 150ms ease,
+      display 150ms allow-discrete;
+
+    /* 2. Open state — what it transitions TO */
+    &:popover-open {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  /* 3. Starting style — what it transitions FROM */
+  @starting-style {
+    .popover:popover-open {
+      opacity: 0;
+      transform: translateY(-4px);
+    }
+  }
+}
+```
+
+| Direction | What happens |
+|---|---|
+| **Enter** | `@starting-style` values → transition → `:popover-open` values. The popover fades in and slides up. |
+| **Exit** | `:popover-open` values → transition → base state values. `allow-discrete` on `display` keeps the element visible during the fade-out. |
+
+## Dialog & Sheet Animations
+
+Dialogs and sheets use the same pattern but with `dialog[open]` instead of `:popover-open`. They also animate the `::backdrop` pseudo-element for the overlay effect.
+
+```css
+dialog.dialog {
+  opacity: 0;
+  transform: translateY(-0.5rem) scale(0.98);
+  transition:
+    opacity 200ms ease,
+    transform 200ms ease,
+    display 200ms allow-discrete;
+
+  &[open] {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+
+  /* Backdrop fades in/out too */
+  &::backdrop {
+    background: oklch(0 0 0 / 0);
+    backdrop-filter: blur(0px);
+    transition: all 200ms ease,
+      display 200ms allow-discrete;
+  }
+
+  &[open]::backdrop {
+    background: oklch(0 0 0 / 0.45);
+    backdrop-filter: blur(3px);
+  }
+}
+
+@starting-style {
+  dialog.dialog[open] {
+    opacity: 0;
+    transform: translateY(-0.5rem) scale(0.98);
+  }
+  dialog.dialog[open]::backdrop {
+    background: oklch(0 0 0 / 0);
+    backdrop-filter: blur(0px);
+  }
+}
+```
+
+<Note>
+  Sheets use `translate` instead of `scale` — a sheet with `data-side="right"` slides in from `translateX(100%)` rather than scaling from the center.
+</Note>
+
+## Accordion Animations
+
+Accordions animate their height using the [`::details-content`](https://developer.mozilla.org/en-US/docs/Web/CSS/::details-content) pseudo-element and the `block-size` property. This solves one of the most long-requested CSS features: animating `height: 0` to `height: auto` — now possible natively with zero JavaScript.
+
+```css
+.accordion-item {
+  /* Target the collapsible content area */
+  & ::details-content {
+    block-size: 0;
+    overflow-y: clip;
+    transition:
+      block-size 200ms ease,
+      content-visibility 200ms allow-discrete;
+  }
+
+  /* When open, expand to natural height */
+  &[open] ::details-content {
+    block-size: auto;
+  }
+}
+
+/* Start from 0 when opening */
+@starting-style {
+  .accordion-item[open] ::details-content {
+    block-size: 0;
+  }
+}
+```
+
+| Property | What it does |
+|---|---|
+| `block-size: auto` | The browser calculates the natural height and smoothly transitions from `0` to that value — no JS height measurement needed. |
+| `content-visibility` with `allow-discrete` | Prevents the content from disappearing before the close animation finishes. |
+
+## Programmatic Exit Animations
+
+Most components handle exit purely through CSS transitions. For cases where logic must run *after* the exit animation completes — like removing a toast element from the DOM — the Web Animations API provides a promise-based approach.
+
+```javascript
+// Animate out, then remove from DOM
+el.animate(
+  [
+    { opacity: 1, transform: 'translateY(0)' },
+    { opacity: 0, transform: 'translateY(0.5rem)' }
+  ],
+  { duration: 200, easing: 'ease', fill: 'forwards' }
+).finished.then(() => {
+  el.hidePopover();
+  el.remove();
+});
+```
+
+**Used by:** Toast (dismiss animation before removing the element from the DOM).
+
+## `prefers-reduced-motion`
+
+All animation components respect the user's motion preference. When `prefers-reduced-motion: reduce` is set, transitions and animations are suppressed or simplified.
+
+```css
+@media (prefers-reduced-motion: reduce) {
+  .popover,
+  dialog.dialog,
+  .accordion-item ::details-content {
+    transition: none;
+  }
+}
+```
+
+<Warning>
+  Respecting `prefers-reduced-motion` is an **accessibility requirement**, not a nice-to-have. Users who set this preference may experience nausea or disorientation from motion. Every animated component in shadcn HTML implements this media query.
+</Warning>
+
+## Animation Summary by Component
+
+| Component | Animation | Technique |
+|---|---|---|
+| Popover | Fade + slide up | `@starting-style` + `:popover-open` |
+| Dropdown | Fade + slide up | `@starting-style` + `:popover-open` |
+| Tooltip | Fade in | `@starting-style` + `:popover-open` |
+| Dialog | Fade + slide + scale | `@starting-style` + `dialog[open]` + `::backdrop` |
+| Alert Dialog | Fade + slide + scale | `@starting-style` + `dialog[open]` + `::backdrop` |
+| Sheet | Slide from edge | `@starting-style` + `dialog[open]` + `::backdrop` |
+| Toast | Slide in, slide out | `@starting-style` + Web Animations API for exit |
+| Accordion | Height expand/collapse | `@starting-style` + `::details-content` + `block-size` |
+| Collapsible | Height expand/collapse | `@starting-style` + `::details-content` + `block-size` |
+| Command | Fade + scale up | `@starting-style` + `dialog[open]` |
+
+All of these techniques are pure CSS — except the Toast exit, which uses the Web Animations API to await the animation before removing the element from the DOM. No animation libraries, no `requestAnimationFrame` hacks, no JS class toggling required.

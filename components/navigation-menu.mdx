@@ -1,0 +1,162 @@
+---
+title: "Navigation Menu Component — Shadcn HTML Site Nav"
+sidebarTitle: Navigation Menu
+description: "Build accessible top-level site navigation with dropdown submenus using the Popover API and CSS anchor positioning. No framework required."
+---
+
+The **Navigation Menu** component provides top-level site navigation, typically placed in a header. It supports simple links and trigger buttons that open rich dropdown panels — product listings, feature grids, or grouped links with descriptions. Dropdown panels are powered by the browser-native **Popover API** via declarative `popovertarget` attributes, so open/close requires zero JavaScript click handlers. CSS anchor positioning aligns each panel to its trigger, and a `:has()` selector rotates the chevron icon automatically when a dropdown is open.
+
+## CDN Import
+
+```html
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/codylindley/shadcn-html@latest/dist/components/navigation-menu/navigation-menu.css">
+<script type="module" src="https://cdn.jsdelivr.net/gh/codylindley/shadcn-html@latest/dist/components/navigation-menu/navigation-menu.js"></script>
+```
+
+<Note>
+The JavaScript file sets unique `anchor-name` / `position-anchor` CSS custom properties on each trigger–panel pair so that CSS anchor positioning works when there are multiple dropdowns on the same page. No click handlers are wired by JS.
+</Note>
+
+## Basic Usage
+
+A minimal navigation menu with one plain link and one trigger that opens a dropdown panel.
+
+```html
+<nav class="nav-menu" aria-label="Main">
+  <ul class="nav-menu-list">
+    <li class="nav-menu-item">
+      <a class="nav-menu-link" href="/">Home</a>
+    </li>
+    <li class="nav-menu-item">
+      <button class="nav-menu-trigger" popovertarget="nav-products">
+        Products
+        <svg aria-hidden="true" width="14" height="14"
+             viewBox="0 0 24 24" fill="none"
+             stroke="currentColor" stroke-width="2">
+          <path d="m6 9 6 6 6-6"/>
+        </svg>
+      </button>
+      <div class="nav-menu-content" id="nav-products" popover>
+        <a class="nav-menu-content-link" href="/analytics">
+          <strong>Analytics</strong>
+          <p>View your dashboard and reports</p>
+        </a>
+        <a class="nav-menu-content-link" href="/reports">
+          <strong>Reports</strong>
+          <p>Generate and export custom reports</p>
+        </a>
+      </div>
+    </li>
+  </ul>
+</nav>
+```
+
+## Variants
+
+### Full Navigation Bar
+
+A complete header navigation with plain links, a multi-item dropdown, and a call-to-action link.
+
+```html
+<nav class="nav-menu" aria-label="Main">
+  <ul class="nav-menu-list">
+    <li class="nav-menu-item">
+      <a class="nav-menu-link" href="/">Home</a>
+    </li>
+
+    <li class="nav-menu-item">
+      <button class="nav-menu-trigger" popovertarget="nav-dd-solutions">
+        Solutions
+        <svg aria-hidden="true" width="14" height="14"
+             viewBox="0 0 24 24" fill="none"
+             stroke="currentColor" stroke-width="2">
+          <path d="m6 9 6 6 6-6"/>
+        </svg>
+      </button>
+      <div class="nav-menu-content" id="nav-dd-solutions" popover>
+        <a class="nav-menu-content-link" href="/enterprise">
+          <strong>Enterprise</strong>
+          <p>Scalable tools for large teams</p>
+        </a>
+        <a class="nav-menu-content-link" href="/startup">
+          <strong>Startup</strong>
+          <p>Move fast without breaking things</p>
+        </a>
+        <a class="nav-menu-content-link" href="/opensource">
+          <strong>Open Source</strong>
+          <p>Free forever for open-source projects</p>
+        </a>
+      </div>
+    </li>
+
+    <li class="nav-menu-item">
+      <a class="nav-menu-link" href="/pricing">Pricing</a>
+    </li>
+
+    <li class="nav-menu-item">
+      <a class="nav-menu-link" href="/docs">Docs</a>
+    </li>
+  </ul>
+</nav>
+```
+
+| Class | Element | Purpose |
+|---|---|---|
+| `.nav-menu` | `<nav>` | Root navigation landmark |
+| `.nav-menu-list` | `<ul>` | Horizontal list of nav items |
+| `.nav-menu-item` | `<li>` | Individual nav item wrapper |
+| `.nav-menu-link` | `<a>` | Plain navigation link |
+| `.nav-menu-trigger` | `<button>` | Trigger that opens a dropdown panel |
+| `.nav-menu-content` | `<div popover>` | Dropdown panel container |
+| `.nav-menu-content-link` | `<a>` | Rich link inside the dropdown panel |
+
+## ARIA & Accessibility
+
+| Attribute | Element | Purpose |
+|---|---|---|
+| `aria-label` | `<nav>` | Accessible name for the navigation landmark |
+| `popovertarget="<id>"` | Trigger button | Declaratively links the button to the panel; browser manages `aria-expanded` |
+| `aria-hidden="true"` | Chevron `<svg>` | Decorative indicator; hidden from screen readers |
+| `popover` | Panel `<div>` | Enables Popover API; panel gets focus trap and Escape handling |
+
+<Note>
+The browser automatically toggles `aria-expanded` on a button that has `popovertarget` when the referenced popover opens or closes. You do not need to manage this attribute manually.
+</Note>
+
+### Keyboard Interactions
+
+| Key | Action |
+|---|---|
+| `Tab` | Moves focus between navigation items (links and trigger buttons) |
+| `Enter` / `Space` | Opens the dropdown panel when focus is on a trigger button |
+| `Escape` | Closes the open dropdown panel and returns focus to the trigger |
+
+<Tip>
+Dropdown panels opened via the Popover API render in the browser's top layer. This means they will never be clipped by an ancestor with `overflow: hidden` and will always appear above page content regardless of stacking context.
+</Tip>
+
+## Wiring
+
+The JS file runs automatically on load and via `MutationObserver`. It iterates every `.nav-menu-trigger` + `.nav-menu-content` pair and assigns unique, auto-generated CSS custom properties:
+
+```css
+/* Set by JS — example output */
+.nav-menu-trigger { anchor-name: --nav-dd-solutions; }
+.nav-menu-content { position-anchor: --nav-dd-solutions; }
+```
+
+This is necessary because CSS anchor names must be unique per page. If you only have a single dropdown on the page you can set them manually in a `<style>` block and omit the JS import.
+
+| Data attribute | Element | Purpose |
+|---|---|---|
+| `data-init` | Trigger button | Added by JS to prevent double-initialisation |
+
+## Notes
+
+- The `popovertarget` attribute on the trigger button is a declarative toggle — clicking the button opens or closes the panel without any JavaScript event listeners.
+- The chevron rotates automatically via CSS: `:has(+ .nav-menu-content:popover-open)` detects when the sibling panel is open and applies `rotate: 180deg`.
+- Icon-only triggers (hamburger buttons on mobile) must have an `aria-label` since they contain no text.
+- For richer dropdown content, `.nav-menu-content-link` items can include an icon, a bold title, and a short description paragraph.
+- `@starting-style` provides the entry animation for the dropdown panel.
+- `prefers-reduced-motion` suppresses all animations.
+- `forced-colors` maps the dropdown border to the system `ButtonText` colour.

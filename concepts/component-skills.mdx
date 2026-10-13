@@ -1,0 +1,149 @@
+---
+title: "Component Skills: Structured HTML Usage References"
+sidebarTitle: Component Skills
+description: "Component skill files are structured Markdown references that teach AI assistants and developers how to build each shadcn-html component's markup correctly."
+---
+
+Every component in shadcn-html ships with a `component-skill.md` file — a structured Markdown reference that documents the HTML pattern for that component in full. Skill files tell you exactly which elements to use, which attributes to set, what variants and sizes are available, and what the accessibility requirements are. They are the single source of truth for how to write a component's markup, and they are purpose-built to be useful both to human developers and to AI coding assistants.
+
+## What is a component skill?
+
+A component skill is a Markdown file that focuses purely on the **HTML structure** and its configuration options. It does not contain CSS or JavaScript — those live in their own files alongside the skill. The skill answers: *"What HTML do I write to use this component correctly?"*
+
+```
+dist/components/{name}/
+├── component-skill.md   ← the skill file (HTML reference)
+├── {name}.css           ← component stylesheet
+└── {name}.js            ← interaction JS (if needed)
+```
+
+<Note>
+  Every component in the library has a skill file at `dist/components/{name}/component-skill.md`. Browse component pages in the sidebar to find links to individual skill files.
+</Note>
+
+## Sections in every skill file
+
+Every component skill follows a consistent seven-section template, in this order:
+
+| Section | Contents |
+|---|---|
+| **1. Native basis** | Which HTML element or browser API the component builds on — every component starts from native semantics |
+| **2. Native Web APIs** | Bulleted list of significant platform APIs used (Popover API, CSS Anchor Positioning, `<dialog>`, etc.) with MDN links |
+| **3. Structure** | Complete HTML markup showing the component's element hierarchy, class names, and required attributes |
+| **4. Variants** | Table of `data-variant` values with descriptions and example markup for each |
+| **5. Sizes** | Table of `data-size` values (if the component supports sizing) |
+| **6. Accessibility** | Required ARIA attributes, keyboard interactions, and screen reader considerations |
+| **7. Notes** | Edge cases, composition tips, caveats, and integration notes |
+
+The consistent structure means once you've read one skill file, you know where to find any piece of information in any other.
+
+## Abbreviated example: Badge skill
+
+Here is the full skill file for the Badge component — one of the simplest in the library — showing all sections in practice:
+
+```markdown
+# Pattern: Badge
+
+## Native basis
+`<span>` element. No interactivity required —
+pure visual indicator.
+
+---
+
+## Native Web APIs
+- [`<span>`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/span)
+  — inline container for phrasing content
+
+---
+
+## Structure
+
+```html
+<span class="badge" data-variant="default">
+  Badge
+</span>
+```
+
+---
+
+## Variants
+
+| `data-variant` | Purpose                    |
+|----------------|----------------------------|
+| `default`      | Primary bg, high emphasis  |
+| `secondary`    | Secondary bg, medium       |
+| `outline`      | Border only, low emphasis  |
+
+```html
+<span class="badge" data-variant="default">New</span>
+<span class="badge" data-variant="secondary">Draft</span>
+<span class="badge" data-variant="outline">v0.1.0</span>
+```
+
+---
+
+## Accessibility
+
+- Use descriptive text content — badges are
+  read inline by screen readers.
+- If the badge is purely decorative, add
+  `aria-hidden="true"`.
+```
+
+## Using skills with AI assistants
+
+Skill files are designed to give AI assistants everything they need to generate correct, accessible markup in a single reference. The structured format — with explicit HTML, variant tables, and ARIA requirements — is optimized for AI comprehension.
+
+<Steps>
+  <Step title="Copy & paste into your AI chat">
+    Copy the skill file content and paste it into your AI chat alongside your request. The AI will use it as context to generate correct markup for that component.
+  </Step>
+  <Step title="Use file references in editor tools">
+    In tools that support file context (Cursor, GitHub Copilot, etc.), point the AI at `dist/components/{name}/component-skill.md` directly. The AI reads it automatically.
+  </Step>
+  <Step title="Provide multiple skills for complex pages">
+    For pages that use several components, provide all relevant skill files together. The AI will compose them correctly into a cohesive page structure.
+  </Step>
+</Steps>
+
+**Example prompt using skill files:**
+
+```markdown
+Using the shadcn-html component system, build a settings page with:
+- A card containing a form with two text inputs
+- A destructive button to delete the account
+- A toast notification on save
+
+Here are the component skills:
+[paste card, form, input, button, and toast component-skill.md files]
+```
+
+<Tip>
+  When using Cursor or any editor with an AI context window, drop the entire `dist/` directory into your project. The AI can then read all skill files on demand to produce correct markup for any component you request.
+</Tip>
+
+## Using skills as a developer reference
+
+Even without AI, skill files serve as fast lookup references. They're faster than grepping through CSS to find which `data-variant` values exist, or scanning JS to find keyboard bindings.
+
+<CardGroup cols={3}>
+  <Card title="Quick lookup">
+    Need to know what variants a Toggle supports? Open its `component-skill.md` — the Variants section has them all in a table.
+  </Card>
+  <Card title="Copy-paste HTML">
+    The Structure section gives you ready-to-paste markup with all required attributes already in place.
+  </Card>
+  <Card title="ARIA checklist">
+    The Accessibility section doubles as a checklist to verify your implementation meets all accessibility requirements.
+  </Card>
+</CardGroup>
+
+## Self-hosting for AI context
+
+To give an AI assistant access to all component skills at once:
+
+1. Copy the `dist/` directory into your project (or reference it from the repo)
+2. In your AI tool's context settings, include `dist/components/*/component-skill.md`
+3. The AI will automatically read the relevant skill when you request a component
+
+The skill files are plain Markdown — lightweight, version-controllable, and readable by any tool that handles text files.

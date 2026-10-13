@@ -1,0 +1,118 @@
+---
+title: "Button Group — Connected Button Layouts with Separators"
+sidebarTitle: "Button Group"
+description: "CSS-only component that merges adjacent buttons with connected borders. Supports horizontal and vertical orientations, hr separators, and RTL via logical properties."
+---
+
+The Button Group component visually joins related `<button class="btn">` elements into a cohesive unit by collapsing internal borders and removing the inner border-radii where buttons meet. It is built on a `<div role="group">` container with no JavaScript required — the entire visual treatment is pure CSS. Use it when a set of buttons represent closely related actions (for example, Bold / Italic / Underline, or Previous / Next) and benefit from being perceived as a single compound control.
+
+## CDN Import
+
+```html
+<!-- CSS (button.css required for the .btn class) -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/codylindley/shadcn-html@latest/dist/components/button/button.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/codylindley/shadcn-html@latest/dist/components/button-group/button-group.css">
+```
+
+## Basic Usage
+
+Wrap `.btn` buttons in a `.btn-group` container. Add `role="group"` and `aria-label` for accessibility.
+
+```html
+<div class="btn-group" role="group" aria-label="Text actions">
+  <button class="btn" data-variant="outline">Save</button>
+  <button class="btn" data-variant="outline">Edit</button>
+  <button class="btn" data-variant="outline">Delete</button>
+</div>
+```
+
+## Vertical Orientation
+
+Add `data-orientation="vertical"` to stack buttons vertically.
+
+```html
+<div class="btn-group" data-orientation="vertical" role="group" aria-label="Navigation">
+  <button class="btn" data-variant="outline">Top</button>
+  <button class="btn" data-variant="outline">Middle</button>
+  <button class="btn" data-variant="outline">Bottom</button>
+</div>
+```
+
+## With Separator
+
+Use `<hr role="separator">` to divide non-outline buttons (for example, a `default` variant group where the visual split between actions needs emphasis).
+
+```html
+<div class="btn-group" role="group" aria-label="Clipboard">
+  <button class="btn" data-variant="default">Copy</button>
+  <hr role="separator">
+  <button class="btn" data-variant="default">Paste</button>
+</div>
+```
+
+<Note>
+Outline buttons already have visible borders and do not need `<hr>` separators — the border between adjacent outline buttons naturally provides visual separation.
+</Note>
+
+## Mixed Variants
+
+Button groups work best when all buttons share the same `data-variant`. The `outline` variant is the most common choice because the connected borders create a cohesive visual unit.
+
+```html
+<!-- Recommended: consistent outline variant -->
+<div class="btn-group" role="group" aria-label="Font style">
+  <button class="btn" data-variant="outline" data-size="sm">B</button>
+  <button class="btn" data-variant="outline" data-size="sm">I</button>
+  <button class="btn" data-variant="outline" data-size="sm">U</button>
+</div>
+```
+
+## With Icon Buttons
+
+Icon-only buttons work inside button groups. Remember to add `aria-label` to each.
+
+```html
+<div class="btn-group" role="group" aria-label="Alignment">
+  <button class="btn" data-variant="outline" data-size="icon" aria-label="Align left">
+    <svg aria-hidden="true" width="15" height="15" viewBox="0 0 24 24"
+         fill="none" stroke="currentColor" stroke-width="2"
+         stroke-linecap="round" stroke-linejoin="round">
+      <line x1="21" x2="3" y1="6" y2="6"/>
+      <line x1="15" x2="3" y1="12" y2="12"/>
+      <line x1="17" x2="3" y1="18" y2="18"/>
+    </svg>
+  </button>
+  <button class="btn" data-variant="outline" data-size="icon" aria-label="Align center">
+    <svg aria-hidden="true" width="15" height="15" ...>...</svg>
+  </button>
+  <button class="btn" data-variant="outline" data-size="icon" aria-label="Align right">
+    <svg aria-hidden="true" width="15" height="15" ...>...</svg>
+  </button>
+</div>
+```
+
+## ARIA & Accessibility
+
+| Attribute | Element | Purpose |
+|---|---|---|
+| `role="group"` | Container `.btn-group` | Groups related buttons into a single semantic unit |
+| `aria-label` | Container `.btn-group` | Accessible name for the group — **required** |
+| `role="separator"` | `<hr>` | Communicates the visual divider to assistive technology |
+| `aria-label` | Each `<button>` | Required for icon-only buttons with no visible text |
+
+## Notes
+
+<Tip>
+The `outline` variant is recommended for button groups. Its visible borders collapse naturally between adjacent buttons, creating a seamless join without extra CSS overrides.
+</Tip>
+
+<Warning>
+Always add `role="group"` and `aria-label` to the container. Without them, screen reader users receive no indication that the buttons are related.
+</Warning>
+
+- Adjacent button borders collapse so only one border renders between buttons — no double borders.
+- The group removes internal border-radii (start-end and end-start) to create seamless joins.
+- CSS uses logical properties (`margin-inline-start`, `border-start-start-radius`) for automatic RTL support.
+- The `:has()` pseudo-class restores border-radius on buttons adjacent to `<hr>` separators.
+- In `forced-colors: active` mode, separators map to the system `ButtonText` color.
+- No JavaScript required — this is a purely CSS layout component.

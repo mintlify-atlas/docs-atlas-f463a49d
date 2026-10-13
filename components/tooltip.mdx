@@ -1,0 +1,153 @@
+---
+title: "Tooltip — Hover & Focus Hint Component | Shadcn HTML"
+sidebarTitle: Tooltip
+description: "Accessible tooltips using popover=\"hint\" and CSS anchor positioning. Shows on hover and keyboard focus with configurable delay, arrow support, and automatic collision avoidance."
+---
+
+The **Tooltip** component displays a short contextual hint when the user hovers over or focuses a trigger element. It is built on the newer `popover="hint"` primitive — a variant of the Popover API that appears on pointer hover and keyboard focus without closing any currently open `auto` popovers. [CSS Anchor Positioning](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_anchor_positioning) tethers each tooltip to its trigger, and `position-try-fallbacks` ensures the tooltip automatically flips when near viewport edges. Never use the HTML `title` attribute as a tooltip replacement — it is invisible on touch devices and unstyled in all browsers.
+
+## CDN Import
+
+```html
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/codylindley/shadcn-html@latest/dist/components/tooltip/tooltip.css">
+<script type="module" src="https://cdn.jsdelivr.net/gh/codylindley/shadcn-html@latest/dist/components/tooltip/tooltip.js"></script>
+```
+
+## Basic Usage
+
+Add `data-tooltip-trigger="[id]"` to any trigger element and a matching `id` plus `popover="hint"` to the tooltip element.
+
+```html
+<button class="btn" data-variant="outline" data-tooltip-trigger="tip-basic">
+  Hover me
+</button>
+
+<div class="tooltip" id="tip-basic" popover="hint" role="tooltip">
+  This is a tooltip
+</div>
+```
+
+## With Arrow
+
+Add a `<div data-arrow></div>` inside the tooltip to render a connecting caret. Arrow positioning is automatic based on `data-side`.
+
+```html
+<button class="btn" data-tooltip-trigger="tip-arrow">
+  With arrow
+</button>
+
+<div class="tooltip" id="tip-arrow" popover="hint" role="tooltip">
+  Tooltip with arrow
+  <div data-arrow></div>
+</div>
+```
+
+## Placement Variants
+
+### `data-side`
+
+| Value | Placement | `position-area` |
+|---|---|---|
+| *(default)* | Above trigger | `top` |
+| `top` | Above trigger | `top` |
+| `bottom` | Below trigger | `bottom` |
+| `left` | Left of trigger | `left` |
+| `right` | Right of trigger | `right` |
+
+### `data-align`
+
+| Value | Alignment along the side axis |
+|---|---|
+| *(default)* | Centered |
+| `center` | Centered on trigger axis |
+| `start` | Aligned to start edge |
+| `end` | Aligned to end edge |
+
+```html
+<!-- Bottom placement -->
+<button class="btn" data-tooltip-trigger="tip-bottom">Bottom</button>
+<div class="tooltip" id="tip-bottom" popover="hint" role="tooltip"
+     data-side="bottom">
+  Below the trigger
+  <div data-arrow></div>
+</div>
+
+<!-- Right, start-aligned -->
+<button class="btn" data-tooltip-trigger="tip-right-start">Right Start</button>
+<div class="tooltip" id="tip-right-start" popover="hint" role="tooltip"
+     data-side="right" data-align="start">
+  Right start
+</div>
+
+<!-- Left -->
+<button class="btn" data-tooltip-trigger="tip-left">Left</button>
+<div class="tooltip" id="tip-left" popover="hint" role="tooltip"
+     data-side="left">
+  Left side
+  <div data-arrow></div>
+</div>
+```
+
+## Custom Delay
+
+The default open delay is **700 ms**. Override it with `data-delay` (in milliseconds) on the trigger. Use `0` for instant display.
+
+```html
+<!-- Fast: 200 ms delay -->
+<button class="btn" data-tooltip-trigger="tip-fast" data-delay="200">
+  Fast tooltip
+</button>
+<div class="tooltip" id="tip-fast" popover="hint" role="tooltip">
+  Opens quickly
+</div>
+
+<!-- Instant: no delay -->
+<button class="btn" data-tooltip-trigger="tip-instant" data-delay="0">
+  Instant tooltip
+</button>
+<div class="tooltip" id="tip-instant" popover="hint" role="tooltip">
+  Appears immediately
+</div>
+```
+
+## Disabled Trigger Workaround
+
+Disabled buttons do not fire mouse or focus events. Wrap them in a `<span>` carrying the `data-tooltip-trigger` attribute instead.
+
+```html
+<span data-tooltip-trigger="tip-disabled" style="display:inline-block">
+  <button class="btn" disabled>Disabled action</button>
+</span>
+<div class="tooltip" id="tip-disabled" popover="hint" role="tooltip">
+  This action is unavailable
+</div>
+```
+
+## ARIA & Accessibility
+
+| Attribute | Element | Purpose |
+|---|---|---|
+| `role="tooltip"` | `.tooltip` | Identifies the element as a tooltip to assistive technology |
+| `aria-describedby` | trigger element | Links the trigger to its tooltip description (set automatically by JS) |
+| `popover="hint"` | `.tooltip` | Provides hint-popover semantics; does not close other open popovers |
+
+<Warning>
+  Do **not** use the HTML `title` attribute as a tooltip. It is inaccessible on touch screens and cannot be styled. Always use this component instead.
+</Warning>
+
+## Keyboard Interactions
+
+| Key / Event | Behaviour |
+|---|---|
+| `focus` on trigger | Opens the tooltip (after delay) |
+| `blur` on trigger | Closes the tooltip immediately |
+| `Escape` | Closes the tooltip (native `popover="hint"` behaviour) |
+
+## Notes
+
+- **Group delay**: Once any tooltip becomes visible, subsequent tooltips in the page open instantly. After 400 ms with no tooltip visible, the full delay resets.
+- **Close delay**: Default close delay is 0 ms (instant). Override with `data-close-delay` on the trigger.
+- **Scroll dismiss**: Open tooltips are automatically hidden when the page scrolls.
+- **Collision avoidance**: `position-try-fallbacks: flip-block, flip-inline` repositions the tooltip automatically when near viewport edges.
+- **Arrow**: The `data-arrow` element's position is derived from `data-side` — fully CSS-driven, no JS measurement.
+- `popover="hint"` is distinct from `popover="auto"`: hints layer on top of auto popovers rather than closing them.

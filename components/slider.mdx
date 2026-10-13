@@ -1,0 +1,166 @@
+---
+title: "Slider Component — Range Input, Steps, and Vertical Mode"
+sidebarTitle: Slider
+description: "Styled range slider built on <input type='range'>. Custom thumb and track, filled progress, step control, vertical orientation, value display output."
+---
+
+The **Slider** component is a styled range input built on the native `<input type="range">` element. It provides full keyboard interaction, touch support, and assistive technology announcements out of the box. The CSS layer customises the thumb and track across WebKit and Firefox, and an optional JavaScript file (`slider.js`) powers the filled progress track gradient on WebKit/Blink browsers by writing a `--slider-value` CSS custom property that `linear-gradient` reads.
+
+## CDN Import
+
+The CSS file is required; the JS file is optional and only needed for the filled track indicator on Chrome/Safari/Edge.
+
+```html
+<!-- CSS -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/codylindley/shadcn-html@latest/dist/components/slider/slider.css">
+
+<!-- JS (optional — enables filled track in WebKit/Blink) -->
+<script type="module" src="https://cdn.jsdelivr.net/gh/codylindley/shadcn-html@latest/dist/components/slider/slider.js"></script>
+```
+
+<Note>
+  Firefox natively supports `::-moz-range-progress` to fill the track up to the thumb. The JavaScript file fills that same visual region on WebKit and Blink (Chrome, Safari, Edge) by setting a `--slider-value` custom property on `input` events.
+</Note>
+
+## Basic Usage
+
+Apply the `slider` class to any `<input type="range">`. Always add a `<label>` for accessibility.
+
+```html
+<label class="label" for="volume">Volume</label>
+<input class="slider" type="range" id="volume" min="0" max="100" value="50">
+```
+
+## Variants & Patterns
+
+### With value display
+
+Use an `<output>` element with a matching `for` attribute to display the current value. Wire the live update with an inline `oninput` or your own script.
+
+```html
+<div style="display:flex;justify-content:space-between;align-items:center;">
+  <label class="label" for="temperature" style="margin:0;">Temperature</label>
+  <output id="temperature-val"
+          for="temperature"
+          style="font-size:0.8125rem;color:var(--muted-foreground);font-family:var(--font-mono);">
+    0.5
+  </output>
+</div>
+<input class="slider" type="range" id="temperature"
+       min="0" max="1" step="0.1" value="0.5"
+       oninput="document.getElementById('temperature-val').textContent = this.value">
+```
+
+### With steps
+
+Use the `step` attribute to control increment granularity.
+
+```html
+<label class="label" for="percentage">Percentage</label>
+<input class="slider" type="range" id="percentage"
+       min="0" max="100" step="25" value="50">
+```
+
+### Disabled
+
+```html
+<label class="label" for="locked-slider">Brightness (locked)</label>
+<input class="slider" type="range" id="locked-slider"
+       min="0" max="100" value="60" disabled>
+```
+
+### Vertical orientation
+
+Add `data-orientation="vertical"` to render the slider vertically. The CSS uses `writing-mode: vertical-lr; direction: rtl` for cross-browser compatibility.
+
+```html
+<label class="label" for="height-slider">Height</label>
+<input class="slider" type="range"
+       data-orientation="vertical"
+       id="height-slider"
+       min="0" max="100" value="40">
+```
+
+## Attributes Reference
+
+| Attribute | Description |
+|-----------|-------------|
+| `min` | Minimum value (default: `0`) |
+| `max` | Maximum value (default: `100`) |
+| `step` | Increment granularity. Omit for continuous (default: `1`) |
+| `value` | Current value |
+| `disabled` | Disables the slider |
+| `name` | Includes the value in form submission |
+
+## Data Attributes
+
+| Attribute | Values | Description |
+|-----------|--------|-------------|
+| `data-orientation` | `vertical` | Renders the slider vertically |
+
+## Keyboard Interaction
+
+| Key | Action |
+|-----|--------|
+| `→` / `↑` | Increase value by one step |
+| `←` / `↓` | Decrease value by one step |
+| `Home` | Set to minimum value |
+| `End` | Set to maximum value |
+| `Page Up` | Increase by a larger step (browser-defined) |
+| `Page Down` | Decrease by a larger step (browser-defined) |
+
+All keyboard behavior is provided natively by `<input type="range">`.
+
+## ARIA & Accessibility
+
+| Attribute | Element | Purpose |
+|-----------|---------|---------|
+| `role="slider"` | `<input>` | Implicit from `type="range"` — do **not** add manually |
+| `aria-valuenow` | `<input>` | Implicit from `value` attribute |
+| `aria-valuemin` | `<input>` | Implicit from `min` attribute |
+| `aria-valuemax` | `<input>` | Implicit from `max` attribute |
+| `aria-valuetext` | `<input>` | Custom human-readable value (e.g. `"50%"`, `"Medium"`) |
+| `aria-orientation` | `<input>` | Set to `"vertical"` for vertical sliders |
+| `aria-label` | `<input>` | Accessible name when no visible `<label>` exists |
+| `for` | `<label>` | Associates label with slider |
+| `for` | `<output>` | Associates value display with slider |
+
+<Tip>
+  Use `aria-valuetext` when the raw numeric value is not meaningful to users. For example, a temperature model parameter slider from `0` to `1` could set `aria-valuetext="creative"` at `1.0` and `aria-valuetext="precise"` at `0.0`.
+</Tip>
+
+## Complete Example
+
+A slider with a label, live value readout, and form submission.
+
+```html
+<form>
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.5rem;">
+    <label class="label" for="brightness" style="margin:0;">Brightness</label>
+    <output id="brightness-val" for="brightness"
+            style="font-size:0.8125rem;color:var(--muted-foreground);font-family:var(--font-mono);">
+      75
+    </output>
+  </div>
+  <input class="slider" type="range"
+         id="brightness" name="brightness"
+         min="0" max="100" step="1" value="75"
+         aria-valuetext="75%"
+         oninput="
+           document.getElementById('brightness-val').textContent = this.value;
+           this.setAttribute('aria-valuetext', this.value + '%');
+         ">
+  <div class="form-actions" style="margin-top:1rem;">
+    <button class="btn" type="submit" data-variant="default">Save</button>
+  </div>
+</form>
+```
+
+## Notes
+
+- **Filled track on WebKit**: Firefox fills the track natively via `::-moz-range-progress`. On Chrome/Safari/Edge, include `slider.js`, which sets `--slider-value` on each `.slider` element and updates it on `input` events to power the `linear-gradient` fill.
+- **Vertical slider**: Uses `writing-mode: vertical-lr; direction: rtl` for consistent cross-browser vertical rendering. Activate it with `data-orientation="vertical"`.
+- **Value display**: Use `<output for="slider-id">` to show the live value. Update it with an inline `oninput` or your own event listener.
+- **Form integration**: Native `<input type="range">` submits its `value` with the form when given a `name` attribute — no JavaScript serialization needed.
+- **Step attribute**: Controls increment granularity. Omit for continuous movement (default step is `1`).
+- The `prefers-reduced-motion` media query suppresses thumb transition animations for motion-sensitive users.

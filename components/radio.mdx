@@ -1,0 +1,194 @@
+---
+title: "Radio Component — Radio Groups, Cards, and Orientations"
+sidebarTitle: Radio
+description: "Custom-styled radio buttons built on <input type='radio'>. Supports vertical and horizontal groups, card variant, descriptions, fieldset grouping."
+---
+
+The **Radio** component provides custom-styled radio buttons built on native `<input type="radio">` elements. Mutual exclusivity within a group is enforced by the shared `name` attribute — a browser-native behavior that requires zero JavaScript. The group is wrapped in a `<fieldset>` with a `<legend>` for accessible labeling, and the component supports vertical stacking, horizontal layout, description text, and a card-style variant.
+
+## CDN Import
+
+No JavaScript is needed — all group behavior is handled natively.
+
+```html
+<!-- CSS -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/codylindley/shadcn-html@latest/dist/components/radio/radio.css">
+```
+
+## Basic Usage
+
+Wrap radio inputs in a `.radio-group` fieldset. Each item uses `.radio-item` for label alignment.
+
+```html
+<fieldset class="radio-group">
+  <legend class="label">Choose a plan</legend>
+
+  <div class="radio-item">
+    <input class="radio" type="radio" name="plan" id="free" value="free" checked>
+    <label for="free">Free</label>
+  </div>
+
+  <div class="radio-item">
+    <input class="radio" type="radio" name="plan" id="pro" value="pro">
+    <label for="pro">Pro</label>
+  </div>
+
+  <div class="radio-item">
+    <input class="radio" type="radio" name="plan" id="enterprise" value="enterprise">
+    <label for="enterprise">Enterprise</label>
+  </div>
+</fieldset>
+```
+
+## Variants
+
+### With description per option
+
+Use `.radio-item-block` when each option needs a label and a description line.
+
+```html
+<fieldset class="radio-group">
+  <legend class="label">Spacing</legend>
+
+  <div class="radio-item-block">
+    <input class="radio" type="radio" name="spacing" id="compact" value="compact">
+    <label for="compact">Compact</label>
+    <span class="radio-description">Tighter spacing for dense layouts.</span>
+  </div>
+
+  <div class="radio-item-block">
+    <input class="radio" type="radio" name="spacing" id="default-spacing" value="default" checked>
+    <label for="default-spacing">Default</label>
+    <span class="radio-description">Standard spacing for most use cases.</span>
+  </div>
+
+  <div class="radio-item-block">
+    <input class="radio" type="radio" name="spacing" id="comfortable" value="comfortable">
+    <label for="comfortable">Comfortable</label>
+    <span class="radio-description">More breathing room between elements.</span>
+  </div>
+</fieldset>
+```
+
+### Card variant
+
+Use `.radio-card` wrapper elements for a card-style selection UI. The selected card highlights via the CSS `:has()` selector — no JavaScript needed.
+
+```html
+<fieldset class="radio-group">
+  <legend class="label">Select a plan</legend>
+
+  <label class="radio-card" for="card-free">
+    <input class="radio" type="radio" name="card-plan" id="card-free" value="free">
+    <label for="card-free">Free</label>
+    <span class="radio-description">Perfect for personal projects.</span>
+  </label>
+
+  <label class="radio-card" for="card-pro">
+    <input class="radio" type="radio" name="card-plan" id="card-pro" value="pro" checked>
+    <label for="card-pro">Pro</label>
+    <span class="radio-description">For growing teams and businesses.</span>
+  </label>
+
+  <label class="radio-card" for="card-enterprise">
+    <input class="radio" type="radio" name="card-plan" id="card-enterprise" value="enterprise">
+    <label for="card-enterprise">Enterprise</label>
+    <span class="radio-description">Unlimited scale with dedicated support.</span>
+  </label>
+</fieldset>
+```
+
+### Horizontal layout
+
+Add `data-orientation="horizontal"` to `.radio-group` to arrange items in a row.
+
+```html
+<fieldset class="radio-group" data-orientation="horizontal">
+  <legend class="label">Alignment</legend>
+
+  <div class="radio-item">
+    <input class="radio" type="radio" name="align" id="align-left" value="left" checked>
+    <label for="align-left">Left</label>
+  </div>
+
+  <div class="radio-item">
+    <input class="radio" type="radio" name="align" id="align-center" value="center">
+    <label for="align-center">Center</label>
+  </div>
+
+  <div class="radio-item">
+    <input class="radio" type="radio" name="align" id="align-right" value="right">
+    <label for="align-right">Right</label>
+  </div>
+</fieldset>
+```
+
+## Layout Options
+
+| Attribute | Value | Effect |
+|-----------|-------|--------|
+| `data-orientation` | `"horizontal"` | Items flow in a row |
+| *(default)* | — | Items stack vertically |
+
+## States
+
+| State | How to apply | Visual effect |
+|-------|-------------|---------------|
+| Unchecked | Default | Empty circle with `--input` border |
+| Checked | `checked` attribute | Filled dot in `--primary` color |
+| Disabled | `disabled` attribute | 50% opacity, `not-allowed` cursor |
+| Disabled group | `<fieldset disabled>` | All radios in group disabled natively |
+| Invalid | `aria-invalid="true"` | Border `--destructive` |
+
+### Disabled group
+
+```html
+<fieldset class="radio-group" disabled>
+  <legend class="label">Size (locked)</legend>
+  <div class="radio-item">
+    <input class="radio" type="radio" name="size-locked" id="sm-locked" value="sm" checked>
+    <label for="sm-locked">Small</label>
+  </div>
+  <div class="radio-item">
+    <input class="radio" type="radio" name="size-locked" id="lg-locked" value="lg">
+    <label for="lg-locked">Large</label>
+  </div>
+</fieldset>
+```
+
+## Keyboard Interaction
+
+| Key | Action |
+|-----|--------|
+| `Tab` / `Shift+Tab` | Move focus into / out of the radio group |
+| `↓` / `→` | Move to next radio, check it |
+| `↑` / `←` | Move to previous radio, check it |
+| `Space` | Check the focused radio |
+
+All keyboard behavior is provided natively by the browser.
+
+## ARIA & Accessibility
+
+| Attribute | Element | Purpose |
+|-----------|---------|---------|
+| `<fieldset>` | Group wrapper | Provides implicit `role="group"` |
+| `<legend>` | First child of fieldset | Accessible group label announced by screen readers |
+| `name` (shared) | All `<input type="radio">` | Enforces mutual exclusivity |
+| `checked` | `<input>` | Pre-selected option |
+| `disabled` | `<input>` or `<fieldset>` | Disables one option or the entire group |
+| `aria-invalid="true"` | `<input>` | Marks option as invalid |
+| `aria-describedby` | `<input>` | Links to description or error text |
+
+<Warning>
+  Always use a shared `name` attribute across all radios in a group. Without it, browsers will not enforce mutual exclusivity and multiple options can appear selected simultaneously.
+</Warning>
+
+## Notes
+
+- Styled with `appearance: none` and a custom dot drawn via a `::after` pseudo-element — no SVG or icon font required.
+- The `name` attribute is **required** for mutual exclusivity — all radios in a group must share the same `name` value.
+- No JavaScript is needed — the browser handles group selection behavior entirely.
+- Use `.radio-item` for a simple label inline with the radio. Use `.radio-item-block` when each option also has a description line.
+- Use `.radio-card` for card-style selection; the selected card highlights via the CSS `:has()` selector.
+- `<fieldset disabled>` propagates disabled state to all child radios natively.
+- Add `data-orientation="horizontal"` to `.radio-group` for a horizontal layout.

@@ -1,0 +1,204 @@
+---
+title: "Toggle Group — Single and Multiple Selection with Keyboard Nav"
+sidebarTitle: "Toggle Group"
+description: "Container for grouped toggle buttons with single or multiple selection, roving tabindex keyboard navigation, and ARIA group semantics. Requires toggle-group.js."
+---
+
+The Toggle Group component wraps multiple Toggle buttons into a single accessible group that supports both single-selection (radio-like) and multiple-selection (checkbox-like) modes. It is built on a `role="group"` container with `<button class="toggle">` children using `aria-pressed` for state. The JavaScript module implements **roving tabindex** so the entire group is a single tab stop, with Arrow keys moving focus between items — matching the [WAI-ARIA Toolbar/Group keyboard pattern](https://www.w3.org/WAI/ARIA/apg/patterns/toolbar/). Variant, size, and orientation are controlled with `data-*` attributes on the container and propagated to children via CSS.
+
+## CDN Import
+
+```html
+<!-- CSS -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/codylindley/shadcn-html@latest/dist/components/toggle/toggle.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/codylindley/shadcn-html@latest/dist/components/toggle-group/toggle-group.css">
+<!-- JS (required for selection and keyboard navigation) -->
+<script type="module" src="https://cdn.jsdelivr.net/gh/codylindley/shadcn-html@latest/dist/components/toggle-group/toggle-group.js"></script>
+```
+
+## Basic Usage
+
+### Single Selection (radio-like)
+
+Only one toggle can be pressed at a time. Pressing the active toggle deselects it.
+
+```html
+<div class="toggle-group" role="group" aria-label="Text alignment" data-type="single">
+  <button class="toggle" aria-pressed="true" value="left">
+    <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24"
+         fill="none" stroke="currentColor" stroke-width="2"
+         stroke-linecap="round" stroke-linejoin="round">
+      <line x1="21" x2="3" y1="6" y2="6"/>
+      <line x1="15" x2="3" y1="12" y2="12"/>
+      <line x1="17" x2="3" y1="18" y2="18"/>
+    </svg>
+  </button>
+  <button class="toggle" aria-pressed="false" value="center">
+    <svg aria-hidden="true" width="16" height="16" ...>...</svg>
+  </button>
+  <button class="toggle" aria-pressed="false" value="right">
+    <svg aria-hidden="true" width="16" height="16" ...>...</svg>
+  </button>
+</div>
+```
+
+### Multiple Selection (checkbox-like)
+
+Any combination of toggles can be pressed simultaneously.
+
+```html
+<div class="toggle-group" role="group" aria-label="Text formatting" data-type="multiple">
+  <button class="toggle" aria-pressed="true" value="bold">
+    <svg aria-hidden="true" width="16" height="16" ...><!-- bold --></svg>
+  </button>
+  <button class="toggle" aria-pressed="false" value="italic">
+    <svg aria-hidden="true" width="16" height="16" ...><!-- italic --></svg>
+  </button>
+  <button class="toggle" aria-pressed="false" value="underline">
+    <svg aria-hidden="true" width="16" height="16" ...><!-- underline --></svg>
+  </button>
+</div>
+```
+
+### With Text Labels
+
+```html
+<div class="toggle-group" role="group" aria-label="View mode"
+     data-type="single" data-variant="outline">
+  <button class="toggle" aria-pressed="true" value="list">
+    <svg aria-hidden="true" width="16" height="16" ...>...</svg>
+    List
+  </button>
+  <button class="toggle" aria-pressed="false" value="grid">
+    <svg aria-hidden="true" width="16" height="16" ...>...</svg>
+    Grid
+  </button>
+</div>
+```
+
+## Variants
+
+Set `data-variant` on the container — it propagates to all child toggles via CSS.
+
+| `data-variant` (on container) | Visual |
+|---|---|
+| *(default)* | Transparent background, no border |
+| `outline` | 1px border + shadow on each item, collapsed double borders |
+
+```html
+<div class="toggle-group" role="group" aria-label="Formatting"
+     data-type="multiple" data-variant="outline">
+  <button class="toggle" aria-pressed="false" value="bold">B</button>
+  <button class="toggle" aria-pressed="false" value="italic">I</button>
+</div>
+```
+
+## Sizes
+
+Set `data-size` on the container — it propagates to all child toggles.
+
+| `data-size` (on container) | Height | Icon Size |
+|---|---|---|
+| `sm` | 2rem | 0.875rem |
+| *(default)* | 2.25rem | 1rem |
+| `lg` | 2.5rem | 1.125rem |
+
+```html
+<div class="toggle-group" role="group" aria-label="Text style"
+     data-type="multiple" data-size="sm">
+  <button class="toggle" aria-pressed="false" value="bold">B</button>
+  <button class="toggle" aria-pressed="false" value="italic">I</button>
+</div>
+```
+
+## Vertical Orientation
+
+```html
+<div class="toggle-group" role="group" aria-label="Alignment"
+     data-type="single" data-orientation="vertical">
+  <button class="toggle" aria-pressed="true">
+    <svg aria-hidden="true" ...><!-- align-top --></svg>
+  </button>
+  <button class="toggle" aria-pressed="false">
+    <svg aria-hidden="true" ...><!-- align-middle --></svg>
+  </button>
+  <button class="toggle" aria-pressed="false">
+    <svg aria-hidden="true" ...><!-- align-bottom --></svg>
+  </button>
+</div>
+```
+
+## Spaced Layout
+
+Add `data-spacing` to restore individual border-radii and add a gap between items instead of connecting them.
+
+```html
+<div class="toggle-group" role="group" aria-label="Options"
+     data-type="multiple" data-spacing>
+  <button class="toggle" aria-pressed="false" value="a">Option A</button>
+  <button class="toggle" aria-pressed="false" value="b">Option B</button>
+</div>
+```
+
+## Disabled Group
+
+Add `data-disabled` to the container and `disabled` to each button to disable the entire group.
+
+```html
+<div class="toggle-group" role="group" aria-label="Formatting"
+     data-type="multiple" data-disabled>
+  <button class="toggle" aria-pressed="true" disabled>Bold</button>
+  <button class="toggle" aria-pressed="false" disabled>Italic</button>
+</div>
+```
+
+## Data Attributes Reference
+
+| Attribute | Element | Values | Purpose |
+|---|---|---|---|
+| `data-type` | Container | `single` (default), `multiple` | Selection mode |
+| `data-variant` | Container | `outline` | Visual style, propagated to children |
+| `data-size` | Container | `sm`, `lg` | Size, propagated to children |
+| `data-orientation` | Container | `vertical` | Layout direction (default: horizontal) |
+| `data-spacing` | Container | *(boolean)* | Adds gap, restores individual border-radii |
+| `data-disabled` | Container | *(boolean)* | Disables all items visually and functionally |
+
+## ARIA & Accessibility
+
+| Attribute | Element | Purpose |
+|---|---|---|
+| `role="group"` | Container | Groups related toggle buttons into a single semantic unit |
+| `aria-label` | Container | Accessible name for the group — **required** |
+| `aria-pressed` | Each `<button>` | `"true"` / `"false"` toggle state communicated to AT |
+| `value` | Each `<button>` | Machine-readable value for the selected item(s) |
+
+## Keyboard Navigation
+
+| Key | Action |
+|---|---|
+| `Tab` | Moves focus into / out of the group (one tab stop) |
+| `ArrowRight` / `ArrowDown` | Moves focus to the next item (wraps) |
+| `ArrowLeft` / `ArrowUp` | Moves focus to the previous item (wraps) |
+| `Home` | Moves focus to the first item |
+| `End` | Moves focus to the last item |
+| `Space` / `Enter` | Toggles the focused item |
+
+Arrow direction follows `data-orientation`: horizontal mode uses Left/Right, vertical mode uses Up/Down.
+
+## Notes
+
+<Note>
+Roving tabindex means only one item has `tabindex="0"` at a time; the rest have `tabindex="-1"`. Tab enters and exits the entire group as a single stop, which is correct ARIA behavior.
+</Note>
+
+<Tip>
+In `data-type="single"` mode, pressing the currently active toggle deselects it, leaving zero items selected. If you need exactly-one selection at all times, enforce that constraint in your application logic.
+</Tip>
+
+<Warning>
+Always provide `aria-label` on the container. Without it, screen reader users have no context for what the group of buttons controls.
+</Warning>
+
+- Disabled items are skipped during Arrow key navigation.
+- CSS uses logical properties (`border-start-start-radius`, `margin-inline-start`) for automatic RTL support.
+- Connected mode (default) collapses adjacent radii for a seamless joined look; `data-spacing` restores individual radii.

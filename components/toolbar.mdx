@@ -1,0 +1,162 @@
+---
+title: "Toolbar Component — Keyboard-Navigable Control Bar with ARIA"
+sidebarTitle: "Toolbar"
+description: "Accessible toolbar implementing role=toolbar with roving tabindex Arrow-key navigation. Composes Toggle Groups, Buttons, and Separators into a formatting bar."
+---
+
+The Toolbar component is a `role="toolbar"` container that groups related interactive controls — Toggle Groups, Buttons, and Separators — into a single keyboard-navigable bar. It implements the [WAI-ARIA Toolbar Pattern](https://www.w3.org/WAI/ARIA/apg/patterns/toolbar/): a JavaScript module sets up **roving tabindex** so the entire bar is a single tab stop, and Arrow keys move focus between items. Use a toolbar whenever you have a set of formatting or action controls that logically belong together, such as a rich-text editor bar or an image editing toolbar.
+
+## CDN Import
+
+A toolbar composes several sub-components. Include all the CSS files for every component you place inside the toolbar.
+
+```html
+<!-- CSS -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/codylindley/shadcn-html@latest/dist/components/button/button.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/codylindley/shadcn-html@latest/dist/components/toggle/toggle.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/codylindley/shadcn-html@latest/dist/components/toggle-group/toggle-group.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/codylindley/shadcn-html@latest/dist/components/separator/separator.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/codylindley/shadcn-html@latest/dist/components/toolbar/toolbar.css">
+
+<!-- JS (required for roving tabindex keyboard navigation) -->
+<script type="module" src="https://cdn.jsdelivr.net/gh/codylindley/shadcn-html@latest/dist/components/toggle/toggle.js"></script>
+<script type="module" src="https://cdn.jsdelivr.net/gh/codylindley/shadcn-html@latest/dist/components/toggle-group/toggle-group.js"></script>
+<script type="module" src="https://cdn.jsdelivr.net/gh/codylindley/shadcn-html@latest/dist/components/toolbar/toolbar.js"></script>
+```
+
+## Basic Usage
+
+Wrap your controls in a `.toolbar` container with `role="toolbar"` and an `aria-label`.
+
+```html
+<div class="toolbar" role="toolbar" aria-label="Formatting" aria-orientation="horizontal">
+
+  <!-- Toggle group: text style -->
+  <div class="toggle-group" role="group" aria-label="Text style" data-type="multiple">
+    <button class="toggle" aria-pressed="false" aria-label="Bold">
+      <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24"
+           fill="none" stroke="currentColor" stroke-width="2"
+           stroke-linecap="round" stroke-linejoin="round">
+        <path d="M6 12h9a4 4 0 0 1 0 8H7a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1h7a4 4 0 0 1 0 8"/>
+      </svg>
+    </button>
+    <button class="toggle" aria-pressed="false" aria-label="Italic">
+      <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24"
+           fill="none" stroke="currentColor" stroke-width="2"
+           stroke-linecap="round" stroke-linejoin="round">
+        <line x1="19" x2="10" y1="4" y2="4"/>
+        <line x1="14" x2="5" y1="20" y2="20"/>
+        <line x1="15" x2="9" y1="4" y2="20"/>
+      </svg>
+    </button>
+  </div>
+
+  <!-- Vertical separator -->
+  <div class="separator" data-orientation="vertical" role="separator"></div>
+
+  <!-- Toggle group: text alignment -->
+  <div class="toggle-group" role="group" aria-label="Text alignment" data-type="single">
+    <button class="toggle" aria-pressed="true" value="left" aria-label="Align left">
+      <svg aria-hidden="true" width="16" height="16" ...>...</svg>
+    </button>
+    <button class="toggle" aria-pressed="false" value="center" aria-label="Align center">
+      <svg aria-hidden="true" width="16" height="16" ...>...</svg>
+    </button>
+    <button class="toggle" aria-pressed="false" value="right" aria-label="Align right">
+      <svg aria-hidden="true" width="16" height="16" ...>...</svg>
+    </button>
+  </div>
+
+  <!-- Vertical separator -->
+  <div class="separator" data-orientation="vertical" role="separator"></div>
+
+  <!-- Standalone action link -->
+  <a class="btn" data-variant="link" href="#" target="_blank">Link</a>
+
+</div>
+```
+
+## Composing Controls
+
+A toolbar can contain any combination of these child components:
+
+| Child Component | Role in Toolbar |
+|---|---|
+| `<div class="toggle-group">` | Grouped selection controls (formatting, alignment) |
+| `<button class="toggle">` | Standalone two-state toggle |
+| `<button class="btn">` | Standalone action button |
+| `<a class="btn">` | Navigation link styled as a button |
+| `<div class="separator" data-orientation="vertical">` | Visual divider between logical groups |
+
+## Vertical Toolbar
+
+Set `aria-orientation="vertical"` and `data-orientation="vertical"` on the container for a vertical toolbar. Arrow keys switch to Up/Down navigation automatically.
+
+```html
+<div class="toolbar" role="toolbar" aria-label="Actions"
+     aria-orientation="vertical" data-orientation="vertical">
+  <button class="btn" data-variant="ghost" data-size="icon" aria-label="Bold">
+    <svg aria-hidden="true" width="16" height="16" ...>...</svg>
+  </button>
+  <div class="separator" data-orientation="horizontal" role="separator"></div>
+  <button class="btn" data-variant="ghost" data-size="icon" aria-label="Italic">
+    <svg aria-hidden="true" width="16" height="16" ...>...</svg>
+  </button>
+</div>
+```
+
+## Keyboard Shortcuts on Items
+
+Use `aria-keyshortcuts` on individual toolbar items to communicate keyboard shortcuts to assistive technology.
+
+```html
+<button class="toggle" aria-pressed="false" aria-label="Bold"
+        aria-keyshortcuts="Control+B">
+  <svg aria-hidden="true" width="16" height="16" ...>...</svg>
+</button>
+```
+
+## ARIA & Accessibility
+
+| Attribute | Element | Purpose |
+|---|---|---|
+| `role="toolbar"` | Container | Identifies the ARIA toolbar pattern to assistive technology |
+| `aria-label` | Container | Accessible name for the toolbar — **required** |
+| `aria-orientation` | Container | `"horizontal"` (default) or `"vertical"` — affects Arrow key direction |
+| `aria-label` | Each icon-only item | Accessible name for items without visible text |
+| `aria-keyshortcuts` | Individual items | Communicates keyboard shortcuts (e.g., `"Control+B"`) to AT |
+
+## Keyboard Navigation
+
+| Key | Action |
+|---|---|
+| `Tab` | Moves focus into or out of the toolbar (one tab stop) |
+| `→` / `←` | Moves focus between items (horizontal toolbar) |
+| `↓` / `↑` | Moves focus between items (vertical toolbar) |
+| `Home` | Moves focus to the first item in the toolbar |
+| `End` | Moves focus to the last item in the toolbar |
+| `Space` / `Enter` | Activates the focused item (native button behavior) |
+
+## Wiring
+
+The `toolbar.js` module initializes roving tabindex on the toolbar container. It sets `tabindex="0"` on the first focusable item and `tabindex="-1"` on all others. Arrow key events move focus and update `tabindex` accordingly, so only one item is in the tab order at any time.
+
+Child Toggle Groups run their own roving tabindex independently — the toolbar module coordinates between groups, while each Toggle Group module handles navigation within its own group.
+
+## Notes
+
+<Note>
+The toolbar handles roving tabindex at the toolbar level. Toggle Groups inside the toolbar handle their own internal Arrow-key navigation. Both modules must be loaded for correct behavior.
+</Note>
+
+<Tip>
+Use vertical separators (`data-orientation="vertical"`) between logical groups of controls within the toolbar to visually and semantically communicate groupings.
+</Tip>
+
+<Warning>
+Always add `aria-label` to the toolbar container. Without it, screen reader users receive no description of what the toolbar controls. Also ensure every icon-only button and toggle inside the toolbar has its own `aria-label`.
+</Warning>
+
+- The toolbar does not enforce selection logic — that is handled by child Toggle Groups.
+- In `forced-colors: active` mode, the toolbar border maps to the system `ButtonText` color.
+- Separators inside a toolbar should always be vertical (`data-orientation="vertical"`) in a horizontal toolbar.

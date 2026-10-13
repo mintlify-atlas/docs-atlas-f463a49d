@@ -1,0 +1,177 @@
+---
+title: "Toast — Auto-dismiss Notification Messages | Shadcn HTML"
+sidebarTitle: Toast
+description: "Stacking auto-dismiss toast notifications using the Popover API. Supports success, error, warning variants, configurable position, auto-dismiss timing, and screen reader announcements."
+---
+
+The **Toast** component displays brief, non-blocking notification messages that appear at the edge of the screen and dismiss automatically after a set duration. It uses `popover="manual"` for top-layer rendering without light-dismiss interference, and requires JavaScript for triggering, auto-dismiss timers, stacking management, and `aria-live` region announcements. Toasts are ideal for post-action feedback — form submissions, file saves, error reporting — where a full-page alert would be intrusive.
+
+## CDN Import
+
+```html
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/codylindley/shadcn-html@latest/dist/components/toast/toast.css">
+<script type="module" src="https://cdn.jsdelivr.net/gh/codylindley/shadcn-html@latest/dist/components/toast/toast.js"></script>
+```
+
+## Toast Container
+
+Place the container **once** as a direct child of `<body>`. Set `data-position` to control where toasts appear.
+
+```html
+<div id="toast-container"
+     class="toast-container"
+     aria-label="Notifications"
+     data-position="bottom-right">
+</div>
+```
+
+### Position values
+
+| `data-position` | Location |
+|---|---|
+| `bottom-right` | Bottom-right corner *(default)* |
+| `bottom-left` | Bottom-left corner |
+| `bottom-center` | Bottom-center |
+| `top-right` | Top-right corner |
+| `top-left` | Top-left corner |
+| `top-center` | Top-center |
+
+## Basic Toast Structure
+
+Individual toasts are injected into the container by JavaScript. The markup below shows the full template a single toast uses.
+
+```html
+<div class="toast" role="status" aria-live="polite" aria-atomic="true"
+     popover="manual">
+  <div class="toast-content">
+    <div class="toast-text">
+      <p class="toast-title">Event created</p>
+      <p class="toast-description">Monday, January 3rd at 6:00 pm</p>
+    </div>
+    <button class="toast-close" aria-label="Dismiss" data-toast-close>
+      <svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24"
+           fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M18 6 6 18M6 6l12 12"/>
+      </svg>
+    </button>
+  </div>
+</div>
+```
+
+## Variants
+
+Set `data-variant` on the toast element to communicate intent.
+
+| `data-variant` | Use case |
+|---|---|
+| *(default)* | Neutral informational notification |
+| `success` | Confirmation of a successful action |
+| `error` | Notification of a failure or error |
+| `warning` | Non-blocking caution message |
+
+```html
+<!-- Success toast with icon -->
+<div class="toast" data-variant="success"
+     role="status" aria-live="polite" aria-atomic="true"
+     popover="manual">
+  <div class="toast-content">
+    <svg class="toast-icon" aria-hidden="true" width="16" height="16"
+         viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <path d="M20 6 9 17l-5-5"/>
+    </svg>
+    <div class="toast-text">
+      <p class="toast-title">Saved successfully</p>
+      <p class="toast-description">Your changes have been saved.</p>
+    </div>
+    <button class="toast-close" aria-label="Dismiss" data-toast-close>
+      <svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24"
+           fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M18 6 6 18M6 6l12 12"/>
+      </svg>
+    </button>
+  </div>
+</div>
+
+<!-- Error toast -->
+<div class="toast" data-variant="error"
+     role="status" aria-live="polite" aria-atomic="true"
+     popover="manual">
+  <div class="toast-content">
+    <div class="toast-text">
+      <p class="toast-title">Upload failed</p>
+      <p class="toast-description">The file exceeds the 10 MB size limit.</p>
+    </div>
+    <button class="toast-close" aria-label="Dismiss" data-toast-close>
+      <svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24"
+           fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M18 6 6 18M6 6l12 12"/>
+      </svg>
+    </button>
+  </div>
+</div>
+```
+
+## Toast with Action
+
+Include a `.toast-actions` block with one or more buttons for undoable operations.
+
+```html
+<div class="toast" role="status" aria-live="polite" aria-atomic="true"
+     popover="manual">
+  <div class="toast-content">
+    <div class="toast-text">
+      <p class="toast-title">Email moved to trash</p>
+    </div>
+    <button class="toast-close" aria-label="Dismiss" data-toast-close>
+      <svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24"
+           fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M18 6 6 18M6 6l12 12"/>
+      </svg>
+    </button>
+  </div>
+  <div class="toast-actions">
+    <button class="btn" data-variant="outline" data-size="sm"
+            data-toast-action>
+      Undo
+    </button>
+  </div>
+</div>
+```
+
+## Auto-dismiss Timing
+
+| Behaviour | `duration` value |
+|---|---|
+| Default | `4000` (4 seconds) |
+| Long | `8000` (8 seconds) |
+| Persistent | `Infinity` |
+
+## ARIA & Accessibility
+
+| Attribute | Element | Value | Purpose |
+|---|---|---|---|
+| `role="status"` | each toast | `status` | Implicit polite live region |
+| `aria-live="polite"` | each toast | `polite` | Screen reader announces the toast without interrupting |
+| `aria-atomic="true"` | each toast | `true` | Announces the entire toast content, not just changed nodes |
+| `aria-label` | `.toast-container` | `"Notifications"` | Labels the notification region for AT |
+| `aria-label="Dismiss"` | `.toast-close` button | `"Dismiss"` | Labels the icon-only close button |
+
+<Tip>
+  Use `aria-live="assertive"` only for critical error toasts. Polite is the correct default — assertive interrupts the user's current screen-reader activity.
+</Tip>
+
+## Wiring
+
+| Attribute | Placement | Effect |
+|---|---|---|
+| `data-position="[value]"` | `.toast-container` | Sets the screen corner for toast stacking |
+| `data-toast-close` | button inside a toast | Immediately dismisses the toast |
+| `data-toast-action` | button inside a toast | Marks the action button (styling hook) |
+
+## Notes
+
+- The toast container must be a **direct child of `<body>`** for correct top-layer rendering.
+- Toasts use `popover="manual"` — clicking outside will **not** dismiss them; only the auto-dismiss timer or the close button does.
+- Stacking order: newest toast on top (`flex-direction: column-reverse` for bottom positions).
+- Maximum of 3 toasts are shown simultaneously by default. Older toasts are dismissed as new ones arrive.
+- For form submissions, fire toasts from the submit handler after the async operation resolves rather than showing inline validation messages.

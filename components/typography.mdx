@@ -1,0 +1,123 @@
+---
+title: "Typography Component — Headings, Prose, and Inline Styles"
+sidebarTitle: "Typography"
+description: "CSS utility classes for semantic HTML text elements — headings h1–h4, paragraphs, blockquotes, inline code, and more using shadcn design tokens."
+---
+
+The Typography component provides a set of CSS utility classes that style native HTML text elements using shadcn design tokens. It is built entirely on semantic HTML — `<h1>`–`<h4>`, `<p>`, `<blockquote>`, `<code>`, and `<small>` — with no JavaScript required. Use these classes whenever you need consistent, accessible prose styling in page content, card bodies, dialog descriptions, or any long-form text layout.
+
+## CDN Import
+
+```html
+<!-- CSS -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/codylindley/shadcn-html@latest/dist/components/typography/typography.css">
+```
+
+## Basic Usage
+
+Apply a class matching the element's role. The same class names can be applied to non-semantic elements when you need the visual style without the semantic meaning.
+
+```html
+<h1 class="h1">Taxing Laughter: The Joke Tax Chronicles</h1>
+<h2 class="h2">The People of the Kingdom</h2>
+<h3 class="h3">The Joke Tax</h3>
+<h4 class="h4">People stopped telling jokes</h4>
+
+<p class="p">The king, seeing how much happier his subjects were, realized the error of his ways and repealed the joke tax.</p>
+
+<p class="lead">A modal dialog that interrupts the user with important content and expects a response.</p>
+
+<blockquote class="blockquote">
+  <p>"After all," he said, "everyone enjoys a good joke, so it's only fair that they should pay for the privilege."</p>
+</blockquote>
+
+<p>Edit the <code class="code">default-semantic-tokens.css</code> file to customize your theme.</p>
+```
+
+## Class Reference
+
+Every class maps to a native HTML element but can be applied to any element when you need the visual style alone.
+
+| Class | Typical Element | Description |
+|---|---|---|
+| `.h1` | `<h1>` | 2.25rem, 800 weight, tight tracking, `text-wrap: balance` |
+| `.h2` | `<h2>` | 1.875rem, 600 weight, bottom border, balanced wrapping |
+| `.h3` | `<h3>` | 1.5rem, 600 weight, slightly tight tracking |
+| `.h4` | `<h4>` | 1.25rem, 600 weight |
+| `.p` | `<p>` | 0.875rem body text, 1.75 line-height, `text-wrap: pretty` |
+| `.lead` | `<p>` | 1.25rem muted intro paragraph, 1.6 line-height |
+| `.large` | `<div>` | 1.125rem, 600 weight |
+| `.small` | `<small>` | 0.875rem, 500 weight, line-height 1 |
+| `.muted` | `<p>` | 0.875rem in `--muted-foreground` color |
+| `.blockquote` | `<blockquote>` | Italic, `border-inline-start` accent, hanging punctuation |
+| `.code` | `<code>` | Monospace, muted background, small radius |
+
+## Prose Composition
+
+Combine classes for a full prose layout — the `.p` class automatically adds top spacing between sibling paragraphs.
+
+```html
+<article>
+  <h1 class="h1">Taxing Laughter</h1>
+  <p class="lead">A far-off land. A very lazy king.</p>
+  <h2 class="h2">The King's Plan</h2>
+  <p class="p">The king thought long and hard, and finally came up with a brilliant plan.</p>
+  <blockquote class="blockquote">
+    <p>"After all," he said, "everyone enjoys a good joke."</p>
+  </blockquote>
+  <h3 class="h3">The Joke Tax</h3>
+  <p class="p">The king's subjects were not amused. Edit <code class="code">joke-tax.js</code> to protest.</p>
+</article>
+```
+
+## Text Utilities
+
+```html
+<!-- Large emphasis -->
+<div class="large">Are you absolutely sure?</div>
+
+<!-- Small label -->
+<small class="small">Email address</small>
+
+<!-- Muted helper text -->
+<p class="muted">Enter your email address.</p>
+```
+
+## RTL Support
+
+Blockquotes use CSS logical properties (`border-inline-start`, `padding-inline-start`), so the accent border automatically flips in right-to-left contexts.
+
+```html
+<div dir="rtl">
+  <h3 class="h3">ضريبة النكتة</h3>
+  <p class="p">فكر الملك طويلاً وبجد...</p>
+  <blockquote class="blockquote">
+    <p>"في النهاية," قال...</p>
+  </blockquote>
+</div>
+```
+
+## ARIA & Accessibility
+
+| Rule | Detail |
+|---|---|
+| Heading order | Use `h1` → `h2` → `h3` in sequence. Never skip levels. |
+| Screen reader outline | Headings form the document outline that screen reader users navigate by. |
+| `<blockquote>` | Announced as a quote by assistive technology — no extra ARIA needed. |
+| `<code>` | Announced as code — no extra ARIA needed. |
+| High contrast | `prefers-contrast: more` removes tight letter-spacing, adds outline to `.code`, thickens blockquote border, promotes `.muted` to `--foreground`. |
+| Forced colors | `forced-colors: active` maps blockquote border and inline code to `CanvasText`/`Canvas` system colors. |
+
+## Notes
+
+<Note>
+`.h1`–`.h4` classes can be applied to non-heading elements when you want the visual style without changing document semantics — for example, a `<div class="h2">` inside a card header.
+</Note>
+
+<Tip>
+`text-wrap: balance` on all headings and `text-wrap: pretty` on paragraphs prevent awkward single-word last lines with no JavaScript required.
+</Tip>
+
+<Warning>
+The Typography component does not ship list or table styles. Use the dedicated List (`list.css`) and Table (`table.css`) components for those elements.
+</Warning>

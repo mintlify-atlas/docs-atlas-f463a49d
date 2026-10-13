@@ -1,0 +1,126 @@
+---
+title: "Timeline — Shadcn HTML Vertical Event List Component"
+sidebarTitle: Timeline
+description: "A vertical ordered list of events connected by a continuous line. Built on a semantic <ol> element with dot variants for active and default states."
+---
+
+The **Timeline** component renders a vertical sequence of events, each connected by a continuous line that communicates chronological or procedural order. It is built on a native `<ol>` element (ordered list) so the sequence is semantically meaningful, not merely visual. Each item consists of a dot, a title, a description, and a machine-readable `<time>` element. No JavaScript is required. Use timelines for activity feeds, release histories, onboarding steps, order tracking, and any content where the passage of time or a sequence of steps matters.
+
+## CDN Import
+
+Timeline is CSS-only. No script tag is required.
+
+```html
+<link
+  rel="stylesheet"
+  href="https://cdn.jsdelivr.net/gh/codylindley/shadcn-html@latest/dist/components/timeline/timeline.css"
+>
+```
+
+## Basic Usage
+
+An ordered list of events with default (muted) dots:
+
+```html
+<ol class="timeline">
+  <li class="timeline-item">
+    <div class="timeline-dot"></div>
+    <div class="timeline-content">
+      <p class="timeline-title">Project kickoff</p>
+      <p class="timeline-description">Initial planning session and stakeholder alignment.</p>
+      <time class="timeline-time" datetime="2024-01">January 2024</time>
+    </div>
+  </li>
+  <li class="timeline-item">
+    <div class="timeline-dot"></div>
+    <div class="timeline-content">
+      <p class="timeline-title">Design phase</p>
+      <p class="timeline-description">Wireframes, prototypes, and design system setup.</p>
+      <time class="timeline-time" datetime="2024-02">February 2024</time>
+    </div>
+  </li>
+  <li class="timeline-item">
+    <div class="timeline-dot"></div>
+    <div class="timeline-content">
+      <p class="timeline-title">Development complete</p>
+      <p class="timeline-description">All features implemented and code reviewed.</p>
+      <time class="timeline-time" datetime="2024-04">April 2024</time>
+    </div>
+  </li>
+</ol>
+```
+
+## Structure
+
+| Class | Element | Purpose |
+| --- | --- | --- |
+| `timeline` | `<ol>` | Ordered list container; positions the connecting line |
+| `timeline-item` | `<li>` | Single event row |
+| `timeline-dot` | `<div>` | Circular marker on the line; variant-controlled |
+| `timeline-content` | `<div>` | Text content region beside the dot |
+| `timeline-title` | `<p>` | Event heading |
+| `timeline-description` | `<p>` | Supporting detail in muted colour |
+| `timeline-time` | `<time>` | Machine-readable date/time stamp |
+
+## Dot Variants
+
+Use `data-variant` on `timeline-dot` to highlight the current or active step:
+
+```html
+<ol class="timeline">
+  <li class="timeline-item">
+    <div class="timeline-dot"></div>
+    <div class="timeline-content">
+      <p class="timeline-title">Order placed</p>
+      <p class="timeline-description">Your order has been received.</p>
+      <time class="timeline-time" datetime="2024-03-01">March 1, 2024</time>
+    </div>
+  </li>
+  <li class="timeline-item">
+    <div class="timeline-dot" data-variant="active"></div>
+    <div class="timeline-content">
+      <p class="timeline-title">In transit</p>
+      <p class="timeline-description">Your package is on its way.</p>
+      <time class="timeline-time" datetime="2024-03-03">March 3, 2024</time>
+    </div>
+  </li>
+  <li class="timeline-item">
+    <div class="timeline-dot"></div>
+    <div class="timeline-content">
+      <p class="timeline-title">Delivered</p>
+      <p class="timeline-description">Package delivered to front door.</p>
+      <time class="timeline-time" datetime="2024-03-05">March 5, 2024</time>
+    </div>
+  </li>
+</ol>
+```
+
+| `data-variant` on `timeline-dot` | Appearance | When to use |
+| --------------------------------- | ---------- | ----------- |
+| _(none / default)_ | Muted border dot | Completed or future steps |
+| `active` | Primary-coloured filled dot | The current step in a process |
+
+<Tip>
+  For a progress tracker pattern, mark all completed steps with a checkmark icon inside the dot and only the current step as `data-variant="active"`.
+</Tip>
+
+## ARIA & Accessibility
+
+| Element / Attribute | Requirement | Notes |
+| --- | --- | --- |
+| `<ol>` | Correct semantic element | Ordered list conveys sequence to screen readers |
+| `<time datetime="...">` | Recommended | Machine-readable date lets assistive technology and search engines parse the date correctly |
+| `timeline-dot` | Decorative | The dot `<div>` carries no text — it is purely visual and ignored by screen readers |
+| Heading hierarchy | `timeline-title` | Use `<h3>` or appropriate heading level if the timeline lives inside a larger document section |
+
+<Note>
+  If you upgrade `timeline-title` from `<p>` to a heading element (e.g. `<h3 class="timeline-title">`), ensure it fits correctly in your page's heading hierarchy so screen reader users navigating by headings encounter a logical outline.
+</Note>
+
+## Notes
+
+- **Native basis** — `<ol>` element with `::before` pseudo-elements for the connector line and dot shape.
+- Timeline is CSS-only — no JavaScript file to load.
+- The vertical connector line is drawn on the `::before` of `.timeline-item`; the last item's line is hidden via `:last-child` CSS.
+- `<time datetime="...">` is essential for machine readability — always include a valid ISO 8601 date in the `datetime` attribute even when displaying a human-friendly label.
+- For horizontal timelines, this component should not be used without custom CSS overrides; the default layout is strictly vertical.

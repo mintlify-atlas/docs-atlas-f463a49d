@@ -1,0 +1,146 @@
+{
+  "projectType": "frontend",
+  "projectName": "Shadcn HTML",
+  "projectDescription": "A zero-dependency, framework-free UI component system built on semantic HTML, modern CSS, and vanilla JavaScript that uses shadcn/ui design tokens for AI-assisted prototyping.",
+  "theme": "willow",
+  "primaryColor": "#040404",
+  "lightColor": null,
+  "darkColor": null,
+  "navigation": {
+    "tabs": [
+      {
+        "tab": "Getting Started",
+        "groups": [
+          {
+            "group": "Introduction",
+            "pages": [
+              "introduction",
+              "installation",
+              "quickstart"
+            ]
+          },
+          {
+            "group": "Core Concepts",
+            "pages": [
+              "concepts/theming",
+              "concepts/data-attribute-api",
+              "concepts/component-skills",
+              "concepts/dark-mode",
+              "concepts/es-modules"
+            ]
+          },
+          {
+            "group": "Platform Fundamentals",
+            "pages": [
+              "platform/native-web-apis",
+              "platform/cascade-layers",
+              "platform/animations",
+              "platform/accessibility"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Components",
+        "groups": [
+          {
+            "group": "Primitives",
+            "pages": [
+              "components/typography",
+              "components/icon",
+              "components/separator"
+            ]
+          },
+          {
+            "group": "Actions",
+            "pages": [
+              "components/button",
+              "components/toggle",
+              "components/toggle-group",
+              "components/button-group",
+              "components/toolbar"
+            ]
+          },
+          {
+            "group": "Forms & Inputs",
+            "pages": [
+              "components/input",
+              "components/textarea",
+              "components/select",
+              "components/checkbox",
+              "components/radio",
+              "components/switch",
+              "components/slider",
+              "components/form"
+            ]
+          },
+          {
+            "group": "Data Display",
+            "pages": [
+              "components/badge",
+              "components/card",
+              "components/avatar",
+              "components/table",
+              "components/statistic",
+              "components/timeline",
+              "components/tree-view",
+              "components/calendar"
+            ]
+          },
+          {
+            "group": "Overlays & Feedback",
+            "pages": [
+              "components/dialog",
+              "components/popover",
+              "components/tooltip",
+              "components/sheet",
+              "components/accordion",
+              "components/toast",
+              "components/alert",
+              "components/progress"
+            ]
+          },
+          {
+            "group": "Navigation",
+            "pages": [
+              "components/tabs",
+              "components/breadcrumb",
+              "components/pagination",
+              "components/dropdown",
+              "components/navigation-menu",
+              "components/sidebar"
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "keyFeatures": [
+    "Zero dependencies — no npm install, no build step, no framework required",
+    "shadcn/ui token model — compatible with tweakcn.com theme exports for instant rethemes",
+    "55+ UI components covering layout, forms, overlays, navigation, and data display",
+    "Data attribute API — variants and sizes via data-variant, data-size instead of modifier classes",
+    "Native web platform first — uses <dialog>, popover API, <details>, @starting-style, CSS anchor positioning",
+    "Component skills — structured markdown files documenting HTML structure, ARIA, variants, and wiring",
+    "Automatic dark mode via CSS token cascade, no JS overrides needed",
+    "CDN delivery via jsDelivr — link individual components without downloading anything",
+    "Self-hostable — drop the dist/ folder into any project for offline/AI-agent use"
+  ],
+  "publicApiSurface": [
+    "CDN: https://cdn.jsdelivr.net/gh/codylindley/shadcn-html@latest/dist/theme/default-semantic-tokens.css",
+    "CDN: https://cdn.jsdelivr.net/gh/codylindley/shadcn-html@latest/dist/components/{name}/{name}.css",
+    "CDN: https://cdn.jsdelivr.net/gh/codylindley/shadcn-html@latest/dist/components/{name}/{name}.js",
+    "data-variant — selects visual variant (default, secondary, outline, ghost, destructive, link)",
+    "data-size — selects size (xs, sm, default, lg, icon, icon-sm, icon-lg)",
+    "data-dialog-trigger=\"[id]\" — opens a <dialog> by id",
+    "data-dialog-close — closes the containing dialog",
+    "data-popover-trigger — opens associated popover",
+    "data-toast-trigger — fires a toast notification",
+    "class=\"btn\" — button component root class",
+    "class=\"dialog\" — dialog component root class",
+    "class=\"card\" — card component root class",
+    "class=\"badge\" — badge component root class",
+    "dist/theme/default-semantic-tokens.css — design token file (tweakcn-compatible)",
+    "dist/components/{name}/component-skill.md — structured usage reference per component"
+  ]
+}

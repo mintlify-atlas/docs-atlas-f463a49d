@@ -1,0 +1,237 @@
+---
+title: "Data Attribute API: Props for HTML Components"
+sidebarTitle: Data Attribute API
+description: "Understand how data attributes replace framework props in shadcn-html — variant, size, orientation, behavioral wiring, and ARIA state hooks explained."
+---
+
+In React or Solid you configure components with props. In shadcn-html, **data attributes are your props**. Every component uses a single CSS class to declare *what* it is, and `data-*` attributes to declare *which version* — variant, size, orientation, and behavior. Once you learn the pattern for one component, you know it for all of them.
+
+## Props → data attributes
+
+If you're coming from a component framework, the mapping is straightforward:
+
+```html
+<!-- React / Solid (props) -->
+<Button variant="destructive" size="lg">
+  Delete
+</Button>
+
+<!-- shadcn-html (data attributes) -->
+<button class="btn"
+  data-variant="destructive"
+  data-size="lg">
+  Delete
+</button>
+```
+
+The CSS side mirrors this exactly — attribute selectors target each configuration axis independently:
+
+```css
+/* Each axis is a separate, flat selector */
+.btn[data-variant="destructive"] {
+  background-color: var(--destructive);
+  color: var(--destructive-foreground);
+}
+
+.btn[data-size="lg"] {
+  height: 2.75rem;
+  padding-inline: 1.5rem;
+  font-size: 1rem;
+}
+```
+
+## The two-layer markup model
+
+Every component has exactly two layers in its markup: a **class** (what it is) and **data attributes** (which version).
+
+| Layer | Role | Example |
+|---|---|---|
+| `class` | Identity — the base CSS selector | `class="btn"` |
+| `data-variant` | Visual style — the component's "skin" | `data-variant="outline"` |
+| `data-size` | Dimensions — height, padding, font-size | `data-size="sm"` |
+| `data-*` | Additional axes — orientation, position, etc. | `data-orientation="vertical"` |
+
+The `class` attribute stays a single token. There are no long class chains, no BEM suffixes, no modifier classes.
+
+## Why data attributes instead of modifier classes?
+
+Traditional systems like Bootstrap and BEM use modifier classes: `.btn-primary`, `.btn--lg`, `.btn-outline-danger`. Data attributes are strictly better for a component system:
+
+<CardGroup cols={2}>
+  <Card title="Flat specificity">
+    All variant and size selectors have equal CSS weight. No specificity wars, no `!important` escalation.
+  </Card>
+  <Card title="Independent axes">
+    Variant and size combine freely without needing combinatorial class names like `.btn-outline-lg`.
+  </Card>
+  <Card title="Uniform API">
+    Every component follows the same pattern. Learn it once, apply everywhere. Consistent enough for AI code generation too.
+  </Card>
+  <Card title="Clean markup">
+    The `class` attribute stays a single token — `class="btn"` — not a long chain of modifiers that requires mental parsing.
+  </Card>
+</CardGroup>
+
+```html
+<!-- Modifier classes — axis coupling, specificity problems -->
+<button class="btn btn-destructive btn-lg">Delete</button>
+
+<!-- Data attributes — independent axes, flat specificity -->
+<button class="btn" data-variant="destructive" data-size="lg">Delete</button>
+```
+
+## Styling attributes
+
+These are written by you in HTML and read by CSS. They control visual appearance.
+
+### `data-variant`
+
+The most common attribute. Controls the visual style (color, fill, border treatment) of a component.
+
+```html
+<button class="btn" data-variant="default">Default</button>
+<button class="btn" data-variant="secondary">Secondary</button>
+<button class="btn" data-variant="outline">Outline</button>
+<button class="btn" data-variant="ghost">Ghost</button>
+<button class="btn" data-variant="destructive">Destructive</button>
+<button class="btn" data-variant="link">Link</button>
+```
+
+| Component | Supported values |
+|---|---|
+| `.btn` | `default` · `secondary` · `outline` · `ghost` · `destructive` · `link` |
+| `.badge` | `default` · `secondary` · `outline` |
+| `.alert` | `default` · `destructive` |
+| `.toggle` | `default` · `outline` |
+| `.toggle-group` | `default` · `outline` |
+| `.toast` | `default` · `destructive` · `success` · `warning` · `info` |
+| `.tab-list` | `default` · `line` |
+| `.dropdown-item` | `default` · `destructive` |
+
+### `data-size`
+
+Controls height, padding, and sometimes font-size.
+
+```html
+<button class="btn" data-size="xs">Extra Small</button>
+<button class="btn" data-size="sm">Small</button>
+<button class="btn">Default</button>
+<button class="btn" data-size="lg">Large</button>
+<button class="btn" data-size="icon">Icon</button>
+```
+
+| Component | Supported values |
+|---|---|
+| `.btn` | `xs` · `sm` · default · `lg` · `icon` · `icon-sm` · `icon-lg` |
+| `.input` | `sm` · default · `lg` |
+| `.select` | `sm` · default · `lg` |
+| `.dialog` | `sm` · default · `lg` · `xl` · `full` |
+| `.toggle` | `sm` · default · `lg` |
+| `.avatar` | `sm` · default · `lg` |
+| `.spinner` | `sm` · default · `lg` |
+| `.switch` | `sm` · default |
+
+### Other styling axes
+
+Some components have additional configuration dimensions beyond variant and size.
+
+| Attribute | Component | Values | Purpose |
+|---|---|---|---|
+| `data-orientation` | `.btn-group` · `.sep` · `.toolbar` | `horizontal` · `vertical` | Layout direction |
+| `data-side` | `.sheet` | `left` · `right` · `top` · `bottom` | Slide-in direction |
+| `data-position` | `.toast-container` | `top-left` · `top-right` · `top-center` · `bottom-left` · `bottom-right` · `bottom-center` | Viewport placement |
+| `data-ratio` | `.image` | `1/1` · `4/3` · `16/9` · `21/9` | Aspect ratio |
+| `data-layout` | `.descriptions` | `horizontal` · `vertical` | Term/definition layout |
+| `data-trend` | `.stat-trend` | `up` · `down` | Trend indicator color |
+| `data-spacing` | `.toggle-group` | *(boolean)* | Adds gap between toggles |
+
+## Behavioral attributes
+
+These wire up JavaScript interactions. They follow the pattern `data-{component}-trigger` and `data-{component}-close`, connecting a trigger element to the element it controls by ID.
+
+```html
+<!-- The trigger: its value is the ID of the target -->
+<button class="btn" data-dialog-trigger="confirm-dialog">
+  Open Dialog
+</button>
+
+<!-- The target: matched by ID -->
+<dialog id="confirm-dialog" class="dialog">
+  <div class="dialog-content">
+    <p>Are you sure you want to delete this item?</p>
+    <!-- The close: placed inside the dialog, closes its parent -->
+    <button class="btn" data-variant="outline" data-dialog-close>Cancel</button>
+    <button class="btn" data-variant="destructive">Confirm</button>
+  </div>
+</dialog>
+```
+
+| Attribute | Component | Purpose |
+|---|---|---|
+| `data-dialog-trigger` | Dialog | Opens the `<dialog>` whose `id` matches the value |
+| `data-dialog-close` | Dialog | Closes the nearest parent dialog |
+| `data-alert-dialog-trigger` | Alert Dialog | Opens an alert dialog by ID |
+| `data-alert-dialog-close` | Alert Dialog | Closes the nearest parent alert dialog |
+| `data-sheet-trigger` | Sheet | Opens a sheet (drawer) by ID |
+| `data-sheet-close` | Sheet | Closes the nearest parent sheet |
+| `data-dropdown-trigger` | Dropdown | Toggles a popover dropdown menu |
+| `data-action` | Number Input | `increment` / `decrement` buttons |
+| `data-type` | Accordion · Toggle Group | `single` or `multiple` selection mode |
+| `data-collapsible` | Accordion | Allows all panels to be closed simultaneously |
+
+## State attributes (JS-managed)
+
+These are set and removed by JavaScript at runtime to represent UI state. CSS reads them to apply state-specific styles. You do **not** write these in your markup — the component's JS module manages them automatically.
+
+| Attribute | Component | Purpose |
+|---|---|---|
+| `data-highlighted` | Dropdown · Combobox | Marks the currently keyboard-highlighted item |
+| `data-error` | Avatar | Set when image fails to load, triggers fallback display |
+| `data-placeholder` | Combobox | Present when no selection has been made |
+| `data-init` | All interactive | Set by JS to prevent double-initialization |
+
+## ARIA attributes as styling hooks
+
+Where the browser natively provides state APIs — `aria-selected`, `aria-expanded`, `aria-pressed`, `disabled`, `open` — component CSS styles against those directly. No data attributes are needed because the browser already exposes the state.
+
+```css
+/* Tab is selected — use ARIA, not a data attribute */
+.tab-trigger[aria-selected="true"] {
+  color: var(--foreground);
+  border-color: var(--primary);
+}
+
+/* Toggle is pressed — native ARIA attribute */
+.toggle[aria-pressed="true"] {
+  background: var(--accent);
+}
+
+/* Button is disabled — native HTML attribute */
+.btn:disabled {
+  opacity: 0.5;
+  pointer-events: none;
+}
+```
+
+<Note>
+  **Rule of thumb:** if the browser has a native attribute for a state (`disabled`, `aria-selected`, `aria-expanded`, `open`), the CSS selects against that. Data attributes are only used when no native equivalent exists.
+</Note>
+
+## The universal pattern at a glance
+
+Every component follows this structure. Once you learn one, you know them all.
+
+```html
+<element
+  class="{component}"              <!-- what it is -->
+  data-variant="{variant}"         <!-- visual style -->
+  data-size="{size}"               <!-- dimensions -->
+  data-{axis}="{value}"            <!-- other config axes -->
+  data-{component}-trigger="{id}"  <!-- JS wiring -->
+  aria-*/disabled/open             <!-- native state -->
+>
+  content
+</element>
+```
+
+Each component's `component-skill.md` lists the complete supported set of data attributes, variants, sizes, and ARIA requirements for that specific component.

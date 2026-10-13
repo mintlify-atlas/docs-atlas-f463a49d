@@ -1,20 +1,92 @@
 ---
-title: "Introduction"
-description: "Welcome to your project"
+title: "Shadcn HTML: Framework-Free UI Components"
+sidebarTitle: "Home"
+description: "Themeable UI components built on semantic HTML, modern CSS, and vanilla JavaScript. No framework, no build step, no npm install required."
 ---
 
-Write a short description of your product here. What it does, who it's for, and what they can accomplish with it.
+Shadcn HTML is a portable UI component system that runs anywhere HTML runs. Built on the shadcn/ui token model, it gives you 55+ production-ready components that work with a single `<link>` tag — no framework, no bundler, no dependencies.
 
-<Tip>
-  Ready to make this your own? Start by editing this page. Update your `docs.json` file to customize your site. Then fill out the [Quickstart](/quickstart) page.
-</Tip>
+<CardGroup cols={2}>
+  <Card title="Installation" icon="download" href="/installation">
+    Add components via CDN or download the full system. No npm, no build step.
+  </Card>
+  <Card title="Quickstart" icon="rocket" href="/quickstart">
+    Build your first page with shadcn HTML in under five minutes.
+  </Card>
+  <Card title="Theming" icon="palette" href="/concepts/theming">
+    Swap a tweakcn theme and every component updates instantly.
+  </Card>
+  <Card title="Component Skills" icon="book" href="/concepts/component-skills">
+    Structured markup references that guide AI and developers alike.
+  </Card>
+</CardGroup>
 
-<Card title="Quickstart" icon="rocket" href="/quickstart">
-  This card links to the quickstart page in your project.
-</Card>
-<Card title="Components" icon="puzzle-piece" href="https://mintlify.com/docs/components">
-  Add cards, callouts, steps, tabs, and more to design and structure your pages.
-</Card>
-<Card title="Settings" icon="gear" href="https://mintlify.com/docs/organize/settings">
-  Set your site name, branding, and navigation in the `docs.json` file.
-</Card>
+## What is Shadcn HTML?
+
+Shadcn HTML is a UI component library for the web platform — built without any framework, build tool, or dependency. Each component is a self-contained folder with a stylesheet, optional JavaScript, and a structured component skill file that documents its HTML structure, variants, ARIA patterns, and wiring conventions.
+
+The design token system is fully compatible with [tweakcn.com](https://tweakcn.com) theme exports. Drop in a new `default-semantic-tokens.css` and every component rethemes at once — colors, radius, shadows, and dark mode.
+
+<CardGroup cols={3}>
+  <Card title="Zero Dependencies" icon="ban">
+    No npm, no bundler, no framework. Runs in any browser with a `<link>` tag.
+  </Card>
+  <Card title="55+ Components" icon="grid-2">
+    Buttons, forms, dialogs, navigation, data display, overlays, and more.
+  </Card>
+  <Card title="Native Web First" icon="globe">
+    Uses `<dialog>`, Popover API, `<details>`, and CSS anchor positioning — not JS workarounds.
+  </Card>
+  <Card title="Token-Driven Theming" icon="swatchbook">
+    Every color, radius, and shadow is a CSS custom property. One file swap rethemes everything.
+  </Card>
+  <Card title="Data Attribute API" icon="code">
+    Configure components with `data-variant` and `data-size` — the HTML equivalent of props.
+  </Card>
+  <Card title="Dark Mode Automatic" icon="moon">
+    Add `class="dark"` to `<html>`. The token cascade does the rest.
+  </Card>
+</CardGroup>
+
+## Browse Components
+
+<CardGroup cols={2}>
+  <Card title="Actions" icon="cursor-arrow-rays" href="/components/button">
+    Button, Toggle, Toggle Group, Button Group, Toolbar
+  </Card>
+  <Card title="Forms & Inputs" icon="input-text" href="/components/input">
+    Input, Textarea, Select, Checkbox, Radio, Switch, Slider, Form
+  </Card>
+  <Card title="Data Display" icon="table-cells" href="/components/badge">
+    Badge, Card, Avatar, Table, Statistic, Timeline, Tree View, Calendar
+  </Card>
+  <Card title="Overlays & Feedback" icon="window" href="/components/dialog">
+    Dialog, Popover, Tooltip, Sheet, Accordion, Toast, Alert, Progress
+  </Card>
+  <Card title="Navigation" icon="compass" href="/components/tabs">
+    Tabs, Breadcrumb, Pagination, Dropdown, Navigation Menu, Sidebar
+  </Card>
+  <Card title="Primitives" icon="text" href="/components/typography">
+    Typography, Icon, Separator
+  </Card>
+</CardGroup>
+
+## Quick Example
+
+Load the theme tokens, icons, and one component — that's the entire setup:
+
+```html
+<!-- 1. Theme tokens (tweakcn-compatible) -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/codylindley/shadcn-html@latest/dist/theme/default-semantic-tokens.css">
+
+<!-- 2. Lucide icons -->
+<script src="https://unpkg.com/lucide@1.8.0"></script>
+<script>lucide.createIcons();</script>
+
+<!-- 3. One component -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/codylindley/shadcn-html@latest/dist/components/button/button.css">
+
+<!-- Use it -->
+<button class="btn" data-variant="default">Get Started</button>
+<button class="btn" data-variant="outline">Learn More</button>
+```

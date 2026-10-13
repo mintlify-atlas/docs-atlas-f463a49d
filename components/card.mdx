@@ -1,0 +1,170 @@
+---
+title: "Card — Shadcn HTML Content Container Component"
+sidebarTitle: Card
+description: "A flexible content container with header, body, and footer regions. Built on semantic <div> or <article> elements with CSS-only styling and container query support."
+---
+
+The **Card** component is a surface-level container that groups related content into a visually distinct panel. It is built on either a `<div>` (for UI grouping such as forms or settings panels) or an `<article>` (for standalone self-contained content like blog posts or product listings). No JavaScript is needed — layout and spacing are handled entirely in CSS, with built-in container-query support so cards compact gracefully when placed in narrow columns.
+
+## CDN Import
+
+Card is CSS-only. No script tag is required.
+
+```html
+<link
+  rel="stylesheet"
+  href="https://cdn.jsdelivr.net/gh/codylindley/shadcn-html@latest/dist/components/card/card.css"
+>
+```
+
+## Basic Usage
+
+A standard card with all four regions — header, title, description, content, and footer:
+
+```html
+<div class="card">
+  <div class="card-header">
+    <h3 class="card-title">Create project</h3>
+    <p class="card-description">Deploy your new project in one click.</p>
+  </div>
+  <div class="card-content">
+    <p>Your content goes here.</p>
+  </div>
+  <div class="card-footer">
+    <button class="btn" data-variant="outline">Cancel</button>
+    <button class="btn" data-variant="default">Deploy</button>
+  </div>
+</div>
+```
+
+## Structure
+
+| Class | Element | Purpose |
+| --- | --- | --- |
+| `card` | `<div>` or `<article>` | Outer container — sets background, border, and radius |
+| `card-header` | `<div>` | Top region; stacks title + description vertically |
+| `card-title` | `<h2>`–`<h6>` | Heading inside the header |
+| `card-description` | `<p>` | Supporting subtitle in muted foreground colour |
+| `card-content` | `<div>` | Main body region with full padding |
+| `card-footer` | `<div>` | Bottom region for actions; `padding-top: 0` to avoid double-spacing |
+
+## Semantic Element Selection
+
+Choose the root element based on the card's semantic role in the document:
+
+| Use case | Element |
+| --- | --- |
+| UI grouping (form, settings panel) | `<div>` |
+| Blog post, news article | `<article>` |
+| Product in a listing | `<article>` |
+| Dashboard metric | `<div>` |
+| Navigation section group | `<section>` |
+
+## Composition Patterns
+
+### Card with image
+
+Place the `<img>` as the first child of `.card`, before `.card-header`:
+
+```html
+<article class="card">
+  <img
+    src="https://example.com/cover.jpg"
+    alt="Abstract shapes"
+    style="width:100%;aspect-ratio:16/9;object-fit:cover;display:block;"
+  >
+  <div class="card-header">
+    <h3 class="card-title">Modern Design</h3>
+    <p class="card-description">Exploring minimal aesthetics through form and colour.</p>
+  </div>
+  <div class="card-content" style="padding-top:0;">
+    <p style="margin:0;font-size:0.875rem;color:var(--muted-foreground);line-height:1.6;">
+      A deep dive into the principles that guide contemporary visual design.
+    </p>
+  </div>
+  <div class="card-footer">
+    <button class="btn" data-variant="default" data-size="sm">Read more</button>
+    <button class="btn" data-variant="ghost" data-size="sm">Bookmark</button>
+  </div>
+</article>
+```
+
+### Metric card (dashboard stat)
+
+Row-direction header with an icon on the right:
+
+```html
+<div class="card">
+  <div class="card-header"
+       style="flex-direction:row;align-items:center;justify-content:space-between;padding-bottom:0.5rem;">
+    <p class="card-description"
+       style="font-weight:500;color:var(--foreground);font-size:0.8125rem;">Total Revenue</p>
+    <!-- icon slot -->
+  </div>
+  <div class="card-content" style="padding-top:0.25rem;">
+    <p style="font-size:1.625rem;font-weight:700;margin:0;letter-spacing:-0.025em;">$45,231</p>
+    <p class="card-description" style="font-size:0.75rem;margin-top:0.25rem;">+20.1% from last month</p>
+  </div>
+</div>
+```
+
+### Card with header action
+
+Place a ghost icon button inside the header for overflow or settings menus:
+
+```html
+<div class="card">
+  <div class="card-header"
+       style="flex-direction:row;align-items:center;justify-content:space-between;">
+    <div>
+      <h3 class="card-title">Team Members</h3>
+      <p class="card-description">Manage who has access.</p>
+    </div>
+    <button class="btn" data-variant="ghost" data-size="icon" aria-label="More options">
+      <!-- vertical ellipsis icon -->
+    </button>
+  </div>
+  <div class="card-content">
+    <!-- member list -->
+  </div>
+  <div class="card-footer" style="padding-top:1rem;border-top:1px solid var(--border);">
+    <button class="btn" data-variant="outline" data-size="sm" style="width:100%;">
+      Invite member
+    </button>
+  </div>
+</div>
+```
+
+### Interactive (navigable) card
+
+For a card that navigates on click, use `<a>` as the root element and apply the same classes:
+
+```html
+<a href="/articles/my-post" class="card" style="display:block;text-decoration:none;">
+  <div class="card-header">
+    <h3 class="card-title">My Article</h3>
+    <p class="card-description">Published January 1, 2025</p>
+  </div>
+  <div class="card-content">
+    <p>Article excerpt...</p>
+  </div>
+</a>
+```
+
+## ARIA & Accessibility
+
+| Concern | Guidance |
+| --- | --- |
+| Semantic element | Use `<article>` for self-contained content; `<div>` for generic layout grouping |
+| Heading hierarchy | `card-title` should use the correct heading level for the page outline (`h2`–`h6`) |
+| Interactive cards | Wrapping in `<a>` makes the whole card keyboard-focusable; avoid nesting additional `<a>` tags inside |
+| Icon-only buttons | Always add `aria-label` to ghost icon buttons in the header (e.g. "More options") |
+| Images | `<img>` inside a card must carry a meaningful `alt` attribute |
+
+## Notes
+
+- Card is a **container pattern** — its children define its purpose; the card itself has no semantic opinion.
+- Avoid deeply nesting cards (card inside card) — use a `--muted` surface background instead.
+- `card-footer` uses `padding-top: 0` intentionally to avoid double-spacing with `card-content`'s bottom padding.
+- For a card grid layout, use CSS Grid on the **parent** container — the card carries no layout opinion of its own.
+- The card uses `container-type: inline-size`, so child elements can use `@container` queries to adapt at narrow widths.

@@ -1,0 +1,191 @@
+---
+title: "Dark Mode with CSS Token Cascade in Shadcn HTML"
+sidebarTitle: Dark Mode
+description: "Dark mode in shadcn-html is a pure CSS token cascade. Add class='dark' to <html> and every component flips automatically — no JS overrides needed."
+---
+
+Dark mode in shadcn-html is built entirely into the token layer. Add `class="dark"` to your `<html>` element and every component switches to dark values automatically — no per-component overrides, no JavaScript style manipulation, no conditional class logic in markup. The entire mechanism is a single CSS cascade rule.
+
+## How it works
+
+The token file (`dist/theme/default-semantic-tokens.css`) defines two complete sets of color values. The `:root` block provides all light-mode values and is active by default. The `.dark` selector overrides every color token with its dark-mode counterpart. Because `<html>` is an ancestor of every element on the page, adding `.dark` to it makes the overrides cascade to everything instantly.
+
+```css
+/* Light mode (default) — active on :root */
+:root {
+  color-scheme: light;
+  --background: oklch(1 0 0);           /* white */
+  --foreground: oklch(0.145 0 0);       /* near-black */
+  --primary: oklch(0.205 0 0);
+  --primary-foreground: oklch(0.985 0 0);
+  --card: oklch(1 0 0);
+  --muted: oklch(0.970 0 0);
+  --muted-foreground: oklch(0.556 0 0);
+  --border: oklch(0.922 0 0);
+  /* ... all other tokens ... */
+}
+
+/* Dark mode — every token flips when .dark is on <html> */
+.dark {
+  color-scheme: dark;
+  --background: oklch(0.145 0 0);       /* near-black */
+  --foreground: oklch(0.985 0 0);       /* near-white */
+  --primary: oklch(0.922 0 0);
+  --primary-foreground: oklch(0.205 0 0);
+  --card: oklch(0.205 0 0);
+  --muted: oklch(0.269 0 0);
+  --muted-foreground: oklch(0.708 0 0);
+  --border: oklch(0.275 0 0);
+  /* ... all other tokens ... */
+}
+```
+
+Components reference tokens with `var(--background)`, `var(--foreground)`, etc. When `.dark` is present on `<html>`, the cascade replaces every value. No component CSS file needs to change.
+
+```html
+<!-- Light mode (default) -->
+<html lang="en">
+
+<!-- Dark mode — just add the class -->
+<html lang="en" class="dark">
+```
+
+## Token pairs in light and dark
+
+Every surface token has a matching foreground token. When the surface color shifts for dark mode, the foreground shifts to maintain contrast.
+
+| Token | Light value | Dark value |
+|---|---|---|
+| `--background` | `oklch(1 0 0)` | `oklch(0.145 0 0)` |
+| `--foreground` | `oklch(0.145 0 0)` | `oklch(0.985 0 0)` |
+| `--primary` | `oklch(0.205 0 0)` | `oklch(0.922 0 0)` |
+| `--primary-foreground` | `oklch(0.985 0 0)` | `oklch(0.205 0 0)` |
+| `--card` | `oklch(1 0 0)` | `oklch(0.205 0 0)` |
+| `--muted` | `oklch(0.970 0 0)` | `oklch(0.269 0 0)` |
+| `--muted-foreground` | `oklch(0.556 0 0)` | `oklch(0.708 0 0)` |
+| `--border` | `oklch(0.922 0 0)` | `oklch(0.275 0 0)` |
+| `--destructive` | `oklch(0.577 0.245 27.33)` | `oklch(0.704 0.191 22.22)` |
+
+## The `light-dark()` CSS function
+
+The `light-dark()` CSS function lets you express two values inline for a single property without needing separate `:root` and `.dark` blocks. The browser picks the correct value based on the current `color-scheme`.
+
+```css
+/* Equivalent to separate :root and .dark overrides */
+.my-element {
+  background: light-dark(oklch(1 0 0), oklch(0.145 0 0));
+  color: light-dark(oklch(0.145 0 0), oklch(0.985 0 0));
+}
+```
+
+This requires `color-scheme` to be declared — which the token file already handles:
+
+```css
+:root  { color-scheme: light; }
+.dark  { color-scheme: dark; }
+```
+
+## Color scheme declaration
+
+Add the `<meta name="color-scheme">` tag to your `<head>` to tell the browser which color schemes your page supports. This affects native UI elements like scrollbars, form controls, and the default document background — keeping them consistent with your theme.
+
+```html
+<!-- In <head> — declares both light and dark are supported -->
+<meta name="color-scheme" content="light dark">
+```
+
+## System preference detection
+
+Use `prefers-color-scheme` to detect the user's OS-level dark mode preference. The `matchMedia` API provides both initial detection and a live listener for real-time changes as the user switches their system setting.
+
+```javascript
+// Check OS preference at page load
+const darkMQ = window.matchMedia('(prefers-color-scheme: dark)');
+
+if (darkMQ.matches) {
+  document.documentElement.classList.add('dark');
+}
+
+// React to OS changes in real time
+// Skip if the user has set a manual preference
+darkMQ.addEventListener('change', (e) => {
+  if (localStorage.getItem('shadcn-html-theme')) return;
+  document.documentElement.classList.toggle('dark', e.matches);
+  document.documentElement.style.colorScheme = e.matches ? 'dark' : 'light';
+});
+```
+
+## Implementing a dark mode toggle
+
+A complete dark mode toggle in three parts: an initialization script in `<head>`, a toggle button, and the click handler.
+
+<Steps>
+  <Step title="Initialization script (in <head>)">
+    This script must run **synchronously** in `<head>` with no `defer` or `type="module"`. It applies the saved preference or OS default before the browser paints — preventing a flash of the wrong theme on load.
+
+    ```html
+    <script>
+      const saved = localStorage.getItem('shadcn-html-theme');
+      const prefersDark = matchMedia('(prefers-color-scheme: dark)').matches;
+      if (saved === 'dark' || (!saved && prefersDark)) {
+        document.documentElement.classList.add('dark');
+        document.documentElement.style.colorScheme = 'dark';
+      }
+    </script>
+    ```
+  </Step>
+  <Step title="Toggle button markup">
+    ```html
+    <button id="theme-toggle" class="btn"
+      data-size="icon" aria-label="Toggle dark mode">
+      <!-- Sun icon — visible when dark mode is active -->
+      <svg id="icon-sun" aria-hidden="true">...</svg>
+      <!-- Moon icon — visible when light mode is active -->
+      <svg id="icon-moon" aria-hidden="true" style="display:none">...</svg>
+    </button>
+    ```
+  </Step>
+  <Step title="Click handler">
+    ```javascript
+    document.getElementById('theme-toggle')
+      .addEventListener('click', () => {
+        const isDark = document.documentElement
+          .classList.toggle('dark');
+
+        document.documentElement.style.colorScheme =
+          isDark ? 'dark' : 'light';
+
+        localStorage.setItem('shadcn-html-theme',
+          isDark ? 'dark' : 'light');
+      });
+    ```
+  </Step>
+</Steps>
+
+<Warning>
+  The initialization script **must not** use `defer`, `async`, or `type="module"`. It needs to run synchronously before the browser renders anything. Deferring it causes a visible flash of the wrong theme on page load.
+</Warning>
+
+## Persistence with localStorage
+
+When a user explicitly toggles dark mode, save their choice to `localStorage` so it persists across page loads and sessions.
+
+```javascript
+// On page load — check saved preference before OS default
+const saved = localStorage.getItem('shadcn-html-theme');
+const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+
+if (saved === 'dark' || (!saved && prefersDark)) {
+  document.documentElement.classList.add('dark');
+  document.documentElement.style.colorScheme = 'dark';
+}
+```
+
+**Priority order:**
+1. Saved `localStorage` preference — user's explicit choice always wins
+2. `prefers-color-scheme` media query — OS default when no saved preference exists
+3. Light mode — the fallback when neither is set
+
+<Tip>
+  Dark mode is one dimension of theming. Drop in any theme from [tweakcn.com](https://tweakcn.com) to change the full color palette — each theme ships with both `:root` (light) and `.dark` values. See the [Theming](/concepts/theming) page for details.
+</Tip>

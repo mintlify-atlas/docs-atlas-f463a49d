@@ -1,0 +1,204 @@
+---
+title: "Accordion — Collapsible Content Sections | Shadcn HTML"
+sidebarTitle: Accordion
+description: "Accessible collapsible sections built on native <details> and <summary> elements. Multi-open needs zero JS; single-open adds a tiny toggle handler. Animated with CSS."
+---
+
+The **Accordion** component renders a list of collapsible disclosure sections using the browser's native `<details>` and `<summary>` elements. Because the browser natively handles open/close state, keyboard toggling (Enter/Space), and screen-reader announcements, a multi-open accordion requires **absolutely no JavaScript**. Single-open behaviour — where opening one item closes the others — adds a small `toggle` event listener. Content height transitions are CSS-only, using the `::details-content` pseudo-element with a `block-size` transition and `@starting-style` for the enter animation.
+
+## CDN Import
+
+```html
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/codylindley/shadcn-html@latest/dist/components/accordion/accordion.css">
+<script type="module" src="https://cdn.jsdelivr.net/gh/codylindley/shadcn-html@latest/dist/components/accordion/accordion.js"></script>
+```
+
+<Note>
+  The JS module is only needed for `data-type="single"` (exclusive open) behaviour. If you only need multi-open disclosures, the CSS file alone is sufficient.
+</Note>
+
+## Basic Usage — Multi-open (Zero JS)
+
+Any number of items can be open simultaneously. Add the `open` attribute to pre-expand an item on page load.
+
+```html
+<div class="accordion">
+  <details class="accordion-item" open>
+    <summary class="accordion-trigger">
+      <span>Is it accessible?</span>
+      <svg class="accordion-chevron" aria-hidden="true"
+           width="16" height="16" viewBox="0 0 24 24"
+           fill="none" stroke="currentColor" stroke-width="2">
+        <path d="m6 9 6 6 6-6"/>
+      </svg>
+    </summary>
+    <div class="accordion-content">
+      <p>Yes. It uses native HTML details/summary elements which are fully
+         accessible by default. Screen reader and keyboard support are built in.</p>
+    </div>
+  </details>
+
+  <details class="accordion-item">
+    <summary class="accordion-trigger">
+      <span>Is it styled?</span>
+      <svg class="accordion-chevron" aria-hidden="true"
+           width="16" height="16" viewBox="0 0 24 24"
+           fill="none" stroke="currentColor" stroke-width="2">
+        <path d="m6 9 6 6 6-6"/>
+      </svg>
+    </summary>
+    <div class="accordion-content">
+      <p>Yes. It follows the shadcn/ui token system for consistent theming
+         across light and dark modes.</p>
+    </div>
+  </details>
+
+  <details class="accordion-item">
+    <summary class="accordion-trigger">
+      <span>Is it animated?</span>
+      <svg class="accordion-chevron" aria-hidden="true"
+           width="16" height="16" viewBox="0 0 24 24"
+           fill="none" stroke="currentColor" stroke-width="2">
+        <path d="m6 9 6 6 6-6"/>
+      </svg>
+    </summary>
+    <div class="accordion-content">
+      <p>Yes. The chevron rotates and content height transitions use
+         <code>::details-content</code> with <code>@starting-style</code>.</p>
+    </div>
+  </details>
+</div>
+```
+
+## Single-open Mode
+
+Add `data-type="single"` to the wrapper. The JS module listens for `toggle` events and closes any sibling item that is open when a new one opens.
+
+```html
+<div class="accordion" data-type="single">
+  <details class="accordion-item" open>
+    <summary class="accordion-trigger">
+      <span>What payment methods do you accept?</span>
+      <svg class="accordion-chevron" aria-hidden="true"
+           width="16" height="16" viewBox="0 0 24 24"
+           fill="none" stroke="currentColor" stroke-width="2">
+        <path d="m6 9 6 6 6-6"/>
+      </svg>
+    </summary>
+    <div class="accordion-content">
+      <p>We accept Visa, Mastercard, AmEx, PayPal, and bank transfers for annual plans.</p>
+    </div>
+  </details>
+
+  <details class="accordion-item">
+    <summary class="accordion-trigger">
+      <span>Can I cancel my subscription?</span>
+      <svg class="accordion-chevron" aria-hidden="true"
+           width="16" height="16" viewBox="0 0 24 24"
+           fill="none" stroke="currentColor" stroke-width="2">
+        <path d="m6 9 6 6 6-6"/>
+      </svg>
+    </summary>
+    <div class="accordion-content">
+      <p>Yes. Cancel any time from account settings. Access continues until the billing period ends.</p>
+    </div>
+  </details>
+
+  <details class="accordion-item">
+    <summary class="accordion-trigger">
+      <span>Do you offer team pricing?</span>
+      <svg class="accordion-chevron" aria-hidden="true"
+           width="16" height="16" viewBox="0 0 24 24"
+           fill="none" stroke="currentColor" stroke-width="2">
+        <path d="m6 9 6 6 6-6"/>
+      </svg>
+    </summary>
+    <div class="accordion-content">
+      <p>Teams of 5 or more receive a 20% discount. Contact sales for enterprise plans.</p>
+    </div>
+  </details>
+</div>
+```
+
+## Collapsible Single
+
+Combine `data-type="single"` with `data-collapsible` to allow all items to be closed simultaneously.
+
+```html
+<div class="accordion" data-type="single" data-collapsible>
+  <!-- accordion items — clicking the open item will close it -->
+</div>
+```
+
+## Variants
+
+### Default (borderless)
+
+The default accordion renders items separated by a bottom border. No wrapper styling is needed.
+
+### Bordered
+
+Wrap the accordion in a border and rounded corners using design tokens.
+
+```html
+<div class="accordion"
+     style="border:1px solid var(--border);
+            border-radius:var(--radius-lg);
+            padding:0 1rem;">
+  <!-- accordion items -->
+</div>
+```
+
+### Card-wrapped
+
+Embed an accordion inside a card for a more structured layout.
+
+```html
+<div class="card">
+  <div class="card-header">
+    <h3 class="card-title">FAQ</h3>
+    <p class="card-description">Frequently asked questions.</p>
+  </div>
+  <div class="card-content">
+    <div class="accordion">
+      <!-- accordion items -->
+    </div>
+  </div>
+</div>
+```
+
+## ARIA & Accessibility
+
+The `<details>/<summary>` combination provides complete built-in accessibility — no ARIA attributes are required.
+
+| Feature | How it works |
+|---|---|
+| Expand / collapse | Native — `<summary>` acts as a button internally |
+| `aria-expanded` | Implicit: derived from the `open` attribute |
+| Focus management | `<summary>` is focusable by default |
+| Keyboard toggle (Enter / Space) | Native — toggles the parent `<details>` |
+| Screen reader announcement | Browser announces expanded/collapsed state automatically |
+
+## Keyboard Interactions
+
+| Key | Behaviour |
+|---|---|
+| `Tab` | Move focus between summary elements |
+| `Enter` | Toggle the focused item |
+| `Space` | Toggle the focused item |
+
+## Wiring
+
+| Attribute | Placement | Effect |
+|---|---|---|
+| `data-type="single"` | `.accordion` wrapper | Enables exclusive-open mode (one item at a time) |
+| `data-collapsible` | `.accordion` wrapper (with `data-type="single"`) | Allows all items to be closed |
+| `open` | `<details>` | Pre-expands the item on page load |
+
+## Notes
+
+- `<details>/<summary>` is the most accessible accordion implementation possible — it works with zero JS and zero ARIA attributes.
+- The `open` attribute on `<details>` is the single source of truth for expanded/collapsed state.
+- Chevron rotation uses the `details[open] > .accordion-trigger .accordion-chevron` CSS selector — pure CSS, no JS.
+- Content height animation uses `::details-content` with a `block-size` transition and `@starting-style` for the enter animation. No JS height measurement is needed.
+- Avoid nesting accordions — use a flat list with clear headings instead to keep navigation predictable.

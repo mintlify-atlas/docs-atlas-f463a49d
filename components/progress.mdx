@@ -1,0 +1,127 @@
+---
+title: "Progress — Native HTML Progress Bar Component | Shadcn HTML"
+sidebarTitle: Progress
+description: "Styled progress bars using the native <progress> element. Supports determinate and indeterminate states, full ARIA integration, and CSS-only cross-browser styling."
+---
+
+The **Progress** component styles the browser's native `<progress>` element to match the shadcn/ui design token system. Using a semantic HTML element rather than a custom `<div>` means the percentage value is announced by screen readers automatically, no ARIA scaffolding is needed for basic usage, and the component degrades gracefully in unsupported environments by displaying the fallback text content. Use it wherever you need to visualise a task's completion — file uploads, multi-step forms, loading sequences, or background processing.
+
+## CDN Import
+
+```html
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/codylindley/shadcn-html@latest/dist/components/progress/progress.css">
+```
+
+No JavaScript is required for this component.
+
+## Basic Usage
+
+Add the `progress` class to a native `<progress>` element. Set `value` (current progress) and `max` (total) as numeric attributes. The text content inside the element is a fallback for browsers that do not support `<progress>`.
+
+```html
+<progress class="progress" value="66" max="100">66%</progress>
+```
+
+## Determinate Progress
+
+A determinate progress bar shows a known completion percentage. Always set both `value` and `max`.
+
+```html
+<!-- 25% complete -->
+<progress class="progress" value="25" max="100">25%</progress>
+
+<!-- 50% complete -->
+<progress class="progress" value="50" max="100">50%</progress>
+
+<!-- 90% complete -->
+<progress class="progress" value="90" max="100">90%</progress>
+
+<!-- Fully complete -->
+<progress class="progress" value="100" max="100">100%</progress>
+```
+
+## Indeterminate State
+
+Omit the `value` attribute entirely to display an animated indeterminate state. Use this when you do not know how long an operation will take.
+
+```html
+<progress class="progress" max="100">Loading...</progress>
+```
+
+<Note>
+  Browsers render the indeterminate state with a vendor-specific animation. The `.progress` CSS class provides consistent cross-browser styling for both the track and the indicator via `::-webkit-progress-bar`, `::-webkit-progress-value`, and `::-moz-progress-bar` pseudo-elements.
+</Note>
+
+## With a Visible Label
+
+Pair the progress bar with a visible label using a `<label>` element. Alternatively use `aria-label` directly on the element when no visible label is required.
+
+```html
+<!-- With a visible label -->
+<label for="upload-progress">Uploading file…</label>
+<progress class="progress" id="upload-progress" value="42" max="100">42%</progress>
+
+<!-- Label embedded in a layout -->
+<div style="display:flex; flex-direction:column; gap:0.375rem;">
+  <div style="display:flex; justify-content:space-between;">
+    <span style="font-size:0.875rem; font-weight:500;">Processing</span>
+    <span style="font-size:0.875rem; color:var(--muted-foreground);">73%</span>
+  </div>
+  <progress class="progress" value="73" max="100"
+            aria-label="Processing">73%</progress>
+</div>
+```
+
+## Dynamic Updates with JavaScript
+
+Update `value` via JavaScript as an operation progresses. Screen readers will announce the updated percentage automatically because `<progress>` is a native live region.
+
+```html
+<progress class="progress" id="task-progress" value="0" max="100"
+          aria-label="Task progress">
+  0%
+</progress>
+
+<script>
+  const bar = document.getElementById('task-progress');
+  let pct = 0;
+
+  const interval = setInterval(() => {
+    pct = Math.min(pct + 10, 100);
+    bar.value = pct;
+    bar.textContent = pct + '%';
+    if (pct >= 100) clearInterval(interval);
+  }, 500);
+</script>
+```
+
+## ARIA & Accessibility
+
+| Attribute | Element | When to use |
+|---|---|---|
+| `aria-label` | `<progress>` | When there is no associated visible `<label>` element |
+| `aria-valuenow` | `<progress>` | Not needed — the browser maps `value` to `aria-valuenow` automatically |
+| `aria-valuemin` | `<progress>` | Not needed — defaults to `0` implicitly |
+| `aria-valuemax` | `<progress>` | Not needed — the browser maps `max` to `aria-valuemax` automatically |
+
+<Tip>
+  The native `<progress>` element exposes `role="progressbar"` with `aria-valuenow`, `aria-valuemin`, and `aria-valuemax` automatically. You rarely need to add these manually.
+</Tip>
+
+## Structure Reference
+
+| Aspect | Detail |
+|---|---|
+| Element | `<progress>` (native HTML) |
+| Class | `.progress` |
+| `value` | Current progress (number between `0` and `max`) |
+| `max` | Maximum value — defaults to `1` if omitted; set to `100` for percentage-based UX |
+| Indeterminate | Omit `value` entirely — do not set it to `0` |
+
+## Notes
+
+- The native `<progress>` element is accessible out of the box — screen readers announce the current percentage without any ARIA attributes.
+- The text node inside `<progress>` is the fallback content for browsers that do not support the element; it is hidden from modern browsers.
+- Cross-browser styling is applied through `::-webkit-progress-bar` (track), `::-webkit-progress-value` (fill indicator), and `::-moz-progress-bar` (Firefox fill).
+- To display progress as a percentage label next to the bar, read `(element.value / element.max * 100).toFixed(0)` in JavaScript rather than relying on the browser's default text rendering.
+- For a segmented, step-by-step flow indicator, use the `<steps>` pattern with ordered list markup instead.

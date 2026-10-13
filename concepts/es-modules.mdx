@@ -1,0 +1,190 @@
+---
+title: "ES Modules: Loading Interactive Components in HTML"
+sidebarTitle: ES Modules
+description: "Shadcn-html interactive components are native ES modules. Learn how to load them, why they require HTTP, auto-init patterns, and dynamic import usage."
+---
+
+Interactive components in shadcn-html ship as native ES modules — standard JavaScript files that the browser loads natively with no bundler, no build step, and no framework required. You load them with `<script type="module">`, and they wire themselves to any matching HTML on the page automatically. Remove the script tag and nothing breaks. This is the simplest possible JavaScript integration model.
+
+## What is `type="module"`?
+
+Adding `type="module"` to a `<script>` tag tells the browser to treat the file as an ECMAScript module instead of a classic script. The key differences matter for component loading:
+
+| Feature | Classic `<script defer>` | `<script type="module">` |
+|---|---|---|
+| Variable scope | Leaks to `window` | Module scope — nothing leaks |
+| Strict mode | Must add `'use strict'` manually | Strict by default |
+| Execution timing | Requires `defer` attribute | Deferred automatically |
+| Isolation | Needs IIFE wrapper | Each file is its own scope |
+| Protocol | Generally works from `file://` | Requires HTTP (CORS policy) |
+
+With `type="module"`, the browser provides module scope, strict mode, and deferred execution for free — three things you'd otherwise need to set up manually with a classic script.
+
+## Loading component modules
+
+Each interactive component has a `.js` file. Load it with a `type="module"` script tag anywhere in your HTML:
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- Theme and component CSS -->
+  <link rel="stylesheet" href="dist/theme/default-semantic-tokens.css">
+  <link rel="stylesheet" href="dist/components/dialog/dialog.css">
+  <link rel="stylesheet" href="dist/components/button/button.css">
+</head>
+<body>
+
+  <!-- Your component markup -->
+  <button class="btn" data-dialog-trigger="my-dialog">Open</button>
+  <dialog id="my-dialog" class="dialog">
+    <div class="dialog-content">
+      <p>Hello from the dialog.</p>
+      <button class="btn" data-dialog-close>Close</button>
+    </div>
+  </dialog>
+
+  <!-- Load only the components you use -->
+  <script type="module" src="dist/components/dialog/dialog.js"></script>
+
+</body>
+</html>
+```
+
+<Note>
+  Only load the JS files for components you're actually using. Most components are CSS-only and need no JavaScript at all — see the [Which components need JS](#which-components-need-js) section below.
+</Note>
+
+## No imports, no exports — side-effect modules
+
+Component JS files use no `import` or `export` statements. Each file is a **side-effect module** — it wraps its DOM-querying logic in an `init()` function, calls it once on load, and sets up a `MutationObserver` to re-run when the DOM changes. There is nothing to export because the module's purpose *is* its side effect: wiring behavior to HTML elements.
+
+```javascript
+// dialog.js — no imports, no exports
+
+function init() {
+  document.querySelectorAll('[data-dialog-trigger]:not([data-init])').forEach((trigger) => {
+    trigger.dataset.init = '';
+    const dialog = document.getElementById(trigger.dataset.dialogTrigger);
+    if (!dialog) return;
+    trigger.addEventListener('click', () => {
+      dialog._trigger = trigger;
+      dialog.showModal();
+    });
+  });
+}
+
+// Run once when the module loads
+init();
+
+// Auto-run when new elements appear in the DOM
+new MutationObserver(init).observe(document, { childList: true, subtree: true });
+```
+
+There are no `import` statements either because each component is fully self-contained. A dialog doesn't depend on a tooltip. A dropdown doesn't share code with a combobox. Include only the `<script>` tags you need — adding or removing them affects nothing else.
+
+## Auto-initialization pattern
+
+Every component module follows the same initialization pattern:
+
+```javascript
+// The universal component module pattern
+
+function init() {
+  // :not([data-init]) ensures already-initialized elements are skipped
+  document.querySelectorAll('.my-component:not([data-init])').forEach((el) => {
+    el.dataset.init = '';  // Mark as initialized — prevents double-binding
+    // ... bind event listeners, set ARIA attributes, etc.
+  });
+}
+
+// Run once on initial page load
+init();
+
+// Auto-run on DOM changes (SPA navigation, dynamic content insertion, etc.)
+new MutationObserver(init).observe(document, { childList: true, subtree: true });
+```
+
+The `data-init` attribute guard and `:not([data-init])` selector prevent double-binding when the observer fires multiple times. Even with many component observers running in parallel, each callback is cheap — elements that are already initialized are skipped immediately.
+
+## Static pages vs. SPAs
+
+Component JS works identically on both static and dynamic pages.
+
+<CardGroup cols={2}>
+  <Card title="Static pages">
+    Add `<script type="module">` tags and you're done. Modules run once after the HTML is parsed. All components initialize automatically. Nothing else to configure.
+  </Card>
+  <Card title="SPAs and dynamic content">
+    New HTML inserted after page load (via `innerHTML`, `fetch`, framework rendering, etc.) is automatically initialized. The `MutationObserver` in each module watches for new elements and wires them up. Already-initialized elements are skipped via the `data-init` guard.
+  </Card>
+</CardGroup>
+
+## Which components need JS?
+
+Most components are CSS-only. JavaScript is only used when HTML and CSS alone cannot express the behavior — things like keyboard navigation, focus management, modal coordination, and state synchronization.
+
+**CSS-only — no JS script tag needed:**
+
+- **Static display:** Badge, Card, Alert, Spinner, Skeleton, Separator, Progress, Image
+- **Native interactive:** Checkbox, Radio, Select, Switch, Slider, Input, Textarea, File Input
+- **Native disclosure:** Collapsible (uses `<details>`/`<summary>`)
+
+**Needs a `<script type="module">` tag:**
+
+| Category | Components |
+|---|---|
+| Modal coordination | Dialog, Sheet, Alert Dialog, Command |
+| Keyboard navigation | Tabs, Dropdown, Combobox, Toolbar, Navigation Menu |
+| Constraint logic | Accordion (single mode), Toggle, Toggle Group |
+| Positioning & wiring | Tooltip, Popover, Context Menu, Calendar, Carousel, Sortable |
+| Programmatic API | Toast — exposes `window.toast()` |
+
+## ES modules require HTTP
+
+ES modules are subject to browser CORS policy and **will not load from `file://` URLs**. Opening an HTML file directly in the browser (double-clicking it in a file manager) will silently fail to load any module scripts.
+
+You need to serve files over HTTP. Any local server works:
+
+```bash
+# Option 1 — npx serve (no install required)
+npx serve .
+
+# Option 2 — Vite dev server
+npx vite .
+
+# Option 3 — Python built-in server
+python3 -m http.server
+
+# Option 4 — VS Code Live Server extension
+# Right-click index.html → Open with Live Server
+```
+
+<Warning>
+  If you open your HTML file directly from your filesystem (`file:///path/to/index.html`), the interactive component scripts will silently fail. You must use a local HTTP server. The CSS will still work — only the JS modules are affected.
+</Warning>
+
+## Dynamic imports
+
+You can also import component modules programmatically using the dynamic `import()` syntax. This is useful for lazy-loading components that are only needed after user interaction:
+
+```javascript
+// Lazy-load the calendar only when the user opens a date picker
+button.addEventListener('click', async () => {
+  await import('./dist/components/calendar/calendar.js');
+  // Calendar is now initialized and ready
+  openCalendar();
+});
+```
+
+## Browser support
+
+ES modules have been supported in all major browsers since 2017–2018 and require no polyfills.
+
+| Browser | Supported since |
+|---|---|
+| Chrome / Edge | 61 (September 2017) |
+| Firefox | 60 (May 2018) |
+| Safari | 11 (September 2017) |
+
+See [caniuse.com/es6-module](https://caniuse.com/es6-module) and the [MDN Modules guide](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Modules) for full compatibility details.

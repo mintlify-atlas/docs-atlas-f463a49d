@@ -1,0 +1,141 @@
+---
+title: "Breadcrumb Component — Shadcn HTML Navigation Trail"
+sidebarTitle: Breadcrumb
+description: "Display hierarchical navigation paths with accessible HTML breadcrumbs. CSS-only component using nav, ol, and aria-current. No JavaScript needed."
+---
+
+The **Breadcrumb** component renders a hierarchical path that shows users where they are within a site's structure — for example "Home / Components / Breadcrumb". It is built on a `<nav>` landmark containing an `<ol>` (ordered list), which correctly conveys both hierarchy and sequence to screen readers and search engines. The current page is represented by a `<span>` rather than a link, marked with `aria-current="page"`. This is a CSS-only component — no JavaScript is required.
+
+## CDN Import
+
+```html
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/codylindley/shadcn-html@latest/dist/components/breadcrumb/breadcrumb.css">
+```
+
+<Note>
+No `<script>` tag is needed. The breadcrumb is entirely CSS-driven.
+</Note>
+
+## Basic Usage
+
+Wrap everything in `<nav class="breadcrumb" aria-label="Breadcrumb">`. Each path segment is a `<li class="breadcrumb-item">` holding either a link or the current-page span. Place separator elements between items.
+
+```html
+<nav class="breadcrumb" aria-label="Breadcrumb">
+  <ol class="breadcrumb-list">
+    <li class="breadcrumb-item">
+      <a class="breadcrumb-link" href="/">Home</a>
+    </li>
+    <li class="breadcrumb-separator" aria-hidden="true">/</li>
+    <li class="breadcrumb-item">
+      <a class="breadcrumb-link" href="/components">Components</a>
+    </li>
+    <li class="breadcrumb-separator" aria-hidden="true">/</li>
+    <li class="breadcrumb-item">
+      <span class="breadcrumb-page" aria-current="page">Breadcrumb</span>
+    </li>
+  </ol>
+</nav>
+```
+
+## Variants
+
+### Chevron Icon Separator
+
+Replace the `/` text separators with SVG chevron icons for a more visual style. Keep `aria-hidden="true"` on every separator element — they are purely decorative.
+
+```html
+<nav class="breadcrumb" aria-label="Breadcrumb">
+  <ol class="breadcrumb-list">
+    <li class="breadcrumb-item">
+      <a class="breadcrumb-link" href="/">Home</a>
+    </li>
+    <li class="breadcrumb-separator" aria-hidden="true">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
+           stroke="currentColor" stroke-width="2"
+           stroke-linecap="round" stroke-linejoin="round">
+        <path d="m9 18 6-6-6-6"/>
+      </svg>
+    </li>
+    <li class="breadcrumb-item">
+      <a class="breadcrumb-link" href="/components">Components</a>
+    </li>
+    <li class="breadcrumb-separator" aria-hidden="true">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
+           stroke="currentColor" stroke-width="2"
+           stroke-linecap="round" stroke-linejoin="round">
+        <path d="m9 18 6-6-6-6"/>
+      </svg>
+    </li>
+    <li class="breadcrumb-item">
+      <span class="breadcrumb-page" aria-current="page">Breadcrumb</span>
+    </li>
+  </ol>
+</nav>
+```
+
+### Collapsed with Ellipsis
+
+For long trails, collapse middle segments using `.breadcrumb-ellipsis`. The ellipsis character is hidden from screen readers with `aria-hidden="true"` and replaced by a visually-hidden `.sr-only` description.
+
+```html
+<nav class="breadcrumb" aria-label="Breadcrumb">
+  <ol class="breadcrumb-list">
+    <li class="breadcrumb-item">
+      <a class="breadcrumb-link" href="/">Home</a>
+    </li>
+    <li class="breadcrumb-separator" aria-hidden="true">/</li>
+    <li class="breadcrumb-item">
+      <span class="breadcrumb-ellipsis" aria-hidden="true">⋯</span>
+      <span class="sr-only">More pages</span>
+    </li>
+    <li class="breadcrumb-separator" aria-hidden="true">/</li>
+    <li class="breadcrumb-item">
+      <a class="breadcrumb-link" href="/components">Components</a>
+    </li>
+    <li class="breadcrumb-separator" aria-hidden="true">/</li>
+    <li class="breadcrumb-item">
+      <span class="breadcrumb-page" aria-current="page">Breadcrumb</span>
+    </li>
+  </ol>
+</nav>
+```
+
+| Class | Element | Purpose |
+|---|---|---|
+| `.breadcrumb` | `<nav>` | Root navigation landmark |
+| `.breadcrumb-list` | `<ol>` | Ordered list of path segments |
+| `.breadcrumb-item` | `<li>` | Individual path segment |
+| `.breadcrumb-link` | `<a>` | Clickable ancestor link |
+| `.breadcrumb-separator` | `<li>` | Decorative separator (always `aria-hidden`) |
+| `.breadcrumb-page` | `<span>` | Current page label (non-interactive) |
+| `.breadcrumb-ellipsis` | `<span>` | Collapsed segments indicator |
+
+## ARIA & Accessibility
+
+| Attribute | Element | Purpose |
+|---|---|---|
+| `aria-label="Breadcrumb"` | `<nav>` | Names the navigation region for screen readers |
+| `aria-current="page"` | `.breadcrumb-page` span | Identifies the current page to assistive technology |
+| `aria-hidden="true"` | `.breadcrumb-separator` | Hides decorative separators from screen readers |
+| `aria-hidden="true"` | `.breadcrumb-ellipsis` span | Hides the decorative ellipsis character |
+
+### Keyboard Interactions
+
+All links are native `<a>` elements so keyboard navigation is handled by the browser automatically — no scripting needed.
+
+| Key | Action |
+|---|---|
+| `Tab` | Moves focus forward through breadcrumb links |
+| `Shift + Tab` | Moves focus backward through breadcrumb links |
+| `Enter` | Activates the focused link |
+
+## Notes
+
+- Use `<ol>` (ordered list) rather than `<ul>` — the hierarchy of a breadcrumb trail is inherently ordered, and screen readers announce it as such.
+- The current page element must be `<span>` (not `<a>`) because it is not a navigable link; add `aria-current="page"` to it.
+- Every separator element needs `aria-hidden="true"` — separators are purely decorative and would create noise for screen-reader users if announced.
+- Default separator is a `/` text character. Swap in any SVG icon for the visual variant.
+- CSS uses `[dir="rtl"]` to auto-flip chevron SVG separators for right-to-left languages.
+- Hover transitions are suppressed for users who prefer reduced motion.
+- High-contrast mode underlines links and bolds the current page via the `prefers-contrast` media query.

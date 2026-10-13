@@ -1,0 +1,196 @@
+---
+title: "Button Component — Variants, Sizes, and ARIA Patterns"
+sidebarTitle: "Button"
+description: "Accessible button built on the native button element with six variants, eight sizes, icon support, loading state, and declarative commandfor triggers. Zero JavaScript."
+---
+
+The Button component is built directly on the native `<button>` element — and works equally well on `<a>` for navigation — bringing consistent styling, keyboard accessibility, and focus management without any JavaScript. Six `data-variant` values cover every common action type from primary calls-to-action to destructive confirmations, and eight `data-size` values include dedicated square icon sizes. The CSS handles `:focus-visible` rings, `prefers-reduced-motion`, `prefers-contrast`, and `forced-colors` automatically, so buttons are accessible in every environment without extra work.
+
+## CDN Import
+
+```html
+<!-- CSS -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/codylindley/shadcn-html@latest/dist/components/button/button.css">
+```
+
+## Basic Usage
+
+Add the `.btn` class and a `data-variant` attribute to any `<button>` element.
+
+```html
+<button class="btn" data-variant="default">Click me</button>
+```
+
+## Variants
+
+Set `data-variant` to choose the button style. The `default` variant is the primary call-to-action.
+
+```html
+<button class="btn" data-variant="default">Default</button>
+<button class="btn" data-variant="secondary">Secondary</button>
+<button class="btn" data-variant="outline">Outline</button>
+<button class="btn" data-variant="ghost">Ghost</button>
+<button class="btn" data-variant="destructive">Destructive</button>
+<button class="btn" data-variant="link">Link</button>
+```
+
+| `data-variant` | Surface | Text Color | Hover Behavior |
+|---|---|---|---|
+| `default` | `--primary` | `--primary-foreground` | `opacity: 0.9` |
+| `secondary` | `--secondary` | `--secondary-foreground` | `opacity: 0.8` |
+| `outline` | `--background` + border + shadow-xs | `--foreground` | `--accent` background |
+| `ghost` | transparent | `--foreground` | `--accent` background |
+| `destructive` | `--destructive` | `--destructive-foreground` | `opacity: 0.9` |
+| `link` | transparent | `--primary` | underline (no height/padding) |
+
+## Sizes
+
+Set `data-size` to adjust the button dimensions. The default size (no `data-size`) is `2.25rem` tall.
+
+```html
+<button class="btn" data-variant="outline" data-size="xs">Extra Small</button>
+<button class="btn" data-variant="outline" data-size="sm">Small</button>
+<button class="btn" data-variant="outline">Default</button>
+<button class="btn" data-variant="outline" data-size="lg">Large</button>
+```
+
+| `data-size` | Height | Padding | Font Size | Border Radius |
+|---|---|---|---|---|
+| `xs` | 1.75rem | 0 0.5rem | 0.75rem | `--radius-sm` |
+| `sm` | 2rem | 0 0.75rem | 0.8125rem | `--radius-md` |
+| *(default)* | 2.25rem | 0 1rem | 0.875rem | `--radius-md` |
+| `lg` | 2.75rem | 0 2rem | 1rem | `--radius-md` |
+| `icon` | 2.25rem | 0 (square) | — | `--radius-md` |
+| `icon-xs` | 1.75rem | 0 (square) | — | `--radius-sm` |
+| `icon-sm` | 2rem | 0 (square) | — | `--radius-md` |
+| `icon-lg` | 2.75rem | 0 (square) | — | `--radius-md` |
+
+## With Icon
+
+Place an SVG or Lucide `<i>` element before or after the label text. SVGs without a `size-*` class are automatically sized to `1rem`.
+
+```html
+<button class="btn" data-variant="default">
+  <svg aria-hidden="true" width="15" height="15" viewBox="0 0 24 24"
+       fill="none" stroke="currentColor" stroke-width="2"
+       stroke-linecap="round" stroke-linejoin="round">
+    <path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5..."/>
+  </svg>
+  GitHub
+</button>
+
+<!-- Using a Lucide icon -->
+<button class="btn" data-variant="outline">
+  <i data-lucide="download"></i>
+  Download
+</button>
+```
+
+## Icon-Only Buttons
+
+Use the `icon` size variants for square buttons that contain only an icon. These **require `aria-label`** since there is no visible text.
+
+```html
+<button class="btn" data-variant="outline" data-size="icon-xs" aria-label="Settings">
+  <svg aria-hidden="true" width="12" height="12" ...>...</svg>
+</button>
+
+<button class="btn" data-variant="outline" data-size="icon-sm" aria-label="Settings">
+  <svg aria-hidden="true" width="14" height="14" ...>...</svg>
+</button>
+
+<button class="btn" data-variant="outline" data-size="icon" aria-label="Settings">
+  <svg aria-hidden="true" width="15" height="15" ...>...</svg>
+</button>
+
+<button class="btn" data-variant="outline" data-size="icon-lg" aria-label="Settings">
+  <svg aria-hidden="true" width="18" height="18" ...>...</svg>
+</button>
+```
+
+## Loading State
+
+Disable the button and swap the icon for a spinner to indicate a pending action. Add `aria-busy="true"` to communicate the loading state to assistive technology.
+
+```html
+<button class="btn" data-variant="default" disabled aria-busy="true">
+  <svg aria-hidden="true" width="15" height="15" viewBox="0 0 24 24"
+       fill="none" stroke="currentColor" stroke-width="2"
+       style="animation: spin 1s linear infinite;">
+    <path d="M21 12a9 9 0 1 1-6.219-8.56"/>
+  </svg>
+  Loading...
+</button>
+```
+
+## Disabled State
+
+Use the native `disabled` attribute or `aria-disabled="true"` for non-`<button>` elements. Disabled buttons get `opacity: 0.5` and `pointer-events: none`.
+
+```html
+<button class="btn" data-variant="default" disabled>Default</button>
+<button class="btn" data-variant="outline" disabled>Outline</button>
+<button class="btn" data-variant="secondary" disabled>Secondary</button>
+```
+
+## As a Link
+
+Apply `.btn` to an `<a>` element for navigation that looks like a button. Use `<a>` for navigation and `<button>` for actions.
+
+```html
+<a href="/page" class="btn" data-variant="default">Navigate</a>
+<a href="/docs" class="btn" data-variant="outline">Learn more</a>
+```
+
+## Declarative Triggers
+
+The modern `commandfor` / `command` attributes let a button open or close a dialog or popover without any JavaScript click handlers.
+
+```html
+<!-- Opens a dialog declaratively -->
+<button class="btn" data-variant="default"
+        commandfor="my-dialog" command="show-modal">
+  Open Dialog
+</button>
+<dialog id="my-dialog">...</dialog>
+```
+
+## Rounded (Pill) Style
+
+Override the border-radius inline for pill-shaped buttons.
+
+```html
+<button class="btn" data-variant="default" style="border-radius:9999px;">Rounded</button>
+<button class="btn" data-variant="outline" data-size="icon"
+        aria-label="Arrow up" style="border-radius:9999px;">
+  <svg aria-hidden="true" width="15" height="15" ...>...</svg>
+</button>
+```
+
+## ARIA & Accessibility
+
+| Attribute | Element | Purpose |
+|---|---|---|
+| `aria-label` | `<button>` | **Required** for icon-only buttons — provides the accessible name |
+| `disabled` | `<button>` | Native disabled state; sets `opacity: 0.5`, removes pointer events |
+| `aria-disabled="true"` | `<a>` or non-button | Use when the element cannot carry the native `disabled` attribute |
+| `aria-busy="true"` | `<button>` | Communicates a loading/pending state to assistive technology |
+| `:focus-visible` | automatic | Keyboard-only focus ring — suppressed on mouse clicks |
+
+## Notes
+
+<Note>
+Use `<button>` for actions (submitting forms, triggering JS) and `<a>` for navigation. This distinction matters for keyboard users and screen readers.
+</Note>
+
+<Tip>
+The `link` variant resets `height` and `padding` to zero so it flows inline within a paragraph. Do not use it as a standalone call-to-action.
+</Tip>
+
+<Warning>
+Icon-only buttons with no `aria-label` are completely inaccessible to screen reader users. Always add `aria-label` when the button contains only an icon.
+</Warning>
+
+- SVGs inside buttons without a `size-*` class are auto-sized to `1rem` × `1rem` via CSS.
+- In `prefers-contrast: more` mode, a visible border is added to all variants including `default`, `ghost`, and `destructive`.
+- In `forced-colors: active` mode, borders and text map to system `ButtonText` / `GrayText` colors.

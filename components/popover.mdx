@@ -1,0 +1,138 @@
+---
+title: "Popover — Native Popover API Component | Shadcn HTML"
+sidebarTitle: Popover
+description: "Floating content panels using the native Popover API and CSS anchor positioning. Light-dismiss, flip collision, and zero JavaScript for basic open/close behaviour."
+---
+
+The **Popover** component surfaces contextual floating panels — settings forms, dimension inputs, rich tooltips — anchored to a trigger element. It is built entirely on the browser's native [Popover API](https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes/popover) and [CSS Anchor Positioning](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_anchor_positioning), so basic open/close behaviour requires **zero JavaScript**: a `popovertarget` attribute on the trigger button is enough. Light-dismiss (clicking outside or pressing Escape) is handled by the browser automatically.
+
+## CDN Import
+
+```html
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/codylindley/shadcn-html@latest/dist/components/popover/popover.css">
+<script type="module" src="https://cdn.jsdelivr.net/gh/codylindley/shadcn-html@latest/dist/components/popover/popover.js"></script>
+```
+
+<Note>
+  The JS module assigns unique CSS anchor names to each trigger–popover pair so that CSS Anchor Positioning can resolve the layout. Without it, the popover will still open but may not position correctly relative to its trigger.
+</Note>
+
+## Basic Usage
+
+Connect a button to a popover with `popovertarget="[id]"` on the button and the matching `id` plus the `popover` attribute on the target element.
+
+```html
+<button class="btn" data-variant="outline" popovertarget="demo-popover">
+  Open Popover
+</button>
+
+<div class="popover" id="demo-popover" popover>
+  <div class="popover-header">
+    <p class="popover-title">Dimensions</p>
+    <p class="popover-description">Set the dimensions for the layer.</p>
+  </div>
+  <div class="popover-content">
+    <label class="label" for="pop-width">Width</label>
+    <input class="input" id="pop-width" type="number" value="100">
+    <label class="label" for="pop-height" style="margin-top:0.75rem">Height</label>
+    <input class="input" id="pop-height" type="number" value="100">
+  </div>
+</div>
+```
+
+## Placement Variants
+
+Control which side of the trigger the popover appears on with `data-side`, and its alignment along that axis with `data-align`.
+
+```html
+<!-- Top-center (default alignment) -->
+<button class="btn" popovertarget="pop-top">Top</button>
+<div class="popover" id="pop-top" popover data-side="top">Top popover</div>
+
+<!-- Right-aligned to start of trigger -->
+<button class="btn" popovertarget="pop-right-start">Right Start</button>
+<div class="popover" id="pop-right-start" popover data-side="right" data-align="start">
+  Right popover, start aligned
+</div>
+
+<!-- Bottom-end aligned -->
+<button class="btn" popovertarget="pop-bottom-end">Bottom End</button>
+<div class="popover" id="pop-bottom-end" popover data-side="bottom" data-align="end">
+  Bottom popover, end aligned
+</div>
+
+<!-- Left -->
+<button class="btn" popovertarget="pop-left">Left</button>
+<div class="popover" id="pop-left" popover data-side="left">Left popover</div>
+```
+
+### `data-side` values
+
+| Value | Placement |
+|---|---|
+| *(default)* | Below the trigger (`bottom`) |
+| `top` | Above the trigger |
+| `right` | Right of the trigger |
+| `bottom` | Below the trigger |
+| `left` | Left of the trigger |
+
+### `data-align` values
+
+| Value | Alignment along side axis |
+|---|---|
+| *(default)* | Centered (`center`) |
+| `center` | Centered on trigger |
+| `start` | Aligned to start edge |
+| `end` | Aligned to end edge |
+
+## Manual Popover
+
+Use `popover="manual"` when you need the panel to stay open until explicitly closed by your own code (e.g. a persistent settings panel).
+
+```html
+<button class="btn" popovertarget="manual-pop">Open</button>
+<div class="popover" id="manual-pop" popover="manual">
+  <div class="popover-header">
+    <p class="popover-title">Persistent Panel</p>
+  </div>
+  <div class="popover-content">
+    <p>Click outside will NOT close this popover.</p>
+    <button class="btn" data-variant="outline"
+            popovertarget="manual-pop"
+            popovertargetaction="hide">
+      Close
+    </button>
+  </div>
+</div>
+```
+
+## ARIA & Accessibility
+
+The Popover API's native wiring through `popovertarget` handles accessibility automatically. No extra ARIA is required for basic usage.
+
+| Feature | How it is handled |
+|---|---|
+| Open / close toggle | `popovertarget` attribute — fully declarative, no JS |
+| Light dismiss | Popover API: click outside or Escape closes the popover |
+| Focus management | Browser moves focus into the popover on open |
+| Top-layer rendering | Always above all other content — no `z-index` juggling |
+
+<Tip>
+  You can add `aria-haspopup="true"` and `aria-expanded` to the trigger button for enhanced AT announcements, although the native `popovertarget` already provides implicit semantics.
+</Tip>
+
+## Keyboard Interactions
+
+| Key | Action |
+|---|---|
+| `Enter` / `Space` | Toggle popover open/closed (on the trigger button) |
+| `Escape` | Close the popover (native light-dismiss) |
+| `Tab` | Move focus through interactive content inside the popover |
+
+## Notes
+
+- The popover renders in the **top layer** — it is always visually above all page content regardless of `z-index` or `overflow: hidden` on ancestors.
+- `position-try-fallbacks: flip-block` (or `flip-inline` for left/right sides) automatically repositions the popover if it would overflow the viewport.
+- Do **not** place `.popover` elements inside scroll containers — the top-layer element will not scroll with the parent.
+- The `popover` attribute defaults to `"auto"` which enables light-dismiss. Use `popover="manual"` for programmatically controlled popovers.
+- CSS `@starting-style` provides the entry animation; `transition-behavior: allow-discrete` handles the exit transition on `display`.

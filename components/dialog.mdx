@@ -1,0 +1,157 @@
+---
+title: "Dialog — Accessible Modal Windows | Shadcn HTML"
+sidebarTitle: Dialog
+description: "Build accessible modal dialogs with the native <dialog> element. Includes focus trap, Escape key, animated backdrop, and multiple size variants — no framework needed."
+---
+
+The **Dialog** component renders a modal window using the browser's native `<dialog>` element and `showModal()` API. Because `showModal()` promotes the element to the [top layer](https://developer.mozilla.org/en-US/docs/Glossary/Top_layer), the browser automatically handles focus trapping, Escape-key dismissal, and the `::backdrop` overlay — no third-party library required. Use a dialog whenever you need to interrupt the user for a form, a confirmation, or a piece of content that requires a deliberate response before continuing.
+
+## CDN Import
+
+```html
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/codylindley/shadcn-html@latest/dist/components/dialog/dialog.css">
+<script type="module" src="https://cdn.jsdelivr.net/gh/codylindley/shadcn-html@latest/dist/components/dialog/dialog.js"></script>
+```
+
+<Note>
+  Place every `<dialog>` element as a **direct child of `<body>`** to guarantee correct top-layer stacking and backdrop rendering.
+</Note>
+
+## Basic Usage
+
+A trigger button wired with `data-dialog-trigger="[id]"` opens the matching dialog. Any element inside the dialog carrying `data-dialog-close` will close it. Clicking the backdrop also closes the dialog.
+
+```html
+<!-- Trigger -->
+<button class="btn" data-variant="default"
+        data-dialog-trigger="my-dialog"
+        aria-haspopup="dialog">
+  Open Dialog
+</button>
+
+<!-- Dialog — direct child of <body> -->
+<dialog id="my-dialog"
+        class="dialog"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="my-dialog-title">
+
+  <div class="dialog-content">
+    <div class="dialog-header">
+      <h2 class="dialog-title" id="my-dialog-title">Edit Profile</h2>
+      <p class="dialog-description">Make changes to your profile here. Click save when done.</p>
+    </div>
+
+    <div class="dialog-body">
+      <label class="label" for="dlg-name">Name</label>
+      <input class="input" id="dlg-name" type="text" value="Cody Lindley">
+    </div>
+
+    <div class="dialog-footer">
+      <button class="btn" data-variant="outline" data-dialog-close>Cancel</button>
+      <button class="btn" data-variant="default" data-dialog-close>Save changes</button>
+    </div>
+  </div>
+</dialog>
+```
+
+## Confirmation Dialog
+
+For destructive actions, omit the `dialog-body` section and keep only the header and footer.
+
+```html
+<button class="btn" data-variant="outline"
+        data-dialog-trigger="confirm-dialog"
+        aria-haspopup="dialog">
+  Delete Account
+</button>
+
+<dialog id="confirm-dialog" class="dialog"
+        role="dialog" aria-modal="true"
+        aria-labelledby="confirm-title">
+  <div class="dialog-content">
+    <div class="dialog-header">
+      <h2 class="dialog-title" id="confirm-title">Delete account?</h2>
+      <p class="dialog-description">
+        This action cannot be undone. This will permanently delete your
+        account and remove all associated data from our servers.
+      </p>
+    </div>
+    <div class="dialog-footer">
+      <button class="btn" data-variant="outline" data-dialog-close>Cancel</button>
+      <button class="btn" data-variant="destructive" data-dialog-close>Delete account</button>
+    </div>
+  </div>
+</dialog>
+```
+
+## Sizes
+
+Control the maximum width of the dialog with the `data-size` attribute on the `<dialog>` element.
+
+| `data-size` | Max-width | Best for |
+|---|---|---|
+| `sm` | `24rem` | Confirmations, simple alerts |
+| *(default)* | `28rem` | Standard forms and content |
+| `lg` | `32rem` | Complex forms, rich content |
+| `xl` | `40rem` | Data-heavy, multi-column layouts |
+| `full` | `calc(100vw - 2rem)` | Full-width modal experiences |
+
+```html
+<dialog class="dialog" data-size="lg" id="large-dialog"
+        role="dialog" aria-modal="true"
+        aria-labelledby="large-title">
+  <div class="dialog-content">
+    <div class="dialog-header">
+      <h2 class="dialog-title" id="large-title">Large Dialog</h2>
+      <p class="dialog-description">More room for richer content.</p>
+    </div>
+    <div class="dialog-body"><!-- content --></div>
+    <div class="dialog-footer">
+      <button class="btn" data-variant="outline" data-dialog-close>Close</button>
+    </div>
+  </div>
+</dialog>
+```
+
+## ARIA & Accessibility
+
+The native `<dialog>` element opened via `showModal()` already satisfies most requirements. The table below describes every attribute you should add in markup.
+
+| Attribute | Element | Value | Purpose |
+|---|---|---|---|
+| `role="dialog"` | `<dialog>` | `dialog` | Explicitly identifies the element as a dialog |
+| `aria-modal="true"` | `<dialog>` | `true` | Tells screen readers all content behind the dialog is inert |
+| `aria-labelledby` | `<dialog>` | ID of the title heading | Associates the visible title with the dialog |
+| `aria-haspopup="dialog"` | trigger button | `dialog` | Announces to AT that the button opens a dialog |
+
+<Tip>
+  Always point `aria-labelledby` at the `id` of your `dialog-title` heading so screen readers announce the dialog name on open.
+</Tip>
+
+## Wiring
+
+The JavaScript module scans the DOM for `data-dialog-trigger` attributes and attaches click listeners automatically. A `MutationObserver` re-runs `init()` when new content is injected dynamically.
+
+| Attribute | Placement | Effect |
+|---|---|---|
+| `data-dialog-trigger="[id]"` | Any element | Opens the `<dialog>` whose `id` matches the value |
+| `data-dialog-close` | Any element inside the dialog | Closes the dialog and returns focus to the trigger |
+
+```html
+<!-- Open from anywhere on the page -->
+<button data-dialog-trigger="settings-dialog" aria-haspopup="dialog">
+  Settings
+</button>
+
+<!-- Multiple close buttons are supported -->
+<button class="btn" data-variant="ghost" data-dialog-close>✕</button>
+```
+
+## Notes
+
+- **Animation** is CSS-only: entry uses `@starting-style` to define the starting opacity/transform; exit uses `transition` with `allow-discrete` on the `display` property so the element fades out before `display: none` is applied.
+- The CSS selector is `dialog.dialog` (element + class) to avoid accidentally styling bare `<dialog>` elements used elsewhere in the page.
+- For forms inside dialogs, wrap form fields in `.dialog-body` to get correct vertical spacing.
+- Focus returns to the trigger element automatically when the dialog closes.
+- Clicking the backdrop (the `<dialog>` element itself, not its children) triggers `dialog.close()` via the JavaScript module's click handler.

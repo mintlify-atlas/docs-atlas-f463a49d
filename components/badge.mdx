@@ -1,0 +1,108 @@
+---
+title: "Badge — Shadcn HTML Status Label Component"
+sidebarTitle: Badge
+description: "A small inline status indicator built on a <span> element. Use badges to display labels, counts, tags, and version strings with zero JavaScript."
+---
+
+The **Badge** component is a compact, inline status indicator built on a native `<span>` element. It requires no JavaScript — all styling is driven by a single CSS class and a `data-variant` attribute. Reach for a badge wherever you need to communicate a state, label, tag, or count at a glance: alongside navigation items, inside card headers, next to user-generated content, or within buttons to surface unread counts.
+
+## CDN Import
+
+Badge is CSS-only. No script tag is required.
+
+```html
+<link
+  rel="stylesheet"
+  href="https://cdn.jsdelivr.net/gh/codylindley/shadcn-html@latest/dist/components/badge/badge.css"
+>
+```
+
+## Basic Usage
+
+Add the `badge` class to any `<span>` and choose a variant with `data-variant`.
+
+```html
+<span class="badge" data-variant="default">New</span>
+```
+
+## Variants
+
+Each variant maps to a different visual weight, letting you signal importance without relying on colour alone.
+
+```html
+<!-- High emphasis — primary background -->
+<span class="badge" data-variant="default">New</span>
+
+<!-- Medium emphasis — secondary background -->
+<span class="badge" data-variant="secondary">Draft</span>
+
+<!-- Low emphasis — border only, no fill -->
+<span class="badge" data-variant="outline">v0.1.0</span>
+```
+
+| `data-variant` | Visual treatment               | Best used for                        |
+| -------------- | ------------------------------ | ------------------------------------ |
+| `default`      | Primary background + foreground | Status labels, counts, highlights    |
+| `secondary`    | Secondary background            | Draft states, pending items          |
+| `outline`      | Border only, muted text         | Version strings, optional tags       |
+
+<Tip>
+  Render all variants side-by-side when prototyping to confirm contrast passes at your chosen theme.
+</Tip>
+
+## Usage Contexts
+
+### Decorative badge (screen-reader hidden)
+
+When a badge duplicates information already present in surrounding text, hide it from assistive technology:
+
+```html
+<span>Notifications</span>
+<span class="badge" data-variant="default" aria-hidden="true">5</span>
+```
+
+### Inside a button
+
+Embed a badge inside a `.btn` to surface notification counts:
+
+```html
+<button class="btn" data-variant="outline">
+  Inbox
+  <span class="badge" data-variant="default">3</span>
+</button>
+```
+
+### Inside a card header
+
+```html
+<article class="card">
+  <div class="card-header" style="flex-direction:row;align-items:center;justify-content:space-between;">
+    <div>
+      <p class="card-title">API Usage</p>
+      <p class="card-description">Current billing period</p>
+    </div>
+    <span class="badge" data-variant="outline">Active</span>
+  </div>
+  <div class="card-content">
+    <p style="font-size:1.5rem;font-weight:700;margin:0;">12,489</p>
+    <p style="margin:0.25rem 0 0;font-size:0.75rem;color:var(--muted-foreground);">requests this month</p>
+  </div>
+</article>
+```
+
+## ARIA & Accessibility
+
+| Concern | Guidance |
+| --- | --- |
+| Screen-reader text | Write descriptive text content — badges are read inline in the document flow |
+| Decorative badges | Add `aria-hidden="true"` when the badge is purely visual and adjacent text already conveys the meaning |
+| Colour contrast | Variant colours inherit from shadcn design tokens — verify contrast against your active theme |
+| Dynamic counts | If a count changes live, wrap it in `aria-live="polite"` at the container level so screen readers announce updates |
+
+## Notes
+
+- **Native basis** — `<span>` element; no interactivity required, pure visual indicator.
+- Badge is CSS-only — no JavaScript file to load.
+- All three variants use design tokens (`--primary`, `--secondary`, `--border`) so they respond correctly to light/dark theme switching.
+- `data-variant` is the only configuration API; there are no size variants — badges use a fixed pill size with `border-radius: 9999px`.
+- Avoid placing interactive elements (buttons, links) _inside_ a badge; use a badge inside a button instead.

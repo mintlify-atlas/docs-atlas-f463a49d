@@ -1,0 +1,150 @@
+---
+title: "Sheet — Slide-in Drawer Panel Component | Shadcn HTML"
+sidebarTitle: Sheet
+description: "Slide-in drawer panels from any screen edge using the native <dialog> element. Includes focus trap, Escape key, animated backdrop, and top/right/bottom/left placement."
+---
+
+The **Sheet** is a slide-in drawer panel that emerges from an edge of the screen — commonly used for navigation menus, filter sidebars, shopping carts, and detail views. Like the [Dialog](/components/dialog), it is powered by the native `<dialog>` element and `showModal()`, so the browser automatically handles focus trapping, Escape-key dismissal, and the `::backdrop` overlay. The only difference from a dialog is the `data-side` attribute, which selects which edge the panel slides in from.
+
+## CDN Import
+
+```html
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/codylindley/shadcn-html@latest/dist/components/sheet/sheet.css">
+<script type="module" src="https://cdn.jsdelivr.net/gh/codylindley/shadcn-html@latest/dist/components/sheet/sheet.js"></script>
+```
+
+<Note>
+  Place every `<dialog class="sheet">` element as a **direct child of `<body>`** to ensure correct top-layer stacking and backdrop rendering.
+</Note>
+
+## Basic Usage
+
+Wire a trigger with `data-sheet-trigger="[id]"`. Add `data-side` to the dialog to control which edge the panel slides in from (default is `right`).
+
+```html
+<!-- Trigger -->
+<button class="btn" data-variant="outline"
+        data-sheet-trigger="my-sheet"
+        aria-haspopup="dialog">
+  Open Sheet
+</button>
+
+<!-- Sheet — direct child of <body> -->
+<dialog id="my-sheet"
+        class="sheet"
+        data-side="right"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="my-sheet-title">
+
+  <div class="sheet-content">
+    <div class="sheet-header">
+      <h2 class="sheet-title" id="my-sheet-title">Edit Settings</h2>
+      <p class="sheet-description">Adjust your account preferences below.</p>
+    </div>
+
+    <div class="sheet-body">
+      <!-- Form fields, navigation, etc. -->
+      <p>Sheet body content goes here.</p>
+    </div>
+
+    <div class="sheet-footer">
+      <button class="btn" data-variant="outline" data-sheet-close>Cancel</button>
+      <button class="btn" data-variant="default" data-sheet-close>Save changes</button>
+    </div>
+  </div>
+
+  <button class="sheet-close-x" data-sheet-close aria-label="Close">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none"
+         stroke="currentColor" stroke-width="2"
+         stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <path d="M18 6 6 18M6 6l12 12"/>
+    </svg>
+  </button>
+</dialog>
+```
+
+## Sides
+
+Use the `data-side` attribute on the `<dialog class="sheet">` element to select the edge.
+
+| `data-side` | Behaviour |
+|---|---|
+| `right` | Slides in from the right edge *(default)* |
+| `left` | Slides in from the left edge |
+| `top` | Slides down from the top edge |
+| `bottom` | Slides up from the bottom edge |
+
+```html
+<!-- Left sheet -->
+<button class="btn" data-sheet-trigger="sheet-left" aria-haspopup="dialog">
+  Left
+</button>
+<dialog id="sheet-left" class="sheet" data-side="left"
+        role="dialog" aria-modal="true" aria-labelledby="sheet-left-title">
+  <div class="sheet-content">
+    <div class="sheet-header">
+      <h2 class="sheet-title" id="sheet-left-title">Navigation</h2>
+    </div>
+    <div class="sheet-body"><!-- nav links --></div>
+  </div>
+  <button class="sheet-close-x" data-sheet-close aria-label="Close">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none"
+         stroke="currentColor" stroke-width="2" aria-hidden="true">
+      <path d="M18 6 6 18M6 6l12 12"/>
+    </svg>
+  </button>
+</dialog>
+
+<!-- Bottom sheet -->
+<button class="btn" data-sheet-trigger="sheet-bottom" aria-haspopup="dialog">
+  Bottom
+</button>
+<dialog id="sheet-bottom" class="sheet" data-side="bottom"
+        role="dialog" aria-modal="true" aria-labelledby="sheet-bottom-title">
+  <div class="sheet-content">
+    <div class="sheet-header">
+      <h2 class="sheet-title" id="sheet-bottom-title">Share</h2>
+    </div>
+    <div class="sheet-body"><!-- share options --></div>
+  </div>
+  <button class="sheet-close-x" data-sheet-close aria-label="Close">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none"
+         stroke="currentColor" stroke-width="2" aria-hidden="true">
+      <path d="M18 6 6 18M6 6l12 12"/>
+    </svg>
+  </button>
+</dialog>
+```
+
+## ARIA & Accessibility
+
+| Attribute | Element | Value | Purpose |
+|---|---|---|---|
+| `role="dialog"` | `<dialog>` | `dialog` | Identifies the element as a dialog |
+| `aria-modal="true"` | `<dialog>` | `true` | Marks content behind the sheet as inert |
+| `aria-labelledby` | `<dialog>` | ID of title heading | Associates the visible title with the dialog |
+| `aria-haspopup="dialog"` | trigger button | `dialog` | Announces that the button opens a dialog |
+| `aria-label="Close"` | `.sheet-close-x` | `"Close"` | Labels the icon-only close button |
+
+<Tip>
+  Always provide the icon-only `sheet-close-x` button with `aria-label="Close"` — it has no visible text for screen readers to fall back on.
+</Tip>
+
+## Wiring
+
+The JS module uses different attribute names from the Dialog component to allow both components to coexist on the same page without conflicts.
+
+| Attribute | Placement | Effect |
+|---|---|---|
+| `data-sheet-trigger="[id]"` | Any element | Opens the sheet whose `id` matches |
+| `data-sheet-close` | Any element inside the sheet | Closes the sheet and returns focus to the trigger |
+
+## Notes
+
+- Right and left sheets have a fixed width of `24rem` with `max-width: 100vw` for small screens.
+- Top and bottom sheets are full-width with `height: auto` — they grow to fit their content.
+- The CSS selector is `dialog.sheet` (element + class) to avoid conflicts with `dialog.dialog` used by the Dialog component.
+- The `sheet-header` has `padding-right: 2rem` to prevent content from overlapping the corner close button.
+- Animation is CSS-only: `@starting-style` defines the slide-in starting transform, and `transition` + `allow-discrete` handles the slide-out when the dialog closes.
+- Clicking the backdrop closes the sheet, matching the Dialog behaviour.

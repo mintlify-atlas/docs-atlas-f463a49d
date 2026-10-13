@@ -1,0 +1,164 @@
+---
+title: "Table — Shadcn HTML Data Table Component"
+sidebarTitle: Table
+description: "A styled data table built on semantic <table>, <thead>, <tbody>, and <tfoot> elements with responsive overflow scrolling and optional striped-row variants."
+---
+
+The **Table** component applies shadcn design tokens to the native HTML `<table>` element family, giving you consistent spacing, typography, and border treatment without sacrificing semantic markup. Every table should have a `<caption>` for an accessible name, `<th scope="col">` for column headers, and — when the table may exceed its container width — a `table-container` wrapper that enables horizontal scroll. Use this component for invoices, data lists, settings, and any tabular information that benefits from row/column relationships.
+
+## CDN Import
+
+Table is CSS-only. No script tag is required.
+
+```html
+<link
+  rel="stylesheet"
+  href="https://cdn.jsdelivr.net/gh/codylindley/shadcn-html@latest/dist/components/table/table.css"
+>
+```
+
+## Basic Usage
+
+A minimal table with header, body, and accessible caption:
+
+```html
+<div class="table-container">
+  <table class="table">
+    <caption class="table-caption">Recent invoices</caption>
+    <thead>
+      <tr class="table-row">
+        <th class="table-head" scope="col">Invoice</th>
+        <th class="table-head" scope="col">Status</th>
+        <th class="table-head" scope="col">Method</th>
+        <th class="table-head" scope="col" style="text-align:right;">Amount</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr class="table-row">
+        <td class="table-cell">INV001</td>
+        <td class="table-cell">Paid</td>
+        <td class="table-cell">Credit card</td>
+        <td class="table-cell" style="text-align:right;">$250.00</td>
+      </tr>
+      <tr class="table-row">
+        <td class="table-cell">INV002</td>
+        <td class="table-cell">Pending</td>
+        <td class="table-cell">Bank transfer</td>
+        <td class="table-cell" style="text-align:right;">$875.00</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+```
+
+## Structure
+
+| Class | Native element | Purpose |
+| --- | --- | --- |
+| `table-container` | `<div>` | Overflow-x scroll wrapper for responsive layout |
+| `table` | `<table>` | Root element; sets width, border-collapse, and font size |
+| `table-caption` | `<caption>` | Accessible table name; visually muted, positioned below |
+| `table-row` | `<tr>` | Row with bottom border; hover highlight on `<tbody>` rows |
+| `table-head` | `<th>` | Column header; medium weight, muted foreground |
+| `table-cell` | `<td>` | Data cell; consistent padding |
+
+## Full Example with Footer
+
+Use `<tfoot>` for summary rows such as totals:
+
+```html
+<div class="table-container">
+  <table class="table">
+    <caption class="table-caption">A list of recent invoices.</caption>
+    <thead>
+      <tr class="table-row">
+        <th class="table-head" scope="col">Invoice</th>
+        <th class="table-head" scope="col">Status</th>
+        <th class="table-head" scope="col">Method</th>
+        <th class="table-head" scope="col" style="text-align:right;">Amount</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr class="table-row">
+        <td class="table-cell">INV001</td>
+        <td class="table-cell">Paid</td>
+        <td class="table-cell">Credit card</td>
+        <td class="table-cell" style="text-align:right;">$250.00</td>
+      </tr>
+      <tr class="table-row">
+        <td class="table-cell">INV002</td>
+        <td class="table-cell">Pending</td>
+        <td class="table-cell">Bank transfer</td>
+        <td class="table-cell" style="text-align:right;">$875.00</td>
+      </tr>
+      <tr class="table-row">
+        <td class="table-cell">INV003</td>
+        <td class="table-cell">Paid</td>
+        <td class="table-cell">PayPal</td>
+        <td class="table-cell" style="text-align:right;">$1,375.00</td>
+      </tr>
+    </tbody>
+    <tfoot>
+      <tr class="table-row">
+        <td class="table-cell" colspan="3">Total</td>
+        <td class="table-cell" style="text-align:right;font-weight:600;">$2,500.00</td>
+      </tr>
+    </tfoot>
+  </table>
+</div>
+```
+
+## Striped Rows Variant
+
+Add alternating row backgrounds by applying `data-striped` on the `<tbody>`:
+
+```html
+<tbody data-striped>
+  <tr class="table-row">
+    <td class="table-cell">Row 1</td>
+    <td class="table-cell">Value</td>
+  </tr>
+  <tr class="table-row">
+    <td class="table-cell">Row 2</td>
+    <td class="table-cell">Value</td>
+  </tr>
+</tbody>
+```
+
+<Tip>
+  Striped rows help users track across wide tables. Always combine with column headers so the visual rhythm is meaningful.
+</Tip>
+
+## Responsive Layout
+
+Wrap the table in `table-container` to enable horizontal scrolling on small viewports:
+
+```html
+<div class="table-container" style="overflow-x:auto;">
+  <table class="table">
+    <!-- ... -->
+  </table>
+</div>
+```
+
+<Note>
+  Horizontal scroll is the correct pattern for data tables on mobile. Avoid collapsing columns into `<dl>` layouts unless the data is sparse enough to lose its tabular relationship.
+</Note>
+
+## ARIA & Accessibility
+
+| Element / Attribute | Requirement | Notes |
+| --- | --- | --- |
+| `<caption>` | Strongly recommended | Provides the accessible name — equivalent to `aria-label` on a table |
+| `<th scope="col">` | **Required** for column headers | Tells screen readers which column a cell belongs to |
+| `<th scope="row">` | Required for row headers | Use when the first column identifies the row (e.g. a user name) |
+| `<tfoot>` | Semantic footer | Screen readers announce it separately from body rows |
+| `colspan` | Use sparingly | Correctly spans multiple columns — screen readers follow the span |
+
+## Notes
+
+- **Native basis** — `<table>`, `<thead>`, `<tbody>`, `<tfoot>`, and `<caption>` native HTML elements.
+- Table is CSS-only — no JavaScript file to load.
+- The `table-container` wrapper uses `overflow-x: auto` and a small border-radius so it blends with card surfaces.
+- Avoid using `<table>` for layout; always use it for genuine tabular data with rows and columns that share meaningful relationships.
+- For sortable or filterable tables, add `aria-sort` to `<th>` elements and handle click events in your own script.

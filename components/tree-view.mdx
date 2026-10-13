@@ -1,0 +1,148 @@
+---
+title: "Tree View — Shadcn HTML Hierarchical List Component"
+sidebarTitle: Tree View
+description: "An accessible hierarchical tree built on nested <ul>/<li> elements with WAI-ARIA tree roles, expand/collapse via <details>, and full keyboard navigation."
+---
+
+The **Tree View** component renders hierarchical data — such as a file system, a navigation tree, or a nested category list — as an accessible, keyboard-navigable tree widget. It is built on nested `<ul>` and `<li>` elements following the [WAI-ARIA Tree View pattern](https://www.w3.org/WAI/ARIA/apg/patterns/treeview/), using the native `<details>` / `<summary>` elements for expand/collapse behaviour. A lightweight JavaScript module manages `aria-expanded` state and keyboard navigation. Use tree views for file explorers, nested menus, organizational charts, and any deeply nested data.
+
+## CDN Import
+
+Tree View requires both CSS and the JS module:
+
+```html
+<link
+  rel="stylesheet"
+  href="https://cdn.jsdelivr.net/gh/codylindley/shadcn-html@latest/dist/components/tree-view/tree-view.css"
+>
+<script
+  type="module"
+  src="https://cdn.jsdelivr.net/gh/codylindley/shadcn-html@latest/dist/components/tree-view/tree-view.js"
+></script>
+```
+
+## Basic Usage
+
+A two-level tree with one branch (folder) and two leaves (files):
+
+```html
+<ul class="tree" role="tree" aria-label="File explorer">
+  <li class="tree-item" role="treeitem" aria-expanded="true">
+    <details class="tree-branch" open>
+      <summary class="tree-branch-trigger">
+        <!-- chevron icon -->
+        <!-- folder icon -->
+        <span>src</span>
+      </summary>
+      <ul class="tree-group" role="group">
+        <li class="tree-item" role="treeitem">
+          <span class="tree-leaf">
+            <!-- file icon -->
+            <span>index.ts</span>
+          </span>
+        </li>
+        <li class="tree-item" role="treeitem">
+          <span class="tree-leaf">
+            <!-- file icon -->
+            <span>app.ts</span>
+          </span>
+        </li>
+      </ul>
+    </details>
+  </li>
+  <li class="tree-item" role="treeitem">
+    <span class="tree-leaf">
+      <!-- file icon -->
+      <span>package.json</span>
+    </span>
+  </li>
+</ul>
+```
+
+## Structure
+
+| Class | Element | Role | Purpose |
+| --- | --- | --- | --- |
+| `tree` | `<ul>` | `tree` | Root container |
+| `tree-item` | `<li>` | `treeitem` | Individual node — branch or leaf |
+| `tree-branch` | `<details>` | — | Native collapsible for branch nodes |
+| `tree-branch-trigger` | `<summary>` | — | Clickable label + chevron for a branch |
+| `tree-group` | `<ul>` | `group` | Nested child list of a branch |
+| `tree-leaf` | `<span>` | — | Non-collapsible leaf node label |
+
+## Fully Nested Example
+
+```html
+<ul class="tree" role="tree" aria-label="Project files">
+  <li class="tree-item" role="treeitem" aria-expanded="true">
+    <details class="tree-branch" open>
+      <summary class="tree-branch-trigger">
+        <span>components</span>
+      </summary>
+      <ul class="tree-group" role="group">
+        <li class="tree-item" role="treeitem" aria-expanded="false">
+          <details class="tree-branch">
+            <summary class="tree-branch-trigger">
+              <span>button</span>
+            </summary>
+            <ul class="tree-group" role="group">
+              <li class="tree-item" role="treeitem">
+                <span class="tree-leaf"><span>button.css</span></span>
+              </li>
+              <li class="tree-item" role="treeitem">
+                <span class="tree-leaf"><span>button.js</span></span>
+              </li>
+            </ul>
+          </details>
+        </li>
+        <li class="tree-item" role="treeitem">
+          <span class="tree-leaf"><span>index.ts</span></span>
+        </li>
+      </ul>
+    </details>
+  </li>
+  <li class="tree-item" role="treeitem">
+    <span class="tree-leaf"><span>README.md</span></span>
+  </li>
+</ul>
+```
+
+## Keyboard Navigation
+
+The JS module enables the full WAI-ARIA keyboard interaction pattern:
+
+| Key | Action |
+| --- | --- |
+| `↓` / `↑` | Move focus to the next / previous visible node |
+| `→` | Expand a collapsed branch; move into an already-open branch |
+| `←` | Collapse an open branch; move focus to parent branch |
+| `Enter` / `Space` | Toggle expand/collapse on a branch node |
+| `Home` | Move focus to the first node in the tree |
+| `End` | Move focus to the last visible node in the tree |
+
+<Note>
+  Keyboard navigation is handled by the JS module. The `<details>` element provides native toggle behaviour as a progressive enhancement, so the tree remains functional even without JavaScript.
+</Note>
+
+## ARIA & Accessibility
+
+| Attribute | Element | Requirement | Notes |
+| --- | --- | --- | --- |
+| `role="tree"` | Root `<ul>` | **Required** | Identifies the widget to screen readers |
+| `aria-label` | Root `<ul>` | **Required** | Names the tree (e.g. "File explorer") |
+| `role="treeitem"` | Each `<li>` | **Required** | Identifies each node |
+| `aria-expanded="true/false"` | Branch `<li>` | **Required** | Communicates open/closed state |
+| `role="group"` | Nested `<ul>` | **Required** | Groups child nodes under a parent branch |
+| `aria-selected` | `<li>` | Optional | Set to `"true"` on the currently selected node |
+
+<Tip>
+  When icons are used inside `tree-branch-trigger` or `tree-leaf`, mark them `aria-hidden="true"` so screen readers only announce the text label.
+</Tip>
+
+## Notes
+
+- **Native basis** — nested `<ul>` / `<li>` elements with `<details>` / `<summary>` for expand/collapse.
+- The JS module is required for full keyboard navigation and `aria-expanded` synchronisation.
+- `<details open>` renders the branch expanded on initial load; omit `open` for a collapsed default state.
+- Do not exceed five levels of nesting in most UIs — deep trees are hard to navigate both visually and with a keyboard.
+- For large datasets (hundreds of nodes), consider virtual rendering: only render visible nodes in the DOM and update on expand/collapse.
